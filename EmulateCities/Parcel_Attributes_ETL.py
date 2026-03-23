@@ -17,27 +17,33 @@ Author : TRPA GIS
 import arcpy
 import logging
 import os
+import smtplib
 import time
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from functools import wraps
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-LOG_PATH    = r"C:\GIS\Logs\Parcel_Joins_ETL.log"
-SCRATCH_GDB = r"C:\GIS\Scratch.gdb"
+_gis_dir    = os.environ.get('GIS_WORKING_DIR', r'C:\GIS')
+_sde_dir    = os.environ.get('SDE_CONNECT_DIR', r'C:\GIS\DB_CONNECT')
+
+LOG_PATH    = os.path.join(_gis_dir, r'Logs\Parcel_Joins_ETL.log')
+SCRATCH_GDB = os.path.join(_gis_dir, 'Scratch.gdb')
 
 # SDE connection files
-# These are .sde connection files; update paths for your environment.
-# The db behind the collection service is 'sde_collect'.
-COLLECTION_SDE = r"\\<server>\<path>\Collection.sde"   # TODO: update
-VECTOR_SDE     = r"\\<server>\<path>\Vector.sde"        # TODO: update
+COLLECTION_SDE = os.path.join(_sde_dir, 'Collection.sde')
+VECTOR_SDE     = os.path.join(_sde_dir, 'Vector.sde')
 
 # Target feature class / table in the enterprise GDB
 TARGET_FC = os.path.join(COLLECTION_SDE, "SDE.Parcel_Permit_Review_Attributes")
 
 # Parcel master — provides the geometry for all spatial join operations.
-# This should be the polygon feature class matching the target table rows.
-PARCEL_MASTER = os.path.join(COLLECTION_SDE, "SDE.Parcel_Master")  # TODO: confirm
+PARCEL_MASTER = os.path.join(COLLECTION_SDE, "SDE.Parcel_Master")
 
 # ── Overlay layers ─────────────────────────────────────────────────────────────
 # Each entry maps a logical name to the SDE feature class path.
@@ -45,8 +51,8 @@ PARCEL_MASTER = os.path.join(COLLECTION_SDE, "SDE.Parcel_Master")  # TODO: confi
 
 OVERLAYS = {
     # key:           (fc_path,                                          join_type)
-    # join_type: "SPATIAL_JOIN" (largest overlap) or "IDENTITY"
-    "jurisdiction":  (os.path.join(VECTOR_SDE, "SDE.Jurisdiction"),         "SPATIAL_JOIN"),
+    # join_type: "SPATIAL_JOIN" or "IDENTITY"
+    "jurisdiction":  (os.path.join(VECTOR_SDE, "SDE.Jurisdiction"),          "SPATIAL_JOIN"),
     "county":        (os.path.join(VECTOR_SDE, "SDE.County"),                "SPATIAL_JOIN"),
     "hra":           (os.path.join(VECTOR_SDE, "SDE.HydrologyResponseArea"), "SPATIAL_JOIN"),
     "flood_zone":    (os.path.join(VECTOR_SDE, "SDE.FloodZone_FEMA"),        "IDENTITY"),
@@ -61,10 +67,6 @@ OVERLAYS = {
     "zoning":        (os.path.join(VECTOR_SDE, "SDE.Zoning"),                "SPATIAL_JOIN"),
     "landuse_exist": (os.path.join(VECTOR_SDE, "SDE.ExistingLandUse"),       "SPATIAL_JOIN"),
     "landuse_region":(os.path.join(VECTOR_SDE, "SDE.RegionalLandUse"),       "SPATIAL_JOIN"),
-    # Scenic Travel Routes — polygon layers; parcels outside get NULL → "N/A"
-    # Source: Scenic_Status/FeatureServer layers 2 & 3
-    "scenic_roadway":  (os.path.join(VECTOR_SDE, "SDE.Scenic_Roadway_Travel_Route"),   "SPATIAL_JOIN"),
-    "scenic_shoreline":(os.path.join(VECTOR_SDE, "SDE.Scenic_Shoreline_Travel_Route"), "SPATIAL_JOIN"),
 }
 
 # Field mapping: overlay_key -> {source_field_in_overlay: target_field_in_table}
@@ -92,17 +94,23 @@ FIELD_MAP = {
     "zoning":        {"ZONING_DESC":  "ZONING_DESCRIPTION"},
     "landuse_exist": {"LU_DESC":      "EXISTING_LANDUSE"},
     "landuse_region":{"RLU_DESC":     "REGIONAL_LANDUSE"},
-    # UNIT is the named scenic unit (e.g. "US-50", "Lake Tahoe Shoreline")
-    "scenic_roadway":  {"UNIT": "SCENIC_ROADWAY_UNIT"},
-    "scenic_shoreline":{"UNIT": "SCENIC_SHORELINE_UNIT"},
 }
 
 # Fields that should default to "N/A" when the spatial join returns null
 # (i.e. the parcel falls outside the overlay coverage entirely)
 NULL_DEFAULTS = {
-    "SCENIC_ROADWAY_UNIT":  "N/A",
-    "SCENIC_SHORELINE_UNIT": "N/A",
+    "SCENIC_CORRIDOR_RDWY":      "N/A",
+    "SCENIC_CORRIDOR_SHORELINE": "N/A",
 }
+
+# ── Scenic Corridor config ─────────────────────────────────────────────────────
+# Single feature class containing both roadway and shoreline corridors,
+# differentiated by the CATEGORY field.
+SCENIC_CORRIDOR_FC = os.path.join(VECTOR_SDE, r"SDE.Scenic\SDE.Scenic_Corridor")
+
+# TODO: confirm exact CATEGORY values in your data (query the layer to verify)
+SCENIC_CATEGORY_RDWY      = "Roadway"
+SCENIC_CATEGORY_SHORELINE = "Shoreline"
 
 # Primary join key shared between parcel master and the target table
 JOIN_KEY = "APN"
@@ -126,6 +134,34 @@ NULL_RATE_THRESHOLD = 0.05   # 5%
 
 # Max issues to log per check (keeps logs readable)
 MAX_ISSUES = 5
+
+# ── Email ─────────────────────────────────────────────────────────────────────
+
+EMAIL_SUBJECT  = "Parcel Attributes ETL"
+EMAIL_SENDER   = os.environ.get('EMAIL_SENDER')
+EMAIL_RECEIVER = os.environ.get('EMAIL_RECEIVER')
+EMAIL_SMTP_HOST = os.environ.get('EMAIL_SMTP_HOST')
+EMAIL_SMTP_PORT = int(os.environ.get('EMAIL_SMTP_PORT', 25))
+
+def send_mail(body):
+    msg = MIMEMultipart()
+    msg['Subject'] = EMAIL_SUBJECT
+    msg['From']    = EMAIL_SENDER
+    msg['To']      = EMAIL_RECEIVER
+
+    msg.attach(MIMEText('%s<br><br>Cheers,<br>GIS Team' % body, 'html'))
+
+    attachment = MIMEText(open(LOG_PATH, encoding='utf-8', errors='replace').read())
+    attachment.add_header("Content-Disposition", "attachment", filename=os.path.basename(LOG_PATH))
+    msg.attach(attachment)
+
+    try:
+        with smtplib.SMTP(EMAIL_SMTP_HOST, EMAIL_SMTP_PORT) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
+    except Exception:
+        log.exception("Failed to send notification email")
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 
@@ -414,6 +450,67 @@ def collect_join_results(join_fc, overlay_key):
     return results
 
 
+# ── Scenic Corridor joins ─────────────────────────────────────────────────────
+
+@timer
+def run_scenic_corridor_joins(parcel_fc):
+    """
+    Populate SCENIC_CORRIDOR, SCENIC_CORRIDOR_RDWY, and SCENIC_CORRIDOR_SHORELINE
+    from a single SDE layer filtered by CATEGORY.
+
+    Runs two spatial joins (one per category) then merges results per APN:
+      - SCENIC_CORRIDOR        : "Yes" if parcel intersects either category, else "No"
+      - SCENIC_CORRIDOR_RDWY   : CORRIDOR_NAME from roadway join, else "N/A"
+      - SCENIC_CORRIDOR_SHORELINE: CORRIDOR_NAME from shoreline join, else "N/A"
+
+    Returns: { apn: {"SCENIC_CORRIDOR": ..., "SCENIC_CORRIDOR_RDWY": ...,
+                      "SCENIC_CORRIDOR_SHORELINE": ...} }
+    """
+    log.info("--- Processing overlay: scenic_corridor ---")
+
+    results = {}   # { apn: {field: value} }
+
+    for label, category, target_field in [
+        ("roadway",   SCENIC_CATEGORY_RDWY,      "SCENIC_CORRIDOR_RDWY"),
+        ("shoreline", SCENIC_CATEGORY_SHORELINE,  "SCENIC_CORRIDOR_SHORELINE"),
+    ]:
+        # Filter source layer to this category only
+        lyr_name  = f"scenic_{label}_lyr"
+        where     = f"CATEGORY = '{category}'"
+        arcpy.management.MakeFeatureLayer(SCENIC_CORRIDOR_FC, lyr_name, where)
+        log.info(f"  Filtering '{SCENIC_CORRIDOR_FC}' WHERE {where}")
+
+        join_fc = run_spatial_join(parcel_fc, lyr_name, f"join_scenic_{label}")
+        arcpy.management.Delete(lyr_name)
+
+        # Read CORRIDOR_NAME, UNIT, CATEGORY from join output
+        read_fields = [JOIN_KEY, "CORRIDOR_NAME", "UNIT", "CATEGORY"]
+        with arcpy.da.SearchCursor(join_fc, read_fields) as cur:
+            for row in cur:
+                apn, corridor_name, unit, cat = row
+                if apn is None:
+                    continue
+
+                if apn not in results:
+                    results[apn] = {
+                        "SCENIC_CORRIDOR":           "No",
+                        "SCENIC_CORRIDOR_RDWY":      "N/A",
+                        "SCENIC_CORRIDOR_SHORELINE": "N/A",
+                    }
+
+                # A non-null CORRIDOR_NAME means the parcel is inside this category
+                if corridor_name and str(corridor_name).strip():
+                    results[apn][target_field]     = corridor_name
+                    results[apn]["SCENIC_CORRIDOR"] = "Yes"
+
+        matched = sum(1 for v in results.values() if v.get(target_field) != "N/A")
+        log.info(f"  {label}: {matched:,} parcels matched a scenic corridor")
+
+    log.info(f"  Scenic corridor: {sum(1 for v in results.values() if v['SCENIC_CORRIDOR'] == 'Yes'):,} "
+             f"parcels in at least one corridor")
+    return results
+
+
 # ── Update target table ───────────────────────────────────────────────────────
 
 @timer
@@ -508,6 +605,13 @@ def main():
         except Exception:
             log.exception(f"Failed on overlay '{overlay_key}' — skipping")
 
+    # Scenic corridor — handled separately (one source layer, split by CATEGORY)
+    scenic_results = run_scenic_corridor_joins(PARCEL_MASTER)
+    for apn, attrs in scenic_results.items():
+        if apn not in all_results:
+            all_results[apn] = {}
+        all_results[apn].update(attrs)
+
     log.info(f"Total APNs collected across all overlays: {len(all_results):,}")
 
     # Push results to SDE
@@ -521,4 +625,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+        send_mail("SUCCESS - Parcel attribute joins completed.")
+    except arcpy.ExecuteError:
+        log.error(arcpy.GetMessages())
+        send_mail("ERROR - Arcpy Exception - Check Log")
+        raise
+    except Exception:
+        log.exception("Unhandled error in Parcel_Attributes_ETL")
+        send_mail("ERROR - System Error - Check Log")
+        raise
