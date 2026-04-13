@@ -1,236 +1,86 @@
 """
-Parcel_Joins_ETL.py
+Parcel_Attributes_ETL.py
 
-Updates SDE.Parcel_Permit_Review_Attributes via a series of spatial joins
-and identity overlays from parcel geometry to overlay layers.
+Updates SDE.Parcel_Permit_Review_Attributes via:
+  1. Direct field copy from Parcel Master — includes pre-joined attributes
+     (HRA, soils, priority watershed, town center, zoning, location to town
+     center) that are already populated in the Parcel Master service.
+  2. Proximity overlays — "Within" / "Intersects" / "Outside" for
+     FLOOD_ZONE, AVALANCHE_ZONE, HWL_BUFFER, and HISTORIC_DISTRICT.
+     (These will move to Parcel Master in a future iteration.)
+  3. Scenic corridor joins — SCENIC_CORRIDOR proximity + name+type for
+     Roadway and Shoreline corridors via two separate map services.
+  4. LCV status — Yes/No via APN join against the Parcel_Joins service.
 
-Overlay groups:
-  - Location     : Jurisdiction, County, HRA, Watershed, Catchment
-  - Environmental: Flood Zone, Avalanche Zone, Soil (2003), Priority Watershed
-  - Planning     : Plan Area, Town Center, Scenic Corridor, Historic District,
-                   Conservation/Rec
-  - Land Use     : Zoning, Existing Land Use, Regional Land Use
+The ETL is incremental: it compares the most-recent last_edited_date in
+Parcel Master against the same field in the target table and skips the run
+if the target is already up to date.
+
+Target layer (web service reference):
+  https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6
 
 Author : TRPA GIS
 """
 
 import arcpy
 import logging
-import os
-import smtplib
-import time
-from datetime import datetime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from functools import wraps
 
-from dotenv import load_dotenv
-load_dotenv()
-
-# ── Configuration ─────────────────────────────────────────────────────────────
-
-_gis_dir    = os.environ.get('GIS_WORKING_DIR', r'C:\GIS')
-_sde_dir    = os.environ.get('SDE_CONNECT_DIR', r'C:\GIS\DB_CONNECT')
-
-LOG_PATH    = os.path.join(_gis_dir, r'Logs\Parcel_Joins_ETL.log')
-SCRATCH_GDB = os.path.join(_gis_dir, 'Scratch.gdb')
-
-# SDE connection files
-COLLECTION_SDE = os.path.join(_sde_dir, 'Collection.sde')
-VECTOR_SDE     = os.path.join(_sde_dir, 'Vector.sde')
-
-# Target feature class / table in the enterprise GDB
-TARGET_FC = os.path.join(COLLECTION_SDE, "SDE.Parcel_Permit_Review_Attributes")
-
-# Parcel master — provides the geometry for all spatial join operations.
-PARCEL_MASTER = os.path.join(COLLECTION_SDE, "SDE.Parcel_Master")
-
-# ── Overlay layers ─────────────────────────────────────────────────────────────
-# Each entry maps a logical name to the SDE feature class path.
-# TODO: verify each path and field name against your SDE schema.
-
-OVERLAYS = {
-    # key:           (fc_path,                                          join_type)
-    # join_type: "SPATIAL_JOIN" or "IDENTITY"
-    "jurisdiction":  (os.path.join(VECTOR_SDE, "SDE.Jurisdiction"),          "SPATIAL_JOIN"),
-    "county":        (os.path.join(VECTOR_SDE, "SDE.County"),                "SPATIAL_JOIN"),
-    "hra":           (os.path.join(VECTOR_SDE, "SDE.HydrologyResponseArea"), "SPATIAL_JOIN"),
-    "flood_zone":    (os.path.join(VECTOR_SDE, "SDE.FloodZone_FEMA"),        "IDENTITY"),
-    "avalanche":     (os.path.join(VECTOR_SDE, "SDE.AvalancheZone"),         "IDENTITY"),
-    "soil":          (os.path.join(VECTOR_SDE, "SDE.Soils_2003"),            "IDENTITY"),
-    "priority_ws":   (os.path.join(VECTOR_SDE, "SDE.PriorityWatershed"),     "SPATIAL_JOIN"),
-    "plan":          (os.path.join(VECTOR_SDE, "SDE.PlanningArea"),          "SPATIAL_JOIN"),
-    "town_center":   (os.path.join(VECTOR_SDE, "SDE.TownCenter"),            "SPATIAL_JOIN"),
-    "scenic":        (os.path.join(VECTOR_SDE, "SDE.ScenicCorridor"),        "IDENTITY"),
-    "historic":      (os.path.join(VECTOR_SDE, "SDE.HistoricDistrict"),      "SPATIAL_JOIN"),
-    "conservation":  (os.path.join(VECTOR_SDE, "SDE.ConservationRec"),       "SPATIAL_JOIN"),
-    "zoning":        (os.path.join(VECTOR_SDE, "SDE.Zoning"),                "SPATIAL_JOIN"),
-    "landuse_exist": (os.path.join(VECTOR_SDE, "SDE.ExistingLandUse"),       "SPATIAL_JOIN"),
-    "landuse_region":(os.path.join(VECTOR_SDE, "SDE.RegionalLandUse"),       "SPATIAL_JOIN"),
-}
-
-# Field mapping: overlay_key -> {source_field_in_overlay: target_field_in_table}
-# TODO: verify the source field names match your actual overlay layer schemas.
-FIELD_MAP = {
-    "jurisdiction":  {"JURISDICTION": "JURISDICTION"},
-    "county":        {"COUNTY":       "COUNTY"},
-    "hra":           {
-                        "HRA_NAME":       "HRA_NAME",
-                        "WATERSHED_NAME": "WATERSHED_NAME",
-                        "CATCHMENT":      "CATCHMENT",
-                     },
-    "flood_zone":    {"FLD_ZONE":     "FLOOD_ZONE"},
-    "avalanche":     {"AVLN_ZONE":    "AVALANCHE_ZONE"},
-    "soil":          {"SOIL_TYPE":    "SOIL_2003"},
-    "priority_ws":   {"PRIORITY_WS":  "PRIORITY_WATERSHED"},
-    "plan":          {"PLAN_NAME":    "PLAN_NAME"},
-    "town_center":   {
-                        "TC_NAME":    "TOWN_CENTER",
-                        "TC_LOC":     "LOCATION_TO_TOWNCENTER",
-                     },
-    "scenic":        {"SCENIC_CORR":  "SCENIC_CORRIDOR"},
-    "historic":      {"HIST_DIST":    "HISTORIC_DISTRICT"},
-    "conservation":  {"CONS_REC":     "CONSERVATION_REC"},
-    "zoning":        {"ZONING_DESC":  "ZONING_DESCRIPTION"},
-    "landuse_exist": {"LU_DESC":      "EXISTING_LANDUSE"},
-    "landuse_region":{"RLU_DESC":     "REGIONAL_LANDUSE"},
-}
-
-# Fields that should default to "N/A" when the spatial join returns null
-# (i.e. the parcel falls outside the overlay coverage entirely)
-NULL_DEFAULTS = {
-    "SCENIC_CORRIDOR_RDWY":      "N/A",
-    "SCENIC_CORRIDOR_SHORELINE": "N/A",
-}
-
-# ── Scenic Corridor config ─────────────────────────────────────────────────────
-# Single feature class containing both roadway and shoreline corridors,
-# differentiated by the CATEGORY field.
-SCENIC_CORRIDOR_FC = os.path.join(VECTOR_SDE, r"SDE.Scenic\SDE.Scenic_Corridor")
-
-# TODO: confirm exact CATEGORY values in your data (query the layer to verify)
-SCENIC_CATEGORY_RDWY      = "Roadway"
-SCENIC_CATEGORY_SHORELINE = "Shoreline"
-
-# Primary join key shared between parcel master and the target table
-JOIN_KEY = "APN"
-
-# ── Validation config ──────────────────────────────────────────────────────────
-
-# Expected row count range for the parcel master (update to match your dataset)
-PARCEL_COUNT_MIN = 63_000
-PARCEL_COUNT_MAX = 65_500
-
-# Fields that must be non-null / non-empty after the update
-REQUIRED_FIELDS = ["JURISDICTION", "COUNTY", "HRA_NAME", "FLOOD_ZONE", "ZONING_DESCRIPTION"]
-
-# Valid domain values for spot-check fields (add/adjust as needed)
-VALID_JURISDICTIONS = {"El Dorado County", "Placer County", "Douglas County",
-                       "Washoe County", "Carson City", "City of South Lake Tahoe"}
-VALID_COUNTIES      = {"EL", "PL", "DG", "WA", "CC"}
-
-# Max null rate (0–1) allowed per required field before validation fails
-NULL_RATE_THRESHOLD = 0.05   # 5%
-
-# Max issues to log per check (keeps logs readable)
-MAX_ISSUES = 5
-
-# ── Email ─────────────────────────────────────────────────────────────────────
-
-EMAIL_SUBJECT  = "Parcel Attributes ETL"
-EMAIL_SENDER   = os.environ.get('EMAIL_SENDER')
-EMAIL_RECEIVER = os.environ.get('EMAIL_RECEIVER')
-EMAIL_SMTP_HOST = os.environ.get('EMAIL_SMTP_HOST')
-EMAIL_SMTP_PORT = int(os.environ.get('EMAIL_SMTP_PORT', 25))
-
-def send_mail(body):
-    msg = MIMEMultipart()
-    msg['Subject'] = EMAIL_SUBJECT
-    msg['From']    = EMAIL_SENDER
-    msg['To']      = EMAIL_RECEIVER
-
-    msg.attach(MIMEText('%s<br><br>Cheers,<br>GIS Team' % body, 'html'))
-
-    attachment = MIMEText(open(LOG_PATH, encoding='utf-8', errors='replace').read())
-    attachment.add_header("Content-Disposition", "attachment", filename=os.path.basename(LOG_PATH))
-    msg.attach(attachment)
-
-    try:
-        with smtplib.SMTP(EMAIL_SMTP_HOST, EMAIL_SMTP_PORT) as smtp:
-            smtp.ehlo()
-            smtp.starttls()
-            smtp.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
-    except Exception:
-        log.exception("Failed to send notification email")
-
-# ── Logging ───────────────────────────────────────────────────────────────────
-
-def setup_logging():
-    os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s  %(levelname)-8s  %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[
-            logging.FileHandler(LOG_PATH),
-            logging.StreamHandler(),
-        ],
-    )
+from config import (
+    PARCEL_MASTER, TARGET_FC, COLLECTION_SDE, SCRATCH_GDB,
+    JOIN_KEY, PARCEL_MASTER_FIELDS, PARCEL_MASTER_FLAG_FIELDS,
+    OVERLAYS, FIELD_MAP, PROXIMITY_OVERLAYS, SCENIC_CORRIDOR_SERVICES,
+    MAP_SERVICES,
+    PARCEL_COUNT_MIN, PARCEL_COUNT_MAX, REQUIRED_FIELDS,
+    VALID_JURISDICTIONS, VALID_COUNTIES, NULL_RATE_THRESHOLD, MAX_ISSUES,
+)
+from utils import (
+    setup_logging, timer, ensure_scratch_gdb, send_mail,
+    get_last_edited_date, get_insert_fields, apply_value_map,
+    run_spatial_join, run_identity, collect_join_results,
+    get_spatial_relationships, query_service, build_type_coercers,
+)
 
 log = logging.getLogger(__name__)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
 
-def timer(fn):
-    """Decorator that logs elapsed time for any function."""
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = fn(*args, **kwargs)
-        elapsed = time.perf_counter() - start
-        log.info(f"{fn.__name__} completed in {elapsed:.1f}s")
-        return result
-    return wrapper
+# ── Incremental update check ──────────────────────────────────────────────────
 
+def needs_update():
+    """
+    Return True if the target table is out of date relative to Parcel Master.
+    Defaults to True (run the ETL) when either date cannot be determined.
+    """
+    pm_date     = get_last_edited_date(PARCEL_MASTER)
+    target_date = get_last_edited_date(TARGET_FC)
 
-def ensure_scratch_gdb():
-    """Create scratch GDB if it doesn't already exist."""
-    gdb_dir  = os.path.dirname(SCRATCH_GDB)
-    gdb_name = os.path.basename(SCRATCH_GDB)
-    if not arcpy.Exists(SCRATCH_GDB):
-        arcpy.management.CreateFileGDB(gdb_dir, gdb_name)
-        log.info(f"Created scratch GDB: {SCRATCH_GDB}")
-    else:
-        log.info(f"Using existing scratch GDB: {SCRATCH_GDB}")
+    if pm_date is None or target_date is None:
+        log.info("  Could not compare edit dates — proceeding with full update")
+        return True
 
+    log.info(f"  Parcel Master last edited : {pm_date}")
+    log.info(f"  Target table last edited  : {target_date}")
 
-def scratch(name):
-    """Return a path inside the scratch GDB, deleting it first if it exists."""
-    path = os.path.join(SCRATCH_GDB, name)
-    if arcpy.Exists(path):
-        arcpy.management.Delete(path)
-    return path
+    if pm_date > target_date:
+        log.info("  Parcel Master is newer — update required")
+        return True
+
+    log.info("  Target table is already up to date — skipping ETL")
+    return False
+
 
 # ── Validation ────────────────────────────────────────────────────────────────
 
 def validate_inputs():
     """
     Pre-flight checks before any spatial operations run.
-
-    Verifies that all input datasets exist and that the parcel master
-    row count is within the expected range.  Raises RuntimeError if any
-    critical check fails so the ETL aborts before touching the SDE.
-
-    Returns True on pass.
+    Raises RuntimeError on failure so the ETL aborts before touching the SDE.
     """
     log.info("--- Pre-flight validation ---")
     issues = []
 
-    # 1. Target table accessible
     if not arcpy.Exists(TARGET_FC):
         issues.append(f"Target table not found: {TARGET_FC}")
 
-    # 2. Parcel master accessible and within expected count range
     if not arcpy.Exists(PARCEL_MASTER):
         issues.append(f"Parcel master not found: {PARCEL_MASTER}")
     else:
@@ -238,75 +88,64 @@ def validate_inputs():
         log.info(f"  Parcel master row count: {count:,}")
         if not (PARCEL_COUNT_MIN <= count <= PARCEL_COUNT_MAX):
             issues.append(
-                f"Parcel master count {count:,} is outside expected range "
+                f"Parcel master count {count:,} outside expected range "
                 f"[{PARCEL_COUNT_MIN:,} – {PARCEL_COUNT_MAX:,}]"
             )
 
-    # 3. All overlay layers accessible
-    missing_overlays = []
-    for key, (fc_path, _) in OVERLAYS.items():
+    missing = []
+    for key, (fc_path, *_) in OVERLAYS.items():
         if not arcpy.Exists(fc_path):
-            missing_overlays.append(f"  {key}: {fc_path}")
-    if missing_overlays:
-        issues.append("Missing overlay layers:\n" + "\n".join(missing_overlays))
+            missing.append(f"  {key}: {fc_path}")
+    for key, (fc_path, *_) in PROXIMITY_OVERLAYS.items():
+        if not arcpy.Exists(fc_path):
+            missing.append(f"  {key} (proximity): {fc_path}")
+    if missing:
+        issues.append("Missing overlay layers:\n" + "\n".join(missing))
 
     if issues:
         for msg in issues:
             log.error(f"VALIDATION FAIL: {msg}")
-        raise RuntimeError(f"Pre-flight validation failed with {len(issues)} issue(s) — see log")
+        raise RuntimeError(
+            f"Pre-flight validation failed with {len(issues)} issue(s) — see log"
+        )
 
     log.info("  Pre-flight validation PASSED")
     return True
 
 
 def validate_outputs():
-    """
-    Post-update quality checks on the target SDE table.
-
-    Checks:
-      1. Required fields are not null/empty above the allowed threshold
-      2. JURISDICTION values are within the known domain
-      3. COUNTY codes are within the known domain
-      4. Duplicate APNs in the target table
-
-    Logs warnings for each issue found (does not raise — updates already committed).
-    Returns True if all checks pass, False if any warning was issued.
-    """
+    """Post-update quality checks on the target SDE table."""
     log.info("--- Post-update validation ---")
     passed = True
 
-    read_fields = [JOIN_KEY] + REQUIRED_FIELDS + ["COUNTY"]
-    total       = 0
-    null_counts = {f: 0 for f in REQUIRED_FIELDS}
+    read_fields       = [JOIN_KEY] + REQUIRED_FIELDS + ["COUNTY"]
+    total             = 0
+    null_counts       = {f: 0 for f in REQUIRED_FIELDS}
     bad_jurisdictions = []
     bad_counties      = []
-    apn_seen          = {}   # apn -> first row index (for duplicate detection)
+    apn_seen          = {}
     duplicate_apns    = []
 
     with arcpy.da.SearchCursor(TARGET_FC, read_fields) as cur:
         for i, row in enumerate(cur):
-            total += 1
-            apn          = row[0]
-            jurisdiction = row[read_fields.index("JURISDICTION")]
-            county       = row[read_fields.index("COUNTY")]
+            total        += 1
+            apn           = row[0]
+            jurisdiction  = row[read_fields.index("JURISDICTION")]
+            county        = row[read_fields.index("COUNTY")]
 
-            # Null / empty checks for all required fields
             for j, field in enumerate(REQUIRED_FIELDS):
                 val = row[j + 1]
                 if val is None or str(val).strip() == "":
                     null_counts[field] += 1
 
-            # Domain check: JURISDICTION
             if jurisdiction and jurisdiction not in VALID_JURISDICTIONS:
                 if len(bad_jurisdictions) < MAX_ISSUES:
                     bad_jurisdictions.append(f"APN {apn}: '{jurisdiction}'")
 
-            # Domain check: COUNTY
             if county and county not in VALID_COUNTIES:
                 if len(bad_counties) < MAX_ISSUES:
                     bad_counties.append(f"APN {apn}: '{county}'")
 
-            # Duplicate APN detection
             if apn in apn_seen:
                 if len(duplicate_apns) < MAX_ISSUES:
                     duplicate_apns.append(apn)
@@ -315,9 +154,8 @@ def validate_outputs():
 
     log.info(f"  Target table row count: {total:,}")
 
-    # Report null rates
     for field, null_ct in null_counts.items():
-        rate = null_ct / total if total else 0
+        rate   = null_ct / total if total else 0
         status = "WARN" if rate > NULL_RATE_THRESHOLD else "OK"
         log.log(
             logging.WARNING if status == "WARN" else logging.INFO,
@@ -326,7 +164,6 @@ def validate_outputs():
         if status == "WARN":
             passed = False
 
-    # Report domain violations
     if bad_jurisdictions:
         passed = False
         log.warning(f"  [WARN] Unexpected JURISDICTION values (first {len(bad_jurisdictions)}):")
@@ -339,10 +176,9 @@ def validate_outputs():
         for msg in bad_counties:
             log.warning(f"    {msg}")
 
-    # Report duplicates
     if duplicate_apns:
         passed = False
-        log.warning(f"  [WARN] Duplicate APNs found (first {len(duplicate_apns)}): {duplicate_apns}")
+        log.warning(f"  [WARN] Duplicate APNs (first {len(duplicate_apns)}): {duplicate_apns}")
     else:
         log.info("  [OK] No duplicate APNs")
 
@@ -354,213 +190,208 @@ def validate_outputs():
     return passed
 
 
-# ── Spatial operations ────────────────────────────────────────────────────────
+# ── ETL steps ─────────────────────────────────────────────────────────────────
 
 @timer
-def run_spatial_join(parcel_fc, overlay_fc, output_name, match_option="LARGEST_OVERLAP"):
+def copy_parcel_master_fields():
     """
-    Join overlay attributes to parcels using SpatialJoin.
+    Read PARCEL_MASTER_FIELDS and PARCEL_MASTER_FLAG_FIELDS from Parcel Master.
+    Direct-copy fields are passed through as-is; flag fields are run through
+    their value_map translation before storing.
 
-    Uses LARGEST_OVERLAP so each parcel gets the attribute of whichever
-    overlay polygon covers the most area of that parcel.
-
-    Returns the path to the output feature class.
+    Returns: { apn: {target_field: value, ...} }
     """
-    out_fc = scratch(output_name)
-    log.info(f"SpatialJoin: {os.path.basename(parcel_fc)} ← {os.path.basename(overlay_fc)}")
-    arcpy.analysis.SpatialJoin(
-        target_features   = parcel_fc,
-        join_features     = overlay_fc,
-        out_feature_class = out_fc,
-        join_operation    = "JOIN_ONE_TO_ONE",
-        join_type         = "KEEP_ALL",
-        match_option      = match_option,
-    )
-    count = int(arcpy.management.GetCount(out_fc)[0])
-    log.info(f"  → {count:,} features in join output")
-    return out_fc
+    log.info("--- Collecting fields from Parcel Master ---")
 
+    direct_pm  = [pm  for pm, _     in PARCEL_MASTER_FIELDS]
+    direct_tgt = [tgt for _, tgt    in PARCEL_MASTER_FIELDS]
+    flag_pm    = [pm  for pm, _, _  in PARCEL_MASTER_FLAG_FIELDS]
+    flag_tgt   = [tgt for _, tgt, _ in PARCEL_MASTER_FLAG_FIELDS]
+    flag_maps  = [vm  for _, _, vm  in PARCEL_MASTER_FLAG_FIELDS]
 
-@timer
-def run_identity(parcel_fc, overlay_fc, output_name):
-    """
-    Overlay parcels with an identity layer.
-
-    Use Identity when a parcel may straddle multiple overlay polygons
-    and you want the dominant value (largest area portion).  The result
-    is dissolved back to one row per parcel using the JOIN_KEY.
-
-    Returns the path to the output feature class.
-    """
-    identity_tmp = scratch(f"{output_name}_identity_tmp")
-    out_fc       = scratch(output_name)
-
-    log.info(f"Identity: {os.path.basename(parcel_fc)} ← {os.path.basename(overlay_fc)}")
-    arcpy.analysis.Identity(
-        in_features     = parcel_fc,
-        identity_features = overlay_fc,
-        out_feature_class = identity_tmp,
-        join_attributes = "ALL",
-    )
-
-    # Dissolve to one record per parcel, keeping the largest-area value.
-    # We add a shape area field so we can pick the dominant overlay polygon.
-    arcpy.management.AddGeometryAttributes(identity_tmp, "AREA", Area_Unit="SQUARE_METERS")
-
-    # Sort descending by area so the first row per APN is the largest piece,
-    # then dissolve (first occurrence wins after the sort).
-    sorted_tmp = scratch(f"{output_name}_sorted")
-    arcpy.management.Sort(identity_tmp, sorted_tmp, [[JOIN_KEY, "ASCENDING"], ["POLY_AREA", "DESCENDING"]])
-    arcpy.management.DeleteIdentical(sorted_tmp, JOIN_KEY)  # keep first (largest) per APN
-
-    arcpy.management.Rename(sorted_tmp, out_fc)
-    count = int(arcpy.management.GetCount(out_fc)[0])
-    log.info(f"  → {count:,} unique parcels after identity + dissolve")
-    return out_fc
-
-
-def collect_join_results(join_fc, overlay_key):
-    """
-    Read a join output feature class into a dict keyed by APN.
-
-    Returns:
-        { apn: {target_field: value, ...}, ... }
-    """
-    field_mapping = FIELD_MAP[overlay_key]
-    source_fields = list(field_mapping.keys())
-    read_fields   = [JOIN_KEY] + source_fields
+    # Deduplicate field names while keeping APN at index 0
+    all_pm_fields = direct_pm + [f for f in flag_pm if f not in direct_pm]
+    idx           = {pm: i for i, pm in enumerate(all_pm_fields)}
 
     results = {}
-    with arcpy.da.SearchCursor(join_fc, read_fields) as cur:
+    with arcpy.da.SearchCursor(PARCEL_MASTER, all_pm_fields) as cur:
         for row in cur:
             apn = row[0]
             if apn is None:
                 continue
-            attrs = {}
-            for i, src in enumerate(source_fields):
-                target_field = field_mapping[src]
-                val = row[i + 1]
-                # Apply N/A (or other) default for fields outside overlay coverage
-                if (val is None or str(val).strip() == "") and target_field in NULL_DEFAULTS:
-                    val = NULL_DEFAULTS[target_field]
-                attrs[target_field] = val
+            attrs = {tgt: row[idx[pm]] for pm, tgt in zip(direct_pm, direct_tgt)}
+            for pm, tgt, vmap in zip(flag_pm, flag_tgt, flag_maps):
+                attrs[tgt] = apply_value_map(row[idx[pm]], vmap)
             results[apn] = attrs
 
-    log.info(f"  Collected {len(results):,} APN records from '{overlay_key}' join")
+    log.info(f"  Read {len(results):,} parcels from Parcel Master "
+             f"({len(direct_pm)} direct fields, {len(flag_pm)} flag fields)")
     return results
 
-
-# ── Scenic Corridor joins ─────────────────────────────────────────────────────
 
 @timer
 def run_scenic_corridor_joins(parcel_fc):
     """
-    Populate SCENIC_CORRIDOR, SCENIC_CORRIDOR_RDWY, and SCENIC_CORRIDOR_SHORELINE
-    from a single SDE layer filtered by CATEGORY.
+    Populate SCENIC_CORRIDOR, SCENIC_CORRIDOR_RDWY, SCENIC_CORRIDOR_SHORELINE.
 
-    Runs two spatial joins (one per category) then merges results per APN:
-      - SCENIC_CORRIDOR        : "Yes" if parcel intersects either category, else "No"
-      - SCENIC_CORRIDOR_RDWY   : CORRIDOR_NAME from roadway join, else "N/A"
-      - SCENIC_CORRIDOR_SHORELINE: CORRIDOR_NAME from shoreline join, else "N/A"
+    Roadway and Shoreline corridors live in separate map services
+    (SCENIC_CORRIDOR_SERVICES).  For each service:
+      • get_spatial_relationships determines Within / Intersects / Outside
+      • a spatial join reads CORRIDOR_NAME + TYPE for matched parcels
+
+    SCENIC_CORRIDOR is promoted to the most-specific relationship seen
+    across both corridor types (Within > Intersects > Outside).
 
     Returns: { apn: {"SCENIC_CORRIDOR": ..., "SCENIC_CORRIDOR_RDWY": ...,
-                      "SCENIC_CORRIDOR_SHORELINE": ...} }
+                     "SCENIC_CORRIDOR_SHORELINE": ...} }
     """
     log.info("--- Processing overlay: scenic_corridor ---")
+    results = {}
+    _RANK   = {"Within": 2, "Intersects": 1, "Outside": 0}
 
-    results = {}   # { apn: {field: value} }
+    for label, svc_url, target_field, category in SCENIC_CORRIDOR_SERVICES:
+        log.info(f"  Processing {label} corridors (CATEGORY = '{category}')")
 
-    for label, category, target_field in [
-        ("roadway",   SCENIC_CATEGORY_RDWY,      "SCENIC_CORRIDOR_RDWY"),
-        ("shoreline", SCENIC_CATEGORY_SHORELINE,  "SCENIC_CORRIDOR_SHORELINE"),
-    ]:
-        # Filter source layer to this category only
-        lyr_name  = f"scenic_{label}_lyr"
-        where     = f"CATEGORY = '{category}'"
-        arcpy.management.MakeFeatureLayer(SCENIC_CORRIDOR_FC, lyr_name, where)
-        log.info(f"  Filtering '{SCENIC_CORRIDOR_FC}' WHERE {where}")
+        # Overall proximity uses the full (unfiltered) layer
+        prox = get_spatial_relationships(parcel_fc, svc_url)
 
+        # Build CORRIDOR_NAME -> TYPE lookup via REST query.
+        # "TYPE" is a SQL reserved word — arcpy.da.SearchCursor silently drops
+        # it from both direct and * reads, so we bypass arcpy entirely here.
+        type_lookup = {}
+        for rec in query_service(svc_url, ["CORRIDOR_NAME", "TYPE"],
+                                 where=f"CATEGORY = '{category}'"):
+            name = rec.get("CORRIDOR_NAME") or ""
+            typ  = rec.get("TYPE") or ""
+            if name:
+                type_lookup[name.strip()] = typ.strip()
+        log.info(f"  TYPE lookup built: {len(type_lookup)} {label} corridors")
+
+        # Name join filters to this corridor category so RDWY/SHORELINE don't bleed
+        lyr_name = f"scenic_{label}_lyr"
+        arcpy.management.MakeFeatureLayer(svc_url, lyr_name, f"CATEGORY = '{category}'")
         join_fc = run_spatial_join(parcel_fc, lyr_name, f"join_scenic_{label}")
         arcpy.management.Delete(lyr_name)
 
-        # Read CORRIDOR_NAME, UNIT, CATEGORY from join output
-        read_fields = [JOIN_KEY, "CORRIDOR_NAME", "UNIT", "CATEGORY"]
-        with arcpy.da.SearchCursor(join_fc, read_fields) as cur:
+        with arcpy.da.SearchCursor(join_fc, [JOIN_KEY, "CORRIDOR_NAME", "Join_Count"]) as cur:
             for row in cur:
-                apn, corridor_name, unit, cat = row
+                apn, corridor_name, join_count = row
                 if apn is None:
                     continue
-
                 if apn not in results:
                     results[apn] = {
-                        "SCENIC_CORRIDOR":           "No",
+                        "SCENIC_CORRIDOR":           "Outside",
                         "SCENIC_CORRIDOR_RDWY":      "N/A",
                         "SCENIC_CORRIDOR_SHORELINE": "N/A",
                     }
 
-                # A non-null CORRIDOR_NAME means the parcel is inside this category
-                if corridor_name and str(corridor_name).strip():
-                    results[apn][target_field]     = corridor_name
-                    results[apn]["SCENIC_CORRIDOR"] = "Yes"
+                rel = prox.get(apn, "Outside")
+                if _RANK.get(rel, 0) > _RANK.get(results[apn]["SCENIC_CORRIDOR"], 0):
+                    results[apn]["SCENIC_CORRIDOR"] = rel
+
+                if join_count and join_count > 0 and corridor_name:
+                    name_part = str(corridor_name).strip()
+                    type_part = type_lookup.get(name_part, "")
+                    # Omit TYPE when it is absent, empty, or the placeholder "N/A"
+                    if type_part and type_part.upper() != "N/A":
+                        results[apn][target_field] = f"{name_part} {type_part}"
+                    else:
+                        results[apn][target_field] = name_part or "N/A"
 
         matched = sum(1 for v in results.values() if v.get(target_field) != "N/A")
         log.info(f"  {label}: {matched:,} parcels matched a scenic corridor")
 
-    log.info(f"  Scenic corridor: {sum(1 for v in results.values() if v['SCENIC_CORRIDOR'] == 'Yes'):,} "
-             f"parcels in at least one corridor")
+    # Ensure every parcel from parcel_fc appears in results
+    with arcpy.da.SearchCursor(parcel_fc, [JOIN_KEY]) as cur:
+        for row in cur:
+            apn = row[0]
+            if apn and apn not in results:
+                results[apn] = {
+                    "SCENIC_CORRIDOR":           "Outside",
+                    "SCENIC_CORRIDOR_RDWY":      "N/A",
+                    "SCENIC_CORRIDOR_SHORELINE": "N/A",
+                }
+
+    log.info(
+        f"  Scenic corridor: "
+        f"{sum(1 for v in results.values() if v['SCENIC_CORRIDOR'] != 'Outside'):,} "
+        f"parcels in at least one corridor"
+    )
     return results
 
 
-# ── Update target table ───────────────────────────────────────────────────────
+@timer
+def fetch_lcv_from_service():
+    """
+    Derive LCV (Yes / No) via APN join against MAP_SERVICES['lcv'].
+
+    Reads all APNs present in the LCV service layer and returns "Yes" for
+    each one.  APNs absent from the service are set to "No" in main() after
+    the merge step.
+
+    Returns: { apn: {"LCV": "Yes"} }
+    """
+    log.info("--- Fetching LCV status from service ---")
+    lcv_url = MAP_SERVICES["lcv"]
+    lcv_results = {}
+    try:
+        with arcpy.da.SearchCursor(lcv_url, [JOIN_KEY]) as cur:
+            for row in cur:
+                if row[0]:
+                    lcv_results[row[0]] = {"LCV": "Yes"}
+        log.info(f"  {len(lcv_results):,} LCV APNs read from service")
+    except Exception:
+        log.exception("  Failed to read LCV service — LCV field will be null")
+    return lcv_results
+
 
 @timer
-def update_target_table(all_results):
+def truncate_and_append(all_results):
     """
-    Apply collected join results to the target SDE table using an edit session.
+    Replace the contents of TARGET_FC using delete-rows + insert.
 
-    all_results: dict of { apn: {target_field: value, ...} }
+    TruncateTable is not supported on versioned tables; DeleteRows is used
+    instead and must run inside an edit session so the delete is posted as
+    a versioned edit rather than a physical truncation.
+
+    1. Determine writable fields from the target schema.
+    2. DeleteRows — removes all rows within the edit session.
+    3. InsertCursor — writes one row per APN from all_results.
+
+    all_results: { apn: {target_field: value, ...} }
     """
-    # Determine which target fields are present across all results
-    target_fields_set = set()
-    for attrs in all_results.values():
-        target_fields_set.update(attrs.keys())
-    target_fields = sorted(target_fields_set)
-
-    update_fields = [JOIN_KEY] + target_fields
-    log.info(f"Updating {len(target_fields)} fields on {len(all_results):,} parcels")
+    insert_fields = get_insert_fields(TARGET_FC)
+    coercers      = build_type_coercers(TARGET_FC, insert_fields)
+    log.info(f"Delete+append: {len(all_results):,} rows into {len(insert_fields)} fields")
+    log.debug(f"  Insert fields: {insert_fields}")
 
     editor = arcpy.da.Editor(COLLECTION_SDE)
     editor.startEditing(False, True)   # no undo, versioned
     editor.startOperation()
 
-    updated = 0
-    skipped = 0
+    inserted = 0
+    skipped  = 0
     try:
-        with arcpy.da.UpdateCursor(TARGET_FC, update_fields) as cur:
-            for row in cur:
-                apn = row[0]
-                if apn not in all_results:
+        arcpy.management.DeleteRows(TARGET_FC)
+        log.info("  Target table rows deleted")
+
+        with arcpy.da.InsertCursor(TARGET_FC, insert_fields) as cur:
+            for apn, attrs in all_results.items():
+                if apn is None:
                     skipped += 1
                     continue
-                attrs = all_results[apn]
-                changed = False
-                for i, field in enumerate(target_fields):
-                    new_val = attrs.get(field)
-                    if row[i + 1] != new_val:
-                        row[i + 1] = new_val
-                        changed = True
-                if changed:
-                    cur.updateRow(row)
-                    updated += 1
+                row = [coerce(attrs.get(f)) for coerce, f in zip(coercers, insert_fields)]
+                cur.insertRow(row)
+                inserted += 1
 
         editor.stopOperation()
-        editor.stopEditing(True)  # save edits
-        log.info(f"Updated {updated:,} rows  |  Skipped {skipped:,} rows (no join match)")
+        editor.stopEditing(True)
+        log.info(f"  Inserted {inserted:,} rows  |  Skipped {skipped:,} (null APN)")
 
     except Exception:
         editor.stopOperation()
-        editor.stopEditing(False)  # rollback
-        log.exception("Edit session rolled back due to error")
+        editor.stopEditing(False)
+        log.exception("Edit session rolled back — target table may be empty")
         raise
 
 
@@ -570,7 +401,7 @@ def update_target_table(all_results):
 def main():
     setup_logging()
     log.info("=" * 60)
-    log.info("Parcel_Joins_ETL  started")
+    log.info("Parcel_Attributes_ETL  started")
     log.info("=" * 60)
 
     arcpy.env.overwriteOutput = True
@@ -578,61 +409,87 @@ def main():
 
     ensure_scratch_gdb()
 
-    # Pre-flight — abort early if inputs are missing or counts are wrong
+    # ── Incremental check ─────────────────────────────────────────────────────
+    log.info("--- Incremental update check ---")
+    if not needs_update():
+        log.info("Parcel_Attributes_ETL  finished (no update needed)")
+        log.info("=" * 60)
+        return
+
+    # ── Pre-flight validation ─────────────────────────────────────────────────
     validate_inputs()
 
-    # Accumulate all join results keyed by APN
-    all_results = {}   # { apn: {field: value, ...} }
+    all_results = {}   # { apn: {target_field: value, ...} }
 
+    def merge(source_dict):
+        for apn, attrs in source_dict.items():
+            if apn not in all_results:
+                all_results[apn] = {}
+            all_results[apn].update(attrs)
+
+    # ── Step 1: Direct copy from Parcel Master ────────────────────────────────
+    merge(copy_parcel_master_fields())
+
+    # ── Step 2: Attribute-value overlays (extension point — currently empty) ──
     for overlay_key, (overlay_fc, join_type) in OVERLAYS.items():
         log.info(f"--- Processing overlay: {overlay_key} ---")
         try:
             output_name = f"join_{overlay_key}"
-
-            if join_type == "IDENTITY":
-                join_fc = run_identity(PARCEL_MASTER, overlay_fc, output_name)
-            else:
-                join_fc = run_spatial_join(PARCEL_MASTER, overlay_fc, output_name)
-
-            overlay_results = collect_join_results(join_fc, overlay_key)
-
-            # Merge into the master results dict (each overlay adds its fields)
-            for apn, attrs in overlay_results.items():
-                if apn not in all_results:
-                    all_results[apn] = {}
-                all_results[apn].update(attrs)
-
+            join_fc = (
+                run_identity(PARCEL_MASTER, overlay_fc, output_name)
+                if join_type == "IDENTITY"
+                else run_spatial_join(PARCEL_MASTER, overlay_fc, output_name)
+            )
+            merge(collect_join_results(join_fc, overlay_key))
         except Exception:
             log.exception(f"Failed on overlay '{overlay_key}' — skipping")
 
-    # Scenic corridor — handled separately (one source layer, split by CATEGORY)
-    scenic_results = run_scenic_corridor_joins(PARCEL_MASTER)
-    for apn, attrs in scenic_results.items():
-        if apn not in all_results:
-            all_results[apn] = {}
-        all_results[apn].update(attrs)
+    # ── Step 3: Proximity overlays (Within / Intersects / Outside) ────────────
+    for prox_key, (overlay_fc, target_field, attr_field) in PROXIMITY_OVERLAYS.items():
+        log.info(f"--- Processing proximity overlay: {prox_key} ---")
+        try:
+            rel_results = get_spatial_relationships(PARCEL_MASTER, overlay_fc, attr_field)
+            merge({apn: {target_field: label} for apn, label in rel_results.items()})
+        except Exception:
+            log.exception(f"Failed on proximity overlay '{prox_key}' — skipping")
 
-    log.info(f"Total APNs collected across all overlays: {len(all_results):,}")
+    # ── Step 4: Scenic corridor joins ─────────────────────────────────────────
+    try:
+        merge(run_scenic_corridor_joins(PARCEL_MASTER))
+    except Exception:
+        log.exception("Failed on scenic corridor joins — skipping")
 
-    # Push results to SDE
-    update_target_table(all_results)
+    # ── Step 5: LCV status (APN join against Parcel_Joins service) ───────────
+    try:
+        merge(fetch_lcv_from_service())
+        for apn in all_results:
+            all_results[apn].setdefault("LCV", "No")
+    except Exception:
+        log.exception("Failed on LCV join — skipping")
 
-    # Post-update quality checks
+    log.info(f"Total APNs collected across all sources: {len(all_results):,}")
+
+    # ── Truncate + append to SDE ──────────────────────────────────────────────
+    # NOTE: TruncateTable is non-recoverable without a version rollback.
+    # All spatial joins must complete before this step runs.
+    truncate_and_append(all_results)
+
+    # ── Post-update quality checks ────────────────────────────────────────────
     validate_outputs()
 
-    log.info("Parcel_Joins_ETL  finished")
+    log.info("Parcel_Attributes_ETL  finished")
     log.info("=" * 60)
 
 
 if __name__ == "__main__":
     try:
         main()
-        send_mail("SUCCESS - Parcel attribute joins completed.")
+        send_mail("SUCCESS - Parcel attribute ETL completed.")
     except arcpy.ExecuteError:
         log.error(arcpy.GetMessages())
-        send_mail("ERROR - Arcpy Exception - Check Log")
+        send_mail("ERROR - ArcPy exception — check log")
         raise
     except Exception:
         log.exception("Unhandled error in Parcel_Attributes_ETL")
-        send_mail("ERROR - System Error - Check Log")
+        send_mail("ERROR - System error — check log")
         raise
