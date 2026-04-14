@@ -187,6 +187,8 @@ EMAIL_SENDER    = os.environ.get('EMAIL_SENDER')
 EMAIL_RECEIVER  = os.environ.get('EMAIL_RECEIVER')
 EMAIL_SMTP_HOST = os.environ.get('EMAIL_SMTP_HOST')
 EMAIL_SMTP_PORT = int(os.environ.get('EMAIL_SMTP_PORT', 25))
+EMAIL_SMTP_USER = os.environ.get('EMAIL_SMTP_USER')
+EMAIL_SMTP_PASS = os.environ.get('EMAIL_SMTP_PASS')
 
 # ── Write-path constants ───────────────────────────────────────────────────────
 

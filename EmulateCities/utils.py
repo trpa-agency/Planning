@@ -20,6 +20,7 @@ from functools import wraps
 from config import (
     LOG_PATH, SCRATCH_GDB,
     EMAIL_SUBJECT, EMAIL_SENDER, EMAIL_RECEIVER, EMAIL_SMTP_HOST, EMAIL_SMTP_PORT,
+    EMAIL_SMTP_USER, EMAIL_SMTP_PASS,
     JOIN_KEY, FIELD_MAP, SKIP_INSERT_FIELDS,
 )
 
@@ -97,6 +98,10 @@ def send_mail(body):
                           filename=os.path.basename(LOG_PATH))
     msg.attach(attachment)
 
+    if not EMAIL_SMTP_HOST:
+        log.warning("EMAIL_SMTP_HOST not set — skipping notification email")
+        return
+
     try:
         with smtplib.SMTP(EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, timeout=15) as smtp:
             smtp.ehlo()
@@ -104,6 +109,8 @@ def send_mail(body):
             if smtp.has_extn("STARTTLS"):
                 smtp.starttls()
                 smtp.ehlo()
+            if EMAIL_SMTP_USER and EMAIL_SMTP_PASS:
+                smtp.login(EMAIL_SMTP_USER, EMAIL_SMTP_PASS)
             smtp.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
         log.info("Notification email sent")
     except Exception:
