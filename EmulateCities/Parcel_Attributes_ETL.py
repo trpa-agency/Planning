@@ -34,7 +34,7 @@ from config import (
     VALID_JURISDICTIONS, VALID_COUNTIES, NULL_RATE_THRESHOLD, MAX_ISSUES,
 )
 from utils import (
-    setup_logging, timer, ensure_scratch_gdb, send_mail,
+    setup_logging, timer, ensure_scratch_gdb, scratch, send_mail,
     get_last_edited_date, get_insert_fields, apply_value_map,
     run_spatial_join, run_identity, collect_join_results,
     get_spatial_relationships, query_service, build_type_coercers,
@@ -348,15 +348,18 @@ def fetch_lcv_from_service():
 @timer
 def truncate_and_append(all_results):
     """
-    Replace the contents of TARGET_FC using delete-rows + insert.
+    Replace the contents of TARGET_FC using a staged bulk append.
 
     TruncateTable is not supported on versioned tables; DeleteRows is used
-    instead and must run inside an edit session so the delete is posted as
-    a versioned edit rather than a physical truncation.
+    instead.  Row-by-row InsertCursor against a versioned SDE table is slow;
+    staging to a local FGDB first and then using Append is significantly faster.
 
-    1. Determine writable fields from the target schema.
-    2. DeleteRows — removes all rows within the edit session.
-    3. InsertCursor — writes one row per APN from all_results.
+    1. Export the target schema to a staging table in SCRATCH_GDB (zero rows).
+    2. InsertCursor into the local staging table (fast, no network overhead).
+    3. Build a FieldMappings object that covers only insert_fields, explicitly
+       omitting editor-tracking fields so the SDE engine populates them.
+    4. DeleteRows + Append inside an edit session so both operations are posted
+       as versioned edits.
 
     all_results: { apn: {target_field: value, ...} }
     """
@@ -365,29 +368,44 @@ def truncate_and_append(all_results):
     log.info(f"Delete+append: {len(all_results):,} rows into {len(insert_fields)} fields")
     log.debug(f"  Insert fields: {insert_fields}")
 
-    editor = arcpy.da.Editor(COLLECTION_SDE)
-    editor.startEditing(False, True)   # no undo, versioned
-    editor.startOperation()
+    # ── Stage to local FGDB (fast, no network overhead) ──────────────────────
+    staging = scratch("staging_parcel_attrs")
+    arcpy.conversion.ExportTable(TARGET_FC, staging, where_clause="1=0")
 
     inserted = 0
     skipped  = 0
+    with arcpy.da.InsertCursor(staging, insert_fields) as cur:
+        for apn, attrs in all_results.items():
+            if apn is None:
+                skipped += 1
+                continue
+            row = [coerce(attrs.get(f)) for coerce, f in zip(coercers, insert_fields)]
+            cur.insertRow(row)
+            inserted += 1
+    log.info(f"  Staged {inserted:,} rows  |  Skipped {skipped:,} (null APN)")
+
+    # Explicit field mapping — only insert_fields, editor-tracking fields omitted
+    # so the SDE geodatabase engine auto-populates them on insert.
+    fm = arcpy.FieldMappings()
+    for f in insert_fields:
+        fmap = arcpy.FieldMap()
+        fmap.addInputField(staging, f)
+        out_field      = fmap.outputField
+        out_field.name = f
+        fmap.outputField = out_field
+        fm.addFieldMap(fmap)
+
+    # ── Bulk load into SDE inside edit session ────────────────────────────────
+    editor = arcpy.da.Editor(COLLECTION_SDE)
+    editor.startEditing(False, True)   # no undo, versioned
+    editor.startOperation()
     try:
         arcpy.management.DeleteRows(TARGET_FC)
         log.info("  Target table rows deleted")
-
-        with arcpy.da.InsertCursor(TARGET_FC, insert_fields) as cur:
-            for apn, attrs in all_results.items():
-                if apn is None:
-                    skipped += 1
-                    continue
-                row = [coerce(attrs.get(f)) for coerce, f in zip(coercers, insert_fields)]
-                cur.insertRow(row)
-                inserted += 1
-
+        arcpy.management.Append(staging, TARGET_FC, "NO_TEST", fm)
+        log.info(f"  Appended {inserted:,} rows to target table")
         editor.stopOperation()
         editor.stopEditing(True)
-        log.info(f"  Inserted {inserted:,} rows  |  Skipped {skipped:,} (null APN)")
-
     except Exception:
         editor.stopOperation()
         editor.stopEditing(False)
