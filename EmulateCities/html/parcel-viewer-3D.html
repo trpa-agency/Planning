@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parcel Map Viewer — TRPA</title>
+  <title>Parcel Map Viewer (2D / 3D) — TRPA</title>
 
   <!-- Calcite Design System 5.0 -->
   <script type="module" src="https://js.arcgis.com/calcite-components/5.0/calcite.esm.js"></script>
@@ -184,12 +184,28 @@
       display: none !important;
     }
 
-    /* ── Map fills remaining space ── */
-    #viewDiv {
+    /* ── View stack: two map panes occupying the same box, swapped via
+           the `.is-active` class. Keeping both panes mounted avoids
+           tearing down the 3D scene every toggle. ── */
+    #view-stack {
+      position: relative;
       flex: 1;
       min-width: 0;
       height: 100%;
-      position: relative;
+    }
+    .view-pane {
+      position: absolute;
+      inset: 0;
+      /* Keep the pane laid-out (so WebGL sees real dimensions) but invisible
+         and non-interactive. We opacity-swap instead of visibility:hidden
+         because a visibility:hidden container can prevent the SceneView
+         canvas from allocating a backing buffer. */
+      opacity: 0;
+      pointer-events: none;
+    }
+    .view-pane.is-active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     /* Make sure the ESRI view surface fills its container */
@@ -197,6 +213,48 @@
     .esri-view .esri-view-surface {
       width: 100% !important;
       height: 100% !important;
+    }
+
+    /* ── 2D / 3D Toggle — TRPA-styled segmented control over the map ── */
+    .view-toggle {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 50;
+      display: inline-flex;
+      background: var(--trpa-white);
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-family: 'Open Sans', system-ui, sans-serif;
+    }
+    .vt-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--trpa-navy);
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+      min-width: 42px;
+    }
+    .vt-btn + .vt-btn {
+      border-left: 1px solid var(--trpa-gray-border);
+    }
+    .vt-btn:hover:not(.is-active) {
+      background: var(--trpa-gray-light);
+    }
+    .vt-btn.is-active {
+      background: var(--trpa-blue);
+      color: var(--trpa-white);
+    }
+    .vt-btn:focus-visible {
+      outline: 2px solid var(--trpa-orange);
+      outline-offset: -2px;
     }
 
     /* ── Info table ── */
@@ -404,7 +462,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════
-       MAIN LAYOUT — flex sidebar + map (no calcite-shell)
+       MAIN LAYOUT — flex sidebar + view-stack (2D + 3D panes)
   ══════════════════════════════════════════════ -->
   <div id="main-layout">
 
@@ -483,8 +541,21 @@
 
     </aside>
 
-    <!-- ── Map fills remaining space ── -->
-    <div id="viewDiv"></div>
+    <!-- ══════════════════════════════════════════════════════════════════
+         VIEW STACK — 2D MapView pane, 3D SceneView pane, and the
+         segmented 2D/3D toggle that swaps which pane is active.
+    ══════════════════════════════════════════════════════════════════ -->
+    <div id="view-stack">
+
+      <div id="viewDiv2d" class="view-pane is-active"></div>
+      <div id="viewDiv3d" class="view-pane"></div>
+
+      <div id="view-toggle" class="view-toggle" role="group" aria-label="View mode">
+        <button type="button" class="vt-btn is-active" data-view="2d" aria-pressed="true">2D</button>
+        <button type="button" class="vt-btn"            data-view="3d" aria-pressed="false">3D</button>
+      </div>
+
+    </div>
 
   </div><!-- #main-layout -->
 
@@ -499,7 +570,7 @@
    Replace / inject it to drive APN lookup and layer activation.
 
    INTEGRATION PATTERN A — URL query string (parsed at startup):
-     parcel-viewer.html?apn=031-021-001-000&layers=Highwater+Line+Buffer,Flood+Zone
+     parcel-viewer-3D.html?apn=031-021-001-000&layers=Highwater+Line+Buffer,Flood+Zone
 
    INTEGRATION PATTERN B — postMessage from parent iframe:
      mapIframe.contentWindow.postMessage({ APN: "031-021-001-000", layers: ["Zoning"] }, "*");
@@ -508,6 +579,10 @@ const VIEWER_CONFIG = {
   APN:    "130-241-08",                                  // real Tahoe Basin APN for demo/testing
   layers: ["Highwater Line Buffer", "Flood Zone"]        // layer name(s) to activate on load
 };
+
+/* ── Web Scene hosted in ArcGIS Online — contains the TRPA parcel layer
+      already styled + a photogrammetric mesh / terrain setup. ──        */
+const WEB_SCENE_ID = "b29402d66d8c4a3c8738243cf53d49dc";
 
 /* ── Service URL registry (mirrors config.py MAP_SERVICES) ── */
 const SERVICES = {
@@ -637,7 +712,9 @@ const BADGE_COLORS = {
 require([
   "esri/Map",
   "esri/Basemap",
+  "esri/WebScene",
   "esri/views/MapView",
+  "esri/views/SceneView",
   "esri/layers/FeatureLayer",
   "esri/layers/MapImageLayer",
   "esri/layers/GraphicsLayer",
@@ -648,7 +725,8 @@ require([
   "esri/widgets/Legend",
   "esri/widgets/LayerList"
 ], function(
-  Map, Basemap, MapView, FeatureLayer, MapImageLayer, GraphicsLayer,
+  Map, Basemap, WebScene, MapView, SceneView,
+  FeatureLayer, MapImageLayer, GraphicsLayer,
   WMSLayer, Graphic, esriRequest,
   ScaleBar, Legend, LayerList
 ) {
@@ -663,6 +741,20 @@ require([
      with the pills the user sees in the header / sidebar.               */
   let currentConfig       = null;
   let currentOverlayAttrs = null;
+
+  /* ── 3D state ──
+       scene, sceneView          : lazily created on first 3D activation
+       currentMode               : "2d" | "3d"
+       currentParcelExtent       : last parcel extent from applyConfig —
+                                   re-used every time 3D is activated so the
+                                   scene always frames the APN (not whatever
+                                   viewpoint the WebScene ships with)
+       currentParcelFeature      : last parcel feature, for 3D highlight */
+  let scene                      = null;
+  let sceneView                  = null;
+  let currentMode                = "2d";
+  let currentParcelExtent        = null;
+  let currentParcelFeature       = null;
 
   /* Narrative popup for the Parcels layer — declared as a function
      declaration so it is hoisted above the layer-builder below. */
@@ -717,9 +809,16 @@ require([
     );
   }
 
-  /* ── Dedicated GraphicsLayer for the parcel highlight ring ── */
+  /* ── Highlight GraphicsLayers ──
+       One for the 2D MapView, a parallel one for the 3D SceneView.
+       `addHighlight(feature)` pushes the same Graphic into both.     */
   const highlightGL = new GraphicsLayer({
     id: "parcel-highlight",
+    listMode: "hide",
+    title: "Selected Parcel"
+  });
+  const highlightGL3D = new GraphicsLayer({
+    id: "parcel-highlight-3d",
     listMode: "hide",
     title: "Selected Parcel"
   });
@@ -803,7 +902,7 @@ require([
     thumbnailUrl: "https://www.nearmap.com/favicon.ico"
   });
 
-  /* ── Map + View ──
+  /* ── Map + 2D MapView ──
        Basemap is Nearmap aerial WMS only — no basemap toggle. */
   const map = new Map({
     basemap: nearmapBasemap,
@@ -811,7 +910,7 @@ require([
   });
 
   const view = new MapView({
-    container: "viewDiv",
+    container: "viewDiv2d",
     map,
     center: [-120.04, 39.09],  // Lake Tahoe
     zoom: 10,
@@ -824,7 +923,7 @@ require([
     ui: { components: ["zoom"] }
   });
 
-  /* ── Widgets ── */
+  /* ── Widgets (bound to 2D view) ── */
   view.when(() => {
     view.ui.add(new ScaleBar({ view, unit: "dual" }), "bottom-left");
 
@@ -871,6 +970,103 @@ require([
 
     /* Fire the config on load */
     applyConfig(resolveConfig());
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     3D SCENE — lazily initialized on first 3D toggle.
+     Loads the WebScene by portal item id (see WEB_SCENE_ID above). The
+     WebScene already contains the TRPA parcel layer styled in 3D, so we
+     only need to add the highlight GraphicsLayer on top.
+  ══════════════════════════════════════════════════════════════════════════ */
+  /* Build the SceneView — the canonical Esri "load a saved WebScene" pattern.
+     The portal URL is required because this item lives on trpa.maps.arcgis.com,
+     not the default www.arcgis.com. */
+  async function ensureSceneView() {
+    if (sceneView) return sceneView;
+
+    scene = new WebScene({
+      portalItem: {
+        id: WEB_SCENE_ID,
+        portal: { url: "https://trpa.maps.arcgis.com" }
+      }
+    });
+
+    sceneView = new SceneView({
+      container: "viewDiv3d",
+      map: scene
+    });
+
+    try {
+      await scene.load();
+
+      /* The scene as authored uses Esri's "Photorealistic Hybrid" basemap,
+         which is premium and requires an AGOL API key to stream tiles to
+         third-party apps. Anonymous sessions get baseLayers: 0 and no
+         ground. Swap to free equivalents so the scene renders for everyone.
+         Remove this block once an API key is wired up via esriConfig.apiKey. */
+      if (!scene.basemap || scene.basemap.baseLayers.length === 0) {
+        scene.basemap = "hybrid";
+      }
+      if (!scene.ground || scene.ground.layers.length === 0) {
+        scene.ground = "world-elevation";
+      }
+
+      await sceneView.when();
+      scene.add(highlightGL3D);
+      if (currentParcelFeature) {
+        highlightGL3D.add(makeHighlightGraphic(currentParcelFeature));
+      }
+    } catch (err) {
+      console.error("[parcel-viewer-3D] WebScene failed to load:", err);
+    }
+
+    return sceneView;
+  }
+
+  /* Zoom the 3D scene to the currently-selected parcel. */
+  function frameSceneOnParcel() {
+    if (!sceneView || !currentParcelExtent) return;
+    sceneView.goTo(
+      { target: currentParcelExtent, tilt: 55 },
+      { animate: true, duration: 800 }
+    ).catch(() => {});
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     VIEW TOGGLE — swaps which pane is active + inherits camera state
+     so the new view opens framed exactly like the previous one.
+  ══════════════════════════════════════════════════════════════════════════ */
+  async function setActiveView(mode) {
+    if (mode === currentMode) return;
+
+    const pane2d = document.getElementById("viewDiv2d");
+    const pane3d = document.getElementById("viewDiv3d");
+
+    /* Swap visibility FIRST — the SceneView canvas needs to be in a
+       visible, laid-out container to allocate its WebGL backing buffer. */
+    pane2d.classList.toggle("is-active", mode === "2d");
+    pane3d.classList.toggle("is-active", mode === "3d");
+
+    document.querySelectorAll(".vt-btn").forEach(btn => {
+      const active = btn.dataset.view === mode;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+
+    currentMode = mode;
+
+    if (mode === "3d") {
+      // Now that #viewDiv3d is visible, build the SceneView (or reuse
+      // the already-built one) and frame on the configured APN.
+      await ensureSceneView();
+      frameSceneOnParcel();
+    }
+    // 3D → 2D: nothing to do — the 2D view is already framed on the parcel.
+  }
+
+  // Wire up the segmented-control buttons
+  document.querySelectorAll(".vt-btn").forEach(btn => {
+    btn.addEventListener("click", () => setActiveView(btn.dataset.view));
   });
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -960,6 +1156,8 @@ require([
   /* ══════════════════════════════════════════════════════════════════════════
      APPLY CONFIG  { APN: string, layers: string[] }
      Called on load, or by postMessage from the parent app.
+     Zooms BOTH views (2D immediately, 3D on first activation) so either
+     toggle state is pre-framed on the target parcel.
   ══════════════════════════════════════════════════════════════════════════ */
   async function applyConfig(config) {
     if (!config || !config.APN) return;
@@ -983,11 +1181,14 @@ require([
     document.getElementById("active-block").hidden  = true;
 
     /* Reset map state — restore each layer to its default visibility
-       (All Parcels stays on as the base layer; overlays start off)   */
+       (Parcels stays on as the base layer; overlays start off)   */
     overlayLayers.forEach((l, idx) => {
       l.visible = LAYER_DEFS[idx].visibleByDefault === true;
     });
     highlightGL.removeAll();
+    highlightGL3D.removeAll();
+    currentParcelExtent  = null;
+    currentParcelFeature = null;
 
     try {
       const feature = await queryParcelByAPN(apn);
@@ -998,7 +1199,20 @@ require([
       }
 
       /* Zoom → Highlight → Info card → Activate layers */
-      await view.goTo(feature.geometry.extent.expand(2.5), { duration: 800 });
+      const zoomExtent = feature.geometry.extent.expand(2.5);
+
+      // Cache for the 3D path — setActiveView("3d") frames on this extent
+      // every time, and ensureSceneView() highlights this feature on load.
+      currentParcelExtent  = zoomExtent;
+      currentParcelFeature = feature;
+
+      // 2D: always goTo now (view is already created)
+      await view.goTo(zoomExtent, { duration: 800 });
+
+      // 3D: if the SceneView already exists (user toggled once), re-frame it
+      // on the new APN right away so a later toggle shows the right spot.
+      if (sceneView) frameSceneOnParcel();
+
       addHighlight(feature);
       populateInfoCard(feature.attributes);
       const activated = activateLayers(layers);
@@ -1055,16 +1269,26 @@ require([
     return null;
   }
 
-  /* ── Orange highlight ring around the matched parcel ── */
-  function addHighlight(feature) {
-    highlightGL.add(new Graphic({
+  /* ── Build the orange highlight Graphic (shared between 2D & 3D) ── */
+  function makeHighlightGraphic(feature) {
+    return new Graphic({
       geometry: feature.geometry,
       symbol: {
         type: "simple-fill",
         color: [232, 119, 34, 0.16],   // TRPA Orange, 16% fill
         outline: { color: [232, 119, 34, 1], width: 2.5 }
       }
-    }));
+    });
+  }
+
+  /* ── Orange highlight ring around the matched parcel — added to BOTH views.
+     If the SceneView hasn't been built yet, that's fine: ensureSceneView()
+     reads `currentParcelFeature` and draws the highlight on first load. ── */
+  function addHighlight(feature) {
+    highlightGL.add(makeHighlightGraphic(feature));
+    if (sceneView) {
+      highlightGL3D.add(makeHighlightGraphic(feature));
+    }
   }
 
   /* ── Populate info card table from feature attributes ── */
@@ -1166,6 +1390,9 @@ require([
 
   /* Expose applyConfig globally so the parent can call it directly on the iframe window */
   window.applyParcelConfig = applyConfig;
+
+  /* Also expose the toggle for parent-app orchestration (e.g. "open in 3D") */
+  window.setParcelViewerMode = setActiveView;
 
 }); // end require()
 </script>
