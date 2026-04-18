@@ -222,6 +222,93 @@
     }
     .info-table td:last-child { color: #2a2a2a; }
 
+    /* ── Narrative popup (Parcels layer) ── */
+    .pop-narr {
+      font-family: 'Open Sans', system-ui, sans-serif;
+      font-size: 0.8rem;
+      color: var(--trpa-navy);
+      line-height: 1.45;
+    }
+    .pop-narr .pop-apn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0 0.5rem;
+      border-bottom: 1px solid var(--trpa-gray-border);
+      margin-bottom: 0.5rem;
+    }
+    .pop-narr .pop-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+    }
+    .pop-narr .pop-apn-val {
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--trpa-navy);
+      letter-spacing: 0.02em;
+    }
+    .pop-narr .pop-section {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 0.35rem;
+    }
+    .pop-narr .pop-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .pop-narr .pop-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .pop-narr .pop-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #fff;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .pop-narr .pop-val {
+      font-weight: 600;
+      color: var(--trpa-navy);
+    }
+    .pop-narr .pop-empty {
+      color: #888;
+      font-style: italic;
+      margin: 0 0 0.6rem;
+    }
+    .pop-narr .pop-link {
+      display: inline-block;
+      margin-top: 0.25rem;
+      padding: 0.4rem 0.7rem;
+      background: var(--trpa-blue);
+      color: #fff !important;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+    .pop-narr .pop-link:hover {
+      background: var(--trpa-navy);
+    }
+
     .info-empty {
       font-size: 0.8rem;
       color: #888;
@@ -427,7 +514,7 @@ const VIEWER_CONFIG = {
 const SERVICES = {
   parcel_fs:       "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
   parcel_joins:    "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6",
-  parcel_lcv:      "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/1",
+  parcel_lcv:      "https://maps.trpa.org/server/rest/services/Land_Capability_Verification_Digitized/MapServer/1",
   parcel_ms:       "https://maps.trpa.org/server/rest/services/Parcels/MapServer",
   scenic_roadway:  "https://maps.trpa.org/server/rest/services/Scenic_Status/MapServer/2",
   scenic_shore:    "https://maps.trpa.org/server/rest/services/Scenic_Status/MapServer/3",
@@ -570,6 +657,67 @@ require([
   /* ── Layer registry: lowercase name → layer instance ── */
   const layerRegistry = {};
 
+  /* ── Closure-scoped state for the popup builder ──
+       currentConfig     : most recently applied { APN, layers }
+       currentOverlayAttrs : attribute map fetched from parcel_joins for that APN
+     The popup content function reads these so the narrative stays in sync
+     with the pills the user sees in the header / sidebar.               */
+  let currentConfig       = null;
+  let currentOverlayAttrs = null;
+
+  /* Narrative popup for the Parcels layer — declared as a function
+     declaration so it is hoisted above the layer-builder below. */
+  async function buildParcelNarrativePopup(event) {
+    const apn = event && event.graphic && event.graphic.attributes && event.graphic.attributes.APN;
+    if (!apn) return "<em>No APN available for this feature.</em>";
+
+    // If the clicked parcel matches the configured one, reuse the cached
+    // attrs + the active layer list so the popup mirrors the pills exactly.
+    // Otherwise fetch fresh and show every non-null overlay value we know of.
+    const isActiveParcel = currentConfig && currentConfig.APN
+      && currentConfig.APN.trim() === String(apn).trim();
+
+    let attrs       = isActiveParcel ? currentOverlayAttrs : null;
+    let layerNames  = isActiveParcel ? (currentConfig.layers || []) : null;
+
+    if (!attrs) {
+      attrs = await fetchOverlayAttributes(apn);
+    }
+    if (!layerNames) {
+      // Show every LAYER_DEF with an attributeField that returned a value.
+      layerNames = LAYER_DEFS
+        .filter(d => d.attributeField && attrs && attrs[d.attributeField])
+        .map(d => d.name);
+    }
+
+    const pillRows = (layerNames || []).map(name => {
+      const def    = LAYER_DEFS.find(d => d.name.toLowerCase() === name.toLowerCase());
+      const bg     = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const value  = def && def.attributeField && attrs ? attrs[def.attributeField] : null;
+      if (!value) return "";
+      return (
+        `<li class="pop-row">` +
+          `<span class="pop-pill" style="background:${bg}">${name}</span>` +
+          `<span class="pop-val">${value}</span>` +
+        `</li>`
+      );
+    }).filter(Boolean).join("");
+
+    const ltinfoUrl = `https://parcels.laketahoeinfo.org/Parcel/Detail/${encodeURIComponent(apn)}`;
+
+    return (
+      `<div class="pop-narr">` +
+        `<div class="pop-apn"><span class="pop-label">APN</span><span class="pop-apn-val">${apn}</span></div>` +
+        (pillRows
+          ? `<div class="pop-section">Overlay Attributes</div><ul class="pop-list">${pillRows}</ul>`
+          : `<p class="pop-empty">No overlay attributes joined for this parcel.</p>`) +
+        `<a class="pop-link" href="${ltinfoUrl}" target="_blank" rel="noopener">` +
+          `View full parcel details on LTInfo →` +
+        `</a>` +
+      `</div>`
+    );
+  }
+
   /* ── Dedicated GraphicsLayer for the parcel highlight ring ── */
   const highlightGL = new GraphicsLayer({
     id: "parcel-highlight",
@@ -585,14 +733,25 @@ require([
     const [sr, sg, sb] = def.fillRgb || def.color;
     const [or, og, ob] = def.color;
 
-    // Popups are disabled on every layer — the sidebar carries all
-    // parcel/overlay context. Clicks on the map do nothing.
+    // Only the Parcels layer has a popup — a narrative summary with APN,
+    // active-overlay values (pills), and a link to LTInfo. All other layers
+    // stay silent so clicks on stacked overlays just surface the parcel.
+    const isParcelLayer = def.serviceKey === "parcel_fs";
+
     const layerProps = {
       url,
       visible: def.visibleByDefault === true,
       title: def.name,
-      outFields: ["APN"],
-      popupEnabled: false
+      outFields: isParcelLayer ? ["APN"] : ["APN"],
+      popupEnabled: isParcelLayer,
+      popupTemplate: isParcelLayer
+        ? {
+            // No title — the APN row inside the narrative is the heading.
+            title: "",
+            outFields: ["APN"],
+            content: buildParcelNarrativePopup
+          }
+        : null
     };
 
     // If useServiceRenderer is set, skip the renderer override so the
@@ -658,9 +817,10 @@ require([
     center: [-120.04, 39.09],  // Lake Tahoe
     zoom: 10,
     popup: {
-      // Popups disabled globally — sidebar is the only info surface.
-      autoOpenEnabled: false,
-      dockEnabled: false
+      // Float the narrative popup with the parcel feature.
+      autoOpenEnabled: true,
+      dockEnabled: false,
+      collapseEnabled: true
     },
     ui: { components: ["zoom"] }
   });
@@ -808,6 +968,10 @@ require([
     const apn    = config.APN.trim();
     const layers = config.layers || [];
 
+    /* Stash the active config so the narrative popup can mirror the pills. */
+    currentConfig       = { APN: apn, layers: layers.slice() };
+    currentOverlayAttrs = null;
+
     /* Update header pills (APN + colored layer chips, values filled in after
        the parcel_joins fetch below resolves). */
     updateHeaderPills(apn, layers, null);
@@ -841,8 +1005,10 @@ require([
       const activated = activateLayers(layers);
 
       /* Look up overlay attribute values (FLOOD_ZONE, HWL_BUFFER, …) from
-         Parcel_Joins for this APN, then decorate both pill surfaces. */
+         Parcel_Joins for this APN, then decorate both pill surfaces and
+         cache them for the narrative popup. */
       const overlayAttrs = await fetchOverlayAttributes(apn);
+      currentOverlayAttrs = overlayAttrs;
       updateHeaderPills(apn, activated, overlayAttrs);
       renderBadges(activated, overlayAttrs);
 
