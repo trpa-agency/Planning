@@ -229,30 +229,45 @@
       font-style: italic;
     }
 
-    /* ── Active layer badges ── */
+    /* ── Overlay pills (sidebar "Overlay Attributes" block) ── */
+    .overlay-sub {
+      font-size: 0.68rem;
+      color: #888;
+      padding: 0.4rem 0.6rem 0.1rem;
+      line-height: 1.4;
+    }
     .badge-strip {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.3rem;
-      padding: 0.5rem 0.6rem;
+      gap: 0.35rem;
+      padding: 0.45rem 0.6rem 0.7rem;
     }
     .layer-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      font-size: 0.68rem;
+      gap: 0.4rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 0.18rem 0.55rem;
-      border-radius: 12px;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
       color: #fff;
       letter-spacing: 0.01em;
+      line-height: 1.1;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     .badge-swatch {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.7);
       flex-shrink: 0;
+    }
+    .layer-badge .badge-value {
+      background: rgba(255,255,255,0.2);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
 
     /* ── Source notice ── */
@@ -263,6 +278,11 @@
       border-top: 1px solid var(--trpa-gray-border);
       line-height: 1.5;
     }
+    .source-note a {
+      color: var(--trpa-blue);
+      text-decoration: none;
+    }
+    .source-note a:hover { text-decoration: underline; }
 
     /* ── ArcGIS widget overrides ── */
     #legend-container .esri-widget,
@@ -349,7 +369,8 @@
             <table class="info-table" id="parcel-table" hidden></table>
           </calcite-block>
 
-          <calcite-block id="active-block" heading="Active Overlays" open collapsible hidden>
+          <calcite-block id="active-block" heading="Overlay Attributes" open collapsible hidden>
+            <div class="overlay-sub">Values joined by APN from TRPA Parcel Joins</div>
             <div class="badge-strip" id="badge-strip"></div>
           </calcite-block>
 
@@ -358,8 +379,8 @@
           </calcite-block>
 
           <div class="source-note">
-            Source: TRPA Parcel Master · maps.trpa.org<br>
-            Parcels updated 2019 · Overlay layers vary
+            Source: TRPA · <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a> · Tahoe Open Data<br>
+            Updated <span id="parcel-last-edit">…</span>
           </div>
 
         </calcite-panel>
@@ -397,8 +418,8 @@
      mapIframe.contentWindow.postMessage({ APN: "031-021-001-000", layers: ["Zoning"] }, "*");
    ════════════════════════════════════════════════════════════════════════════ */
 const VIEWER_CONFIG = {
-  APN:    "130-241-08",                     // real Tahoe Basin APN for demo/testing
-  layers: ["Highwater Line Buffer"]         // layer name(s) to activate on load
+  APN:    "130-241-08",                                  // real Tahoe Basin APN for demo/testing
+  layers: ["Highwater Line Buffer", "Flood Zone"]        // layer name(s) to activate on load
 };
 
 
@@ -447,6 +468,7 @@ const LAYER_DEFS = [
   {
     name: "Zoning",
     serviceKey: "zoning",
+    attributeField: "ZONING_DESCRIPTION",
     color: [0, 114, 206],             // TRPA Blue
     fillOpacity: 0.20,
     strokeWidth: 1,
@@ -455,6 +477,7 @@ const LAYER_DEFS = [
   {
     name: "Scenic Roadway",
     serviceKey: "scenic_roadway",
+    attributeField: "SCENIC_CORRIDOR_RDWY",
     color: [232, 119, 34],            // TRPA Orange
     fillOpacity: 0.25,
     strokeWidth: 1.5,
@@ -463,6 +486,7 @@ const LAYER_DEFS = [
   {
     name: "Scenic Shoreline",
     serviceKey: "scenic_shore",
+    attributeField: "SCENIC_CORRIDOR_SHORELINE",
     color: [180, 126, 0],             // TRPA Earth
     fillOpacity: 0.25,
     strokeWidth: 1.5,
@@ -471,6 +495,7 @@ const LAYER_DEFS = [
   {
     name: "Flood Zone",
     serviceKey: "flood_zone",
+    attributeField: "FLOOD_ZONE",
     color: [0, 59, 113],              // TRPA Navy
     fillOpacity: 0.22,
     strokeWidth: 1,
@@ -479,6 +504,7 @@ const LAYER_DEFS = [
   {
     name: "Highwater Line Buffer",
     serviceKey: "hwl_buffer",
+    attributeField: "HWL_BUFFER",
     color: [0, 114, 206],             // TRPA Blue (ice fill reads well)
     fillOpacity: 0.18,
     strokeWidth: 2,
@@ -488,6 +514,7 @@ const LAYER_DEFS = [
   {
     name: "Historic Districts",
     serviceKey: "historic",
+    attributeField: "HISTORIC_DISTRICT",
     color: [123, 106, 138],           // TRPA Purple
     fillOpacity: 0.25,
     strokeWidth: 1,
@@ -496,6 +523,7 @@ const LAYER_DEFS = [
   {
     name: "Avalanche Zones",
     serviceKey: "avalanche",
+    attributeField: "AVALANCHE_ZONE",
     color: [156, 62, 39],             // TRPA Brick
     fillOpacity: 0.25,
     strokeWidth: 1,
@@ -530,14 +558,13 @@ require([
   "esri/layers/WMSLayer",
   "esri/Graphic",
   "esri/request",
-  "esri/widgets/Home",
   "esri/widgets/ScaleBar",
   "esri/widgets/Legend",
   "esri/widgets/LayerList"
 ], function(
   Map, Basemap, MapView, FeatureLayer, MapImageLayer, GraphicsLayer,
   WMSLayer, Graphic, esriRequest,
-  Home, ScaleBar, Legend, LayerList
+  ScaleBar, Legend, LayerList
 ) {
 
   /* ── Layer registry: lowercase name → layer instance ── */
@@ -551,22 +578,21 @@ require([
   });
 
   /* ── Build all overlay layers ──
-       Popup is intentionally minimal — APN only. The sidebar Parcel Info card
-       is the surface for rich attributes; the popup just confirms identity.  */
+       Only the Parcels layer shows a popup (APN + Address). All other
+       overlays have popups disabled — the sidebar carries their info.       */
   const overlayLayers = LAYER_DEFS.map(def => {
     const url = SERVICES[def.serviceKey];
     const [sr, sg, sb] = def.fillRgb || def.color;
     const [or, og, ob] = def.color;
 
+    // Popups are disabled on every layer — the sidebar carries all
+    // parcel/overlay context. Clicks on the map do nothing.
     const layerProps = {
       url,
       visible: def.visibleByDefault === true,
       title: def.name,
       outFields: ["APN"],
-      popupTemplate: {
-        title: def.popupTitle,
-        content: "<strong>APN:</strong> {APN}"
-      }
+      popupEnabled: false
     };
 
     // If useServiceRenderer is set, skip the renderer override so the
@@ -632,17 +658,15 @@ require([
     center: [-120.04, 39.09],  // Lake Tahoe
     zoom: 10,
     popup: {
-      // Float the popup with the feature (do NOT dock — docking was eating the map)
-      dockEnabled: false,
-      autoOpenEnabled: true,
-      collapseEnabled: true
+      // Popups disabled globally — sidebar is the only info surface.
+      autoOpenEnabled: false,
+      dockEnabled: false
     },
-    ui: { components: ["zoom", "compass"] }
+    ui: { components: ["zoom"] }
   });
 
   /* ── Widgets ── */
   view.when(() => {
-    view.ui.add(new Home({ view }), "top-left");
     view.ui.add(new ScaleBar({ view, unit: "dual" }), "bottom-left");
 
     // Pass DOM elements (not IDs) so the widgets bind reliably even if a
@@ -661,6 +685,29 @@ require([
     new LayerList({
       view,
       container: layerListEl
+    });
+
+    /* Fetch the Parcels service metadata so we can show its true last-edit
+       date in the source-note footer. editingInfo.lastEditDate is an epoch ms. */
+    esriRequest(SERVICES.parcel_fs, {
+      query: { f: "json" },
+      responseType: "json"
+    }).then(resp => {
+      const ts = resp && resp.data && resp.data.editingInfo && resp.data.editingInfo.lastEditDate;
+      const el = document.getElementById("parcel-last-edit");
+      if (!el) return;
+      if (ts) {
+        const d = new Date(ts);
+        el.textContent = d.toLocaleDateString("en-US", {
+          year: "numeric", month: "long", day: "numeric"
+        });
+      } else {
+        el.textContent = "unknown";
+      }
+    }).catch(err => {
+      console.warn("[parcel-viewer] could not read service metadata:", err);
+      const el = document.getElementById("parcel-last-edit");
+      if (el) el.textContent = "unknown";
     });
 
     /* Fire the config on load */
@@ -698,23 +745,57 @@ require([
 
   /* ══════════════════════════════════════════════════════════════════════════
      HEADER PILLS — renders the active APN + each requested overlay as a
-     colored pill in the top-right of the header.
+     colored pill in the top-right of the header. If the overlay has an
+     attributeField and a value from Parcel_Joins is available, the value
+     is appended to the pill label.
   ══════════════════════════════════════════════════════════════════════════ */
-  function updateHeaderPills(apn, layerNames) {
+  function updateHeaderPills(apn, layerNames, attrs) {
     const host = document.getElementById("config-pills");
     const parts = [];
     if (apn) {
       parts.push(`<span class="header-pill apn-pill">APN · ${apn}</span>`);
     }
     (layerNames || []).forEach(name => {
-      const bg = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const def    = LAYER_DEFS.find(d => d.name.toLowerCase() === name.toLowerCase());
+      const bg     = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const value  = def && def.attributeField && attrs ? attrs[def.attributeField] : null;
+      const label  = value ? `${name}: ${value}` : name;
       parts.push(
         `<span class="header-pill" style="background:${bg}">` +
-          `<span class="pill-dot"></span>${name}` +
+          `<span class="pill-dot"></span>${label}` +
         `</span>`
       );
     });
     host.innerHTML = parts.join("");
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     FETCH OVERLAY ATTRIBUTES from Parcel_Joins/FeatureServer/6 for a given APN.
+     Returns an attributes dictionary (e.g. { FLOOD_ZONE: "AE - Within", ... }),
+     or {} if the APN is not found in the service.
+  ══════════════════════════════════════════════════════════════════════════ */
+  async function fetchOverlayAttributes(apn) {
+    // Collect every attributeField referenced by LAYER_DEFS so one query
+    // covers all possible overlay pills.
+    const fields = Array.from(new Set(
+      LAYER_DEFS.map(d => d.attributeField).filter(Boolean).concat(["APN"])
+    ));
+    try {
+      const resp = await esriRequest(SERVICES.parcel_joins + "/query", {
+        query: {
+          where: `APN = '${apn.replace(/'/g, "''")}'`,
+          outFields: fields.join(","),
+          returnGeometry: false,
+          f: "json"
+        },
+        responseType: "json"
+      });
+      const feat = resp && resp.data && resp.data.features && resp.data.features[0];
+      return feat && feat.attributes ? feat.attributes : {};
+    } catch (err) {
+      console.warn("[parcel-viewer] parcel_joins lookup failed:", err);
+      return {};
+    }
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -727,8 +808,9 @@ require([
     const apn    = config.APN.trim();
     const layers = config.layers || [];
 
-    /* Update header pills (APN + colored layer chips) */
-    updateHeaderPills(apn, layers);
+    /* Update header pills (APN + colored layer chips, values filled in after
+       the parcel_joins fetch below resolves). */
+    updateHeaderPills(apn, layers, null);
 
     /* Reset UI state */
     document.getElementById("parcel-loader").hidden = false;
@@ -757,7 +839,12 @@ require([
       addHighlight(feature);
       populateInfoCard(feature.attributes);
       const activated = activateLayers(layers);
-      renderBadges(activated);
+
+      /* Look up overlay attribute values (FLOOD_ZONE, HWL_BUFFER, …) from
+         Parcel_Joins for this APN, then decorate both pill surfaces. */
+      const overlayAttrs = await fetchOverlayAttributes(apn);
+      updateHeaderPills(apn, activated, overlayAttrs);
+      renderBadges(activated, overlayAttrs);
 
     } catch (err) {
       console.error("[parcel-viewer] lookup error:", err);
@@ -865,14 +952,19 @@ require([
     return activated;
   }
 
-  /* ── Render colored badges for active overlays ── */
-  function renderBadges(names) {
+  /* ── Render colored pills for active overlays, with their attribute values ── */
+  function renderBadges(names, attrs) {
     if (!names.length) return;
     const strip = document.getElementById("badge-strip");
     strip.innerHTML = names.map(name => {
-      const bg = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const def   = LAYER_DEFS.find(d => d.name.toLowerCase() === name.toLowerCase());
+      const bg    = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const value = def && def.attributeField && attrs ? attrs[def.attributeField] : null;
+      const valueHtml = value
+        ? `<span class="badge-value">${value}</span>`
+        : "";
       return `<span class="layer-badge" style="background:${bg}">
-        <span class="badge-swatch"></span>${name}
+        <span class="badge-swatch"></span>${name}${valueHtml}
       </span>`;
     }).join("");
     document.getElementById("active-block").hidden = false;
