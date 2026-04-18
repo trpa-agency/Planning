@@ -104,21 +104,43 @@
       letter-spacing: 0.01em;
     }
 
-    /* Config badge — shows active APN + layers from parent app */
-    #config-badge {
+    /* Config pills — colored pills in header showing APN + active layers */
+    #config-pills {
       margin-left: auto;
-      background: rgba(0,114,206,0.25);
-      border: 1px solid rgba(180,203,232,0.35);
-      border-radius: 4px;
-      padding: 0.2rem 0.65rem;
-      font-size: 0.68rem;
-      font-family: 'Courier New', monospace;
-      color: var(--trpa-ice);
-      max-width: 360px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
+      max-width: 60%;
+      justify-content: flex-end;
+    }
+    .header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      color: #fff;
+      letter-spacing: 0.01em;
+      line-height: 1;
       white-space: nowrap;
-      letter-spacing: 0.02em;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .header-pill.apn-pill {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.03em;
+    }
+    .header-pill .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      flex-shrink: 0;
     }
 
     /* ── Main layout: sidebar + map side-by-side ── */
@@ -265,20 +287,12 @@
   ══════════════════════════════════════════════ -->
   <div id="app-header">
 
-    <div class="header-mark">
-      <img src="TRPALogo_WHITE.png"
-           alt="Tahoe Regional Planning Agency"
-           class="trpa-logo-img" />
-    </div>
-
-    <div class="header-divider"></div>
-
     <div class="header-titles">
       <span class="agency">Tahoe Regional Planning Agency</span>
       <h1>Parcel Map Viewer</h1>
     </div>
 
-    <div id="config-badge">Initializing…</div>
+    <div id="config-pills"></div>
 
   </div>
 
@@ -391,6 +405,8 @@ const VIEWER_CONFIG = {
 /* ── Service URL registry (mirrors config.py MAP_SERVICES) ── */
 const SERVICES = {
   parcel_fs:       "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
+  parcel_joins:    "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6",
+  parcel_lcv:      "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/1",
   parcel_ms:       "https://maps.trpa.org/server/rest/services/Parcels/MapServer",
   scenic_roadway:  "https://maps.trpa.org/server/rest/services/Scenic_Status/MapServer/2",
   scenic_shore:    "https://maps.trpa.org/server/rest/services/Scenic_Status/MapServer/3",
@@ -411,13 +427,22 @@ const SERVICES = {
    ── */
 const LAYER_DEFS = [
   {
-    name: "All Parcels",
-    serviceKey: "parcel_ms",
-    type: "mapimage",                 // MapImageLayer (cached tile service)
+    name: "Parcels",
+    serviceKey: "parcel_fs",          // Parcels/FeatureServer/0 — clickable, visible by default
+    visibleByDefault: true,
     color: [0, 114, 206],             // TRPA Blue
-    fillOpacity: 0,
-    strokeWidth: 0.5,
-    popupTitle: "Parcel Boundary"
+    fillOpacity: 0,                   // outline only, no fill
+    strokeWidth: 0.6,
+    popupTitle: "Parcel"
+  },
+  {
+    name: "Verified Land Capability",
+    serviceKey: "parcel_lcv",         // Parcel_Joins/FeatureServer/1 (keyed by APN)
+    useServiceRenderer: true,         // draw with the service's own symbology
+    color: [74, 97, 24],              // fallback legend swatch color
+    fillOpacity: 0.35,
+    strokeWidth: 1,
+    popupTitle: "Verified Land Capability"
   },
   {
     name: "Zoning",
@@ -478,16 +503,17 @@ const LAYER_DEFS = [
   }
 ];
 
-/* Badge colors for the active-overlay strip */
+/* Badge / pill colors for active layers (used in header pills AND sidebar strip) */
 const BADGE_COLORS = {
-  "all parcels":           "#0072CE",
-  "zoning":                "#0072CE",
-  "scenic roadway":        "#E87722",
-  "scenic shoreline":      "#B47E00",
-  "flood zone":            "#003B71",
-  "highwater line buffer": "#4A9FD4",
-  "historic districts":    "#7B6A8A",
-  "avalanche zones":       "#9C3E27"
+  "parcels":                   "#0072CE",
+  "verified land capability":  "#4A6118",
+  "zoning":                    "#0072CE",
+  "scenic roadway":            "#E87722",
+  "scenic shoreline":          "#B47E00",
+  "flood zone":                "#003B71",
+  "highwater line buffer":     "#4A9FD4",
+  "historic districts":        "#7B6A8A",
+  "avalanche zones":           "#9C3E27"
 };
 
 
@@ -496,18 +522,22 @@ const BADGE_COLORS = {
    ════════════════════════════════════════════════════════════════════════════ */
 require([
   "esri/Map",
+  "esri/Basemap",
   "esri/views/MapView",
   "esri/layers/FeatureLayer",
   "esri/layers/MapImageLayer",
   "esri/layers/GraphicsLayer",
+  "esri/layers/WMSLayer",
   "esri/Graphic",
+  "esri/request",
   "esri/widgets/Home",
   "esri/widgets/ScaleBar",
   "esri/widgets/Legend",
   "esri/widgets/LayerList"
 ], function(
-  Map, MapView, FeatureLayer, MapImageLayer, GraphicsLayer,
-  Graphic, Home, ScaleBar, Legend, LayerList
+  Map, Basemap, MapView, FeatureLayer, MapImageLayer, GraphicsLayer,
+  WMSLayer, Graphic, esriRequest,
+  Home, ScaleBar, Legend, LayerList
 ) {
 
   /* ── Layer registry: lowercase name → layer instance ── */
@@ -520,39 +550,39 @@ require([
     title: "Selected Parcel"
   });
 
-  /* ── Build all overlay layers ── */
+  /* ── Build all overlay layers ──
+       Popup is intentionally minimal — APN only. The sidebar Parcel Info card
+       is the surface for rich attributes; the popup just confirms identity.  */
   const overlayLayers = LAYER_DEFS.map(def => {
     const url = SERVICES[def.serviceKey];
-    let layer;
+    const [sr, sg, sb] = def.fillRgb || def.color;
+    const [or, og, ob] = def.color;
 
-    if (def.type === "mapimage") {
-      layer = new MapImageLayer({
-        url,
-        visible: false,
-        title: def.name
-      });
-    } else {
-      const [sr, sg, sb] = def.fillRgb || def.color;
-      const [or, og, ob] = def.color;
-      layer = new FeatureLayer({
-        url,
-        visible: false,
-        title: def.name,
-        outFields: ["*"],
-        renderer: {
-          type: "simple",
-          symbol: {
-            type: "simple-fill",
-            color: [sr, sg, sb, def.fillOpacity],
-            outline: { color: [or, og, ob, 0.85], width: def.strokeWidth }
-          }
-        },
-        popupTemplate: {
-          title: def.popupTitle,
-          content: [{ type: "fields" }]
+    const layerProps = {
+      url,
+      visible: def.visibleByDefault === true,
+      title: def.name,
+      outFields: ["APN"],
+      popupTemplate: {
+        title: def.popupTitle,
+        content: "<strong>APN:</strong> {APN}"
+      }
+    };
+
+    // If useServiceRenderer is set, skip the renderer override so the
+    // FeatureLayer falls back to the service's published drawing info.
+    if (!def.useServiceRenderer) {
+      layerProps.renderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          color: [sr, sg, sb, def.fillOpacity],
+          outline: { color: [or, og, ob, 0.85], width: def.strokeWidth }
         }
-      });
+      };
     }
+
+    const layer = new FeatureLayer(layerProps);
 
     layerRegistry[def.name.toLowerCase()] = layer;
     return layer;
@@ -571,9 +601,28 @@ require([
     ]
   });
 
-  /* ── Map + View ── */
+  /* ── Nearmap WMS basemap (aerial imagery) ──
+       The SDK auto-fetches GetCapabilities from the base WMS URL.          */
+  const NEARMAP_WMS_URL =
+    "https://api.nearmap.com/wms/v1/places/4298ecf1-2e28-4eec-885a-15234c836254/" +
+    "apikey/NGZhMTA4MDEtYTY5Yi00ODQwLWFmNDQtMDUxMmQwNTJhMmFj";
+
+  const nearmapLayer = new WMSLayer({
+    url: NEARMAP_WMS_URL,
+    title: "Nearmap Aerial"
+  });
+
+  const nearmapBasemap = new Basemap({
+    baseLayers: [nearmapLayer],
+    title: "Nearmap Aerial",
+    id: "nearmap-aerial",
+    thumbnailUrl: "https://www.nearmap.com/favicon.ico"
+  });
+
+  /* ── Map + View ──
+       Basemap is Nearmap aerial WMS only — no basemap toggle. */
   const map = new Map({
-    basemap: "gray-vector",
+    basemap: nearmapBasemap,
     layers: [...overlayLayers, highlightGL, parcelQueryLayer]
   });
 
@@ -648,6 +697,27 @@ require([
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
+     HEADER PILLS — renders the active APN + each requested overlay as a
+     colored pill in the top-right of the header.
+  ══════════════════════════════════════════════════════════════════════════ */
+  function updateHeaderPills(apn, layerNames) {
+    const host = document.getElementById("config-pills");
+    const parts = [];
+    if (apn) {
+      parts.push(`<span class="header-pill apn-pill">APN · ${apn}</span>`);
+    }
+    (layerNames || []).forEach(name => {
+      const bg = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      parts.push(
+        `<span class="header-pill" style="background:${bg}">` +
+          `<span class="pill-dot"></span>${name}` +
+        `</span>`
+      );
+    });
+    host.innerHTML = parts.join("");
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
      APPLY CONFIG  { APN: string, layers: string[] }
      Called on load, or by postMessage from the parent app.
   ══════════════════════════════════════════════════════════════════════════ */
@@ -657,9 +727,8 @@ require([
     const apn    = config.APN.trim();
     const layers = config.layers || [];
 
-    /* Update header badge */
-    document.getElementById("config-badge").textContent =
-      `APN: ${apn}  ·  Layers: ${layers.length ? layers.join(", ") : "none"}`;
+    /* Update header pills (APN + colored layer chips) */
+    updateHeaderPills(apn, layers);
 
     /* Reset UI state */
     document.getElementById("parcel-loader").hidden = false;
@@ -668,8 +737,11 @@ require([
     document.getElementById("parcel-empty").hidden  = false;
     document.getElementById("active-block").hidden  = true;
 
-    /* Reset map state */
-    overlayLayers.forEach(l => { l.visible = false; });
+    /* Reset map state — restore each layer to its default visibility
+       (All Parcels stays on as the base layer; overlays start off)   */
+    overlayLayers.forEach((l, idx) => {
+      l.visible = LAYER_DEFS[idx].visibleByDefault === true;
+    });
     highlightGL.removeAll();
 
     try {
