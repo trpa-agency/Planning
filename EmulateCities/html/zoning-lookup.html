@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoning Lookup — TRPA</title>
+
+  <!-- Calcite Design System 5.0 -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/5.0/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+
+  <!-- ArcGIS Maps SDK 4.31 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
+
+  <!-- AG Grid Community -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+  <!-- Open Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TRPA Brand Tokens ── */
+    :root {
+      --trpa-blue:        #0072CE;
+      --trpa-navy:        #003B71;
+      --trpa-orange:      #E87722;
+      --trpa-earth:       #B47E00;
+      --trpa-forest:      #4A6118;
+      --trpa-brick:       #9C3E27;
+      --trpa-olive:       #B5A64C;
+      --trpa-purple:      #7B6A8A;
+      --trpa-ice:         #B4CBE8;
+      --trpa-gray-light:  #F5F5F5;
+      --trpa-gray-border: #DDDDDD;
+      --trpa-white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+      overflow: hidden;
+      background: #e8ecf1;
+    }
+
+    /* ── App wrapper ── */
+    #app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ── */
+    #app-header {
+      background: var(--trpa-navy);
+      color: var(--trpa-white);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1.25rem;
+      height: 52px;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    }
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .header-titles .agency {
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      opacity: 0.72;
+    }
+    .header-titles h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 26px;
+      background: rgba(255,255,255,0.22);
+      flex-shrink: 0;
+    }
+
+    .header-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    /* ── Main layout ── */
+    #main-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      display: flex;
+      flex-direction: row;
+      width: 380px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--trpa-gray-border);
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    #sidebar calcite-action-bar {
+      width: 48px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--trpa-gray-border);
+    }
+
+    #panel-stack {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #panel-stack > calcite-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #panel-stack > calcite-panel[hidden] {
+      display: none !important;
+    }
+
+    /* ── Map ── */
+    #viewDiv {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      position: relative;
+    }
+
+    .esri-view,
+    .esri-view .esri-view-surface {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── Empty state ── */
+    #empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.25rem;
+      text-align: center;
+      gap: 0.6rem;
+    }
+
+    #empty-state .empty-icon {
+      font-size: 2.2rem;
+      opacity: 0.35;
+      line-height: 1;
+    }
+
+    #empty-state .empty-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--trpa-navy);
+    }
+
+    #empty-state .empty-hint {
+      font-size: 0.78rem;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    /* ── Info table (parcel + zone cards) ── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .info-table tr { border-bottom: 1px solid var(--trpa-gray-border); }
+    .info-table tr:last-child { border-bottom: none; }
+
+    .info-table td {
+      padding: 0.38rem 0.7rem;
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+    .info-table td:first-child {
+      font-weight: 600;
+      color: #666;
+      width: 38%;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .info-table td:last-child { color: var(--trpa-navy); font-weight: 600; }
+
+    .info-table td.empty-val { color: #bbb; font-weight: 400; font-style: italic; }
+
+    /* ── Tolerance badge ── */
+    .tolerance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--trpa-navy);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Special designation chips ── */
+    .desig-chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.5rem 0.7rem 0.7rem;
+    }
+
+    .desig-chip {
+      display: inline-flex;
+      align-items: center;
+      background: var(--trpa-ice);
+      color: var(--trpa-navy);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 59, 113, 0.18);
+      line-height: 1.3;
+    }
+
+    /* ── Design guidelines link ── */
+    .guidelines-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0.45rem 0.7rem 0.7rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--trpa-blue);
+      color: #fff;
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.15s;
+    }
+
+    .guidelines-link:hover { background: var(--trpa-navy); }
+
+    /* ── Use status filter pills ── */
+    .filter-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      padding: 0.5rem 0.7rem;
+      border-bottom: 1px solid var(--trpa-gray-border);
+    }
+
+    .filter-pill {
+      cursor: pointer;
+      padding: 0.22rem 0.65rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 999px;
+      border: 1.5px solid var(--trpa-gray-border);
+      background: #fff;
+      color: #666;
+      transition: all 0.12s;
+      letter-spacing: 0.01em;
+    }
+
+    .filter-pill:hover { border-color: var(--trpa-blue); color: var(--trpa-blue); }
+
+    .filter-pill.active {
+      background: var(--trpa-navy);
+      border-color: var(--trpa-navy);
+      color: #fff;
+    }
+
+    .filter-pill.allowed.active      { background: var(--trpa-forest); border-color: var(--trpa-forest); }
+    .filter-pill.discretionary.active { background: var(--trpa-earth); border-color: var(--trpa-earth); }
+    .filter-pill.see-note.active     { background: var(--trpa-purple); border-color: var(--trpa-purple); }
+
+    /* ── Grid container ── */
+    .grid-wrap {
+      padding: 0.35rem 0.5rem 0.7rem;
+    }
+
+    /* ── CSV export button ── */
+    .grid-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.35rem 0.5rem 0.25rem;
+    }
+
+    /* ── Source note ── */
+    .source-note {
+      font-size: 0.68rem;
+      color: #888;
+      padding: 0.55rem 0.75rem;
+      border-top: 1px solid var(--trpa-gray-border);
+      line-height: 1.5;
+    }
+
+    .source-note a { color: var(--trpa-blue); text-decoration: none; }
+    .source-note a:hover { text-decoration: underline; }
+
+    /* ── AG Grid status cell colors ── */
+    .status-allowed       { color: #fff; background: var(--trpa-forest); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; }
+    .status-discretionary { color: #fff; background: var(--trpa-earth);  padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; }
+    .status-see-note      { color: #fff; background: var(--trpa-purple); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; }
+
+    /* ── ArcGIS widget overrides ── */
+    #legend-container .esri-widget {
+      background: transparent;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+  <!-- ══ HEADER ══ -->
+  <div id="app-header">
+    <div class="header-titles">
+      <span class="agency">Tahoe Regional Planning Agency</span>
+      <h1>Zoning Lookup</h1>
+    </div>
+    <div class="header-divider"></div>
+    <span class="header-subtitle">Click any parcel to see what's allowed</span>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <div id="main-layout">
+
+    <!-- ── Sidebar ── -->
+    <aside id="sidebar">
+
+      <calcite-action-bar layout="vertical" expand-disabled>
+        <calcite-action data-panel-id="info-panel" icon="information"  text="Zoning Info"  text-enabled="false" active></calcite-action>
+        <calcite-action data-panel-id="layers-panel" icon="layers" text="Map Layers" text-enabled="false"></calcite-action>
+      </calcite-action-bar>
+
+      <div id="panel-stack">
+
+        <!-- ── INFO PANEL ── -->
+        <calcite-panel id="info-panel" heading="Zoning Info">
+
+          <calcite-loader id="lookup-loader" label="Looking up zoning…" type="indeterminate" hidden></calcite-loader>
+
+          <calcite-notice id="lookup-error" kind="danger" icon="exclamation-mark-triangle" closable hidden>
+            <div slot="title">Lookup Failed</div>
+            <div slot="message" id="lookup-error-msg">Could not retrieve zoning data.</div>
+          </calcite-notice>
+
+          <!-- Empty state -->
+          <div id="empty-state">
+            <div class="empty-icon">🗺</div>
+            <div class="empty-title">Click a parcel on the map</div>
+            <div class="empty-hint">Select any parcel to see its zoning district, tolerance district, and the full permissible use table.</div>
+          </div>
+
+          <!-- Parcel card -->
+          <calcite-block id="parcel-block" heading="Parcel" open collapsible hidden>
+            <table class="info-table">
+              <tr><td>APN</td><td id="parcel-apn">—</td></tr>
+              <tr><td>Jurisdiction</td><td id="parcel-jurisdiction">—</td></tr>
+              <tr>
+                <td>Tolerance District</td>
+                <td><span id="parcel-tolerance-wrap">—</span></td>
+              </tr>
+            </table>
+          </calcite-block>
+
+          <!-- Zoning card -->
+          <calcite-block id="zone-block" heading="Zoning District" open collapsible hidden>
+            <table class="info-table">
+              <tr><td>Zone</td><td id="zone-description">—</td></tr>
+              <tr><td>Zoning ID</td><td id="zone-id" style="font-family:monospace;font-size:0.8rem">—</td></tr>
+              <tr><td>Plan Name</td><td id="zone-plan-name">—</td></tr>
+              <tr><td>Plan Type</td><td id="zone-plan-type">—</td></tr>
+              <tr><td>Special Area</td><td id="zone-special-area">—</td></tr>
+              <tr><td>Overlay</td><td id="zone-overlay">—</td></tr>
+            </table>
+            <a id="zone-guidelines-link" class="guidelines-link" href="#" target="_blank" rel="noopener" hidden>
+              Design Guidelines ↗
+            </a>
+          </calcite-block>
+
+          <!-- Special Designations -->
+          <calcite-block id="desig-block" heading="Special Designations" open collapsible hidden>
+            <div class="desig-chip-wrap" id="desig-chips"></div>
+          </calcite-block>
+
+          <!-- Permissible Uses -->
+          <calcite-block id="uses-block" heading="Permissible Uses" open collapsible hidden>
+            <div class="filter-strip" id="filter-strip">
+              <span class="filter-pill active" data-filter="all">All</span>
+              <span class="filter-pill allowed" data-filter="allowed">Allowed</span>
+              <span class="filter-pill discretionary" data-filter="discretionary">Requires Approval</span>
+              <span class="filter-pill see-note" data-filter="see-note">See Note</span>
+            </div>
+            <div class="grid-toolbar">
+              <calcite-button id="csv-export" appearance="outline" scale="s" icon-start="download">Export CSV</calcite-button>
+            </div>
+            <div class="grid-wrap">
+              <div id="uses-grid" style="width:100%;"></div>
+            </div>
+          </calcite-block>
+
+          <!-- Legend -->
+          <calcite-block heading="Legend" collapsible>
+            <div id="legend-container"></div>
+          </calcite-block>
+
+          <div class="source-note">
+            Source: TRPA · <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a><br>
+            Zoning data may not reflect recently approved amendments. Confirm with TRPA staff for official determination.
+          </div>
+
+        </calcite-panel>
+
+        <!-- ── LAYERS PANEL ── -->
+        <calcite-panel id="layers-panel" heading="Map Layers" hidden>
+          <calcite-block heading="Toggle Layers" open collapsible>
+            <div id="layer-list-container"></div>
+          </calcite-block>
+        </calcite-panel>
+
+      </div>
+    </aside>
+
+    <!-- ── Map ── -->
+    <div id="viewDiv"></div>
+
+  </div>
+</div>
+
+
+<script>
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/FeatureLayer",
+  "esri/layers/GraphicsLayer",
+  "esri/Graphic",
+  "esri/widgets/Legend",
+  "esri/widgets/Home",
+  "esri/widgets/ScaleBar",
+  "esri/widgets/LayerList"
+], function(
+  Map, MapView, FeatureLayer, GraphicsLayer, Graphic,
+  Legend, Home, ScaleBar, LayerList
+) {
+
+  /* ── Service URLs ── */
+  const SVC = {
+    zoning_district: "https://maps.trpa.org/server/rest/services/Zoning/MapServer/0",
+    zoning_parcel:   "https://maps.trpa.org/server/rest/services/Zoning/MapServer/1",
+    perm_use:        "https://maps.trpa.org/server/rest/services/Zoning/MapServer/6",
+    spec_desig:      "https://maps.trpa.org/server/rest/services/Zoning/MapServer/7",
+    parcel_joins:    "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6"
+  };
+
+  /* ── Layers ── */
+  const districtLayer = new FeatureLayer({
+    url: SVC.zoning_district,
+    title: "Zoning Districts",
+    outFields: ["ZONING_ID","ZONING_DESCRIPTION","PLAN_NAME","PLAN_TYPE",
+                "SPECIAL_AREA_NAME","OVERLAY","DESIGN_GUIDELINES_HYPERLINK"],
+    opacity: 0.55,
+    popupEnabled: false
+  });
+
+  const parcelLayer = new FeatureLayer({
+    url: SVC.zoning_parcel,
+    title: "Parcels",
+    outFields: ["APN"],
+    renderer: {
+      type: "simple",
+      symbol: {
+        type: "simple-fill",
+        color: [0, 0, 0, 0],
+        outline: { color: [130, 130, 130, 0.7], width: 0.5 }
+      }
+    },
+    opacity: 0.9,
+    popupEnabled: false
+  });
+
+  const highlightGL = new GraphicsLayer({ listMode: "hide", title: "Selected Parcel" });
+
+  const map = new Map({
+    basemap: "gray-vector",
+    layers: [districtLayer, parcelLayer, highlightGL]
+  });
+
+  const view = new MapView({
+    container: "viewDiv",
+    map,
+    center: [-120.04, 39.09],
+    zoom: 10,
+    popup: { autoOpenEnabled: false },
+    ui: { components: ["zoom"] }
+  });
+
+  /* ── Widgets ── */
+  view.when(() => {
+    view.ui.add(new Home({ view }), "top-left");
+    view.ui.add(new ScaleBar({ view, unit: "dual" }), "bottom-left");
+
+    new Legend({
+      view,
+      container: document.getElementById("legend-container"),
+      layerInfos: [
+        { layer: districtLayer, title: "Zoning Districts" },
+        { layer: parcelLayer,   title: "Parcels" }
+      ]
+    });
+
+    new LayerList({
+      view,
+      container: document.getElementById("layer-list-container")
+    });
+  });
+
+  /* ── Panel switching ── */
+  document.querySelectorAll("calcite-action[data-panel-id]").forEach(action => {
+    action.addEventListener("click", () => {
+      const targetId = action.dataset.panelId;
+      document.querySelectorAll("#panel-stack > calcite-panel").forEach(p => p.hidden = true);
+      document.querySelectorAll("calcite-action[data-panel-id]").forEach(a => a.active = false);
+      document.getElementById(targetId).hidden = false;
+      action.active = true;
+    });
+  });
+
+  /* ── Status filter logic ── */
+  let activeFilter = "all";
+  let allUses      = [];
+  let gridApi      = null;
+
+  document.getElementById("filter-strip").addEventListener("click", evt => {
+    const pill = evt.target.closest(".filter-pill");
+    if (!pill) return;
+    activeFilter = pill.dataset.filter;
+    document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+    applyGridFilter();
+  });
+
+  const DISCRETIONARY = ["conditional use", "administrative review", "minor use", "special use"];
+
+  function applyGridFilter() {
+    if (!gridApi) return;
+    const filtered = activeFilter === "all" ? allUses : allUses.filter(u => {
+      const s = (u.Use_Status || "").toLowerCase().trim();
+      if (activeFilter === "allowed")      return s === "allowed";
+      if (activeFilter === "discretionary") return DISCRETIONARY.includes(s);
+      if (activeFilter === "see-note")     return s === "see note" || !u.Use_Status;
+      return true;
+    });
+    gridApi.setGridOption("rowData", filtered);
+  }
+
+  /* ── CSV export ── */
+  document.getElementById("csv-export").addEventListener("click", () => {
+    if (gridApi) gridApi.exportDataAsCsv({ fileName: "permissible-uses.csv" });
+  });
+
+  /* ════════════════════════════════
+     MAP CLICK HANDLER
+  ════════════════════════════════ */
+  view.on("click", async evt => {
+    const pt = evt.mapPoint;
+    showLoader(true);
+    hideError();
+
+    try {
+      /* 1. Spatial query against parcel layer for APN + geometry */
+      const pq = parcelLayer.createQuery();
+      pq.geometry            = pt;
+      pq.spatialRelationship = "intersects";
+      pq.outFields           = ["APN"];
+      pq.returnGeometry      = true;
+      pq.outSpatialReference = view.spatialReference;
+      pq.num                 = 1;
+
+      const pResult = await parcelLayer.queryFeatures(pq);
+
+      if (!pResult.features.length) {
+        showLoader(false);
+        showEmptyState("No parcel found at that location. Try clicking inside a parcel boundary.");
+        return;
+      }
+
+      const parcelFeat = pResult.features[0];
+      const apn        = parcelFeat.attributes.APN;
+
+      /* 2. Spatial query for zoning district */
+      const dq = districtLayer.createQuery();
+      dq.geometry            = pt;
+      dq.spatialRelationship = "intersects";
+      dq.outFields           = ["ZONING_ID","ZONING_DESCRIPTION","PLAN_NAME","PLAN_TYPE",
+                                 "SPECIAL_AREA_NAME","OVERLAY","DESIGN_GUIDELINES_HYPERLINK"];
+      dq.returnGeometry      = false;
+      dq.num                 = 1;
+
+      const dResult  = await districtLayer.queryFeatures(dq);
+      const district = dResult.features[0]?.attributes ?? null;
+      const zoningId = district?.ZONING_ID ?? null;
+
+      /* 3. Parallel: parcel attrs + permissible uses + special designations */
+      const [parcelAttrs, usesData, desigData] = await Promise.all([
+        fetchParcelAttrs(apn),
+        zoningId ? fetchPermUses(zoningId) : Promise.resolve([]),
+        zoningId ? fetchSpecDesig(zoningId) : Promise.resolve([])
+      ]);
+
+      /* Highlight + zoom */
+      highlightParcel(parcelFeat);
+      view.goTo(parcelFeat.geometry.extent.expand(3), { duration: 600 });
+
+      /* Populate panel */
+      populatePanel({ apn, district, parcelAttrs, uses: usesData, designations: desigData });
+
+    } catch (err) {
+      console.error("[zoning-lookup] error:", err);
+      showError("Could not retrieve zoning data. " + err.message);
+    } finally {
+      showLoader(false);
+    }
+  });
+
+  /* ── REST helpers ── */
+  async function fetchParcelAttrs(apn) {
+    const params = new URLSearchParams({
+      where:          `APN = '${apn.replace(/'/g, "''")}'`,
+      outFields:      "APN,TOLERANCE_ID,JURISDICTION",
+      returnGeometry: "false",
+      f:              "json"
+    });
+    const resp = await fetch(`${SVC.parcel_joins}/query?${params}`);
+    const json = await resp.json();
+    return json.features?.[0]?.attributes ?? {};
+  }
+
+  async function fetchPermUses(zoningId) {
+    const params = new URLSearchParams({
+      where:     `Zoning_ID = '${zoningId.replace(/'/g, "''")}'`,
+      outFields: "Category,Subcategory,Use_Type,Use_Status,Density,Unit,Notes",
+      f:         "json"
+    });
+    const resp = await fetch(`${SVC.perm_use}/query?${params}`);
+    const json = await resp.json();
+    return (json.features ?? []).map(f => f.attributes);
+  }
+
+  async function fetchSpecDesig(zoningId) {
+    const params = new URLSearchParams({
+      where:     `ZONING_ID = '${zoningId.replace(/'/g, "''")}'`,
+      outFields: "SPECIAL_DESIGNATION,NOTES",
+      f:         "json"
+    });
+    const resp = await fetch(`${SVC.spec_desig}/query?${params}`);
+    const json = await resp.json();
+    return (json.features ?? []).map(f => f.attributes);
+  }
+
+  /* ── Highlight parcel ── */
+  function highlightParcel(feature) {
+    highlightGL.removeAll();
+    highlightGL.add(new Graphic({
+      geometry: feature.geometry,
+      symbol: {
+        type: "simple-fill",
+        color: [232, 119, 34, 0.18],
+        outline: { color: [232, 119, 34, 1], width: 2.5 }
+      }
+    }));
+  }
+
+  /* ── Populate sidebar panel ── */
+  function populatePanel({ apn, district, parcelAttrs, uses, designations }) {
+    /* Hide empty state */
+    document.getElementById("empty-state").style.display = "none";
+
+    /* Parcel card */
+    setText("parcel-apn", apn);
+    setText("parcel-jurisdiction", parcelAttrs?.JURISDICTION);
+
+    const tolWrap = document.getElementById("parcel-tolerance-wrap");
+    const tolId   = parcelAttrs?.TOLERANCE_ID;
+    tolWrap.innerHTML = tolId
+      ? `<span class="tolerance-badge">${tolId}</span>`
+      : '<span style="color:#bbb;font-weight:400;font-style:italic">Not available</span>';
+
+    document.getElementById("parcel-block").hidden = false;
+
+    /* Zoning card */
+    setText("zone-description", district?.ZONING_DESCRIPTION);
+    setText("zone-id",          district?.ZONING_ID);
+    setText("zone-plan-name",   district?.PLAN_NAME);
+    setText("zone-plan-type",   district?.PLAN_TYPE);
+    setText("zone-special-area",
+      district?.SPECIAL_AREA_NAME && district.SPECIAL_AREA_NAME !== " " ? district.SPECIAL_AREA_NAME : null);
+    setText("zone-overlay",
+      district?.OVERLAY && district.OVERLAY !== " " ? district.OVERLAY : null);
+
+    const guideLink = document.getElementById("zone-guidelines-link");
+    if (district?.DESIGN_GUIDELINES_HYPERLINK) {
+      guideLink.href   = district.DESIGN_GUIDELINES_HYPERLINK;
+      guideLink.hidden = false;
+    } else {
+      guideLink.hidden = true;
+    }
+
+    document.getElementById("zone-block").hidden = false;
+
+    /* Special designations */
+    const desigBlock = document.getElementById("desig-block");
+    const desigChips = document.getElementById("desig-chips");
+    if (designations.length) {
+      desigChips.innerHTML = designations.map(d => {
+        const note = d.NOTES ? ` — ${d.NOTES}` : "";
+        return `<span class="desig-chip">${escHtml(d.SPECIAL_DESIGNATION)}${escHtml(note)}</span>`;
+      }).join("");
+      desigBlock.hidden = false;
+    } else {
+      desigBlock.hidden = true;
+    }
+
+    /* Permissible uses table */
+    allUses      = uses;
+    activeFilter = "all";
+    document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+    document.querySelector('.filter-pill[data-filter="all"]').classList.add("active");
+    buildGrid(uses);
+    document.getElementById("uses-block").hidden = false;
+  }
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (value != null && value !== "" && value !== " ") {
+      el.textContent = value;
+      el.classList.remove("empty-val");
+    } else {
+      el.textContent = "—";
+      el.classList.add("empty-val");
+    }
+  }
+
+  function escHtml(str) {
+    return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  /* ── AG Grid ── */
+  function statusRenderer(params) {
+    const v = (params.value || "").toLowerCase().trim();
+    let cls = "";
+    if (v === "allowed")                    cls = "status-allowed";
+    else if (DISCRETIONARY.includes(v))     cls = "status-discretionary";
+    else if (v === "see note" || !v)        cls = "status-see-note";
+    if (!cls) return params.value || "—";
+    return `<span class="${cls}">${escHtml(params.value)}</span>`;
+  }
+
+  const COLUMN_DEFS = [
+    { field: "Category",   headerName: "Category",  width: 130, pinned: "left" },
+    { field: "Use_Type",   headerName: "Use",        flex: 1,  minWidth: 160 },
+    { field: "Use_Status", headerName: "Status",     width: 125, cellRenderer: statusRenderer },
+    { field: "Density",    headerName: "Density",    width: 85,
+      valueFormatter: p => (p.value != null && p.value !== 0) ? p.value.toLocaleString() : "—" },
+    { field: "Unit",       headerName: "Unit",       width: 110 },
+    { field: "Notes",      headerName: "Notes",      flex: 1, minWidth: 120,
+      valueFormatter: p => p.value || "—" }
+  ];
+
+  function buildGrid(data) {
+    const gridDiv = document.getElementById("uses-grid");
+    if (gridApi) {
+      gridApi.setGridOption("rowData", data);
+      return;
+    }
+    const opts = {
+      columnDefs: COLUMN_DEFS,
+      rowData:    data,
+      defaultColDef: { sortable: true, filter: true, resizable: true },
+      pagination:         true,
+      paginationPageSize: 15,
+      domLayout: "autoHeight",
+      onGridReady: p => { gridApi = p.api; }
+    };
+    agGrid.createGrid(gridDiv, opts);
+  }
+
+  /* ── UI helpers ── */
+  function showLoader(on) {
+    document.getElementById("lookup-loader").hidden = !on;
+  }
+
+  function hideError() {
+    document.getElementById("lookup-error").hidden = true;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById("lookup-error");
+    document.getElementById("lookup-error-msg").textContent = msg;
+    el.hidden = false;
+    el.open   = true;
+  }
+
+  function showEmptyState(msg) {
+    const el = document.getElementById("empty-state");
+    el.style.display = "";
+    el.querySelector(".empty-hint").textContent = msg;
+    document.getElementById("parcel-block").hidden = true;
+    document.getElementById("zone-block").hidden   = true;
+    document.getElementById("desig-block").hidden  = true;
+    document.getElementById("uses-block").hidden   = true;
+  }
+
+}); // require
+</script>
+
+</body>
+</html>
