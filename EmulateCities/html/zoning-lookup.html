@@ -141,11 +141,18 @@
       display: none !important;
     }
 
-    /* ── Map ── */
-    #viewDiv {
+    /* ── Map area (map + bottom panel stacked) ── */
+    #map-area {
       flex: 1;
       min-width: 0;
-      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #viewDiv {
+      flex: 1;
+      min-height: 0;
       position: relative;
     }
 
@@ -153,6 +160,95 @@
     .esri-view .esri-view-surface {
       width: 100% !important;
       height: 100% !important;
+    }
+
+    /* ── Bottom panel ── */
+    #bottom-panel {
+      flex-shrink: 0;
+      background: #fff;
+      border-top: 3px solid var(--trpa-navy);
+      display: flex;
+      flex-direction: column;
+      height: 44px;
+      max-height: 50%;
+      overflow: hidden;
+      transition: height 0.22s ease;
+      z-index: 10;
+    }
+
+    #bottom-panel.open { height: var(--panel-h, 38%); }
+
+    #bp-drag {
+      height: 5px;
+      cursor: ns-resize;
+      background: var(--trpa-navy);
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    #bp-drag:hover { opacity: 1; }
+
+    #bp-header {
+      height: 39px;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0 0.85rem;
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid var(--trpa-gray-border);
+    }
+
+    #bp-header:hover { background: var(--trpa-gray-light); }
+
+    #bp-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--trpa-navy);
+      flex: 1;
+    }
+
+    #bp-count {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--trpa-blue);
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    #bp-chevron {
+      font-size: 0.75rem;
+      color: var(--trpa-navy);
+      transition: transform 0.2s;
+    }
+
+    #bottom-panel.open #bp-chevron { transform: rotate(180deg); }
+
+    #bp-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0.6rem 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    /* ── Designation chips inside bottom panel ── */
+    #bp-desig-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    /* ── Filter + toolbar row inside bottom panel ── */
+    #bp-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
     /* ── Empty state ── */
@@ -440,43 +536,17 @@
               <tr><td>Special Area</td><td id="zone-special-area">—</td></tr>
               <tr><td>Overlay</td><td id="zone-overlay">—</td></tr>
             </table>
-            <a id="zone-guidelines-link" class="guidelines-link" href="#" target="_blank" rel="noopener" hidden>
-              Design Guidelines ↗
-            </a>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.45rem 0.7rem 0.7rem">
+              <a id="zone-guidelines-link" class="guidelines-link" href="#" target="_blank" rel="noopener" hidden>
+                Design Guidelines ↗
+              </a>
+              <a id="ltinfo-link" class="guidelines-link" style="background:var(--trpa-navy)" href="#" target="_blank" rel="noopener" hidden>
+                LTInfo Parcel Details ↗
+              </a>
+            </div>
           </calcite-block>
 
-          <!-- Special Designations -->
-          <calcite-block id="desig-block" heading="Special Designations" open collapsible hidden>
-            <div class="desig-chip-wrap" id="desig-chips"></div>
-          </calcite-block>
-
-          <!-- Permissible Uses -->
-          <calcite-block id="uses-block" heading="Permissible Uses" open collapsible hidden>
-            <div class="filter-strip" id="filter-strip">
-              <span class="filter-pill active" data-filter="all">All</span>
-              <span class="filter-pill allowed" data-filter="allowed">Allowed</span>
-              <span class="filter-pill discretionary" data-filter="discretionary">Requires Approval</span>
-              <span class="filter-pill see-note" data-filter="see-note">See Note</span>
-            </div>
-            <div class="grid-toolbar">
-              <calcite-button id="csv-export" appearance="outline" scale="s" icon-start="download">Export CSV</calcite-button>
-            </div>
-            <div class="uses-table-wrap">
-              <table class="uses-table">
-                <thead>
-                  <tr>
-                    <th data-col="Category">Category</th>
-                    <th data-col="Use_Type">Use</th>
-                    <th data-col="Use_Status">Status</th>
-                    <th data-col="Density">Density</th>
-                    <th data-col="Unit">Unit</th>
-                    <th data-col="Notes">Notes</th>
-                  </tr>
-                </thead>
-                <tbody id="uses-tbody"></tbody>
-              </table>
-            </div>
-          </calcite-block>
+          <!-- Designations & Uses moved to bottom panel below map -->
 
           <!-- Legend -->
           <calcite-block heading="Legend" collapsible>
@@ -500,8 +570,54 @@
       </div>
     </aside>
 
-    <!-- ── Map ── -->
-    <div id="viewDiv"></div>
+    <!-- ── Map area + bottom panel ── -->
+    <div id="map-area">
+      <div id="viewDiv"></div>
+
+      <!-- Bottom panel: Special Designations + Permissible Uses -->
+      <div id="bottom-panel">
+        <div id="bp-drag" title="Drag to resize"></div>
+        <div id="bp-header">
+          <span id="bp-title">Designations &amp; Permissible Uses</span>
+          <span id="bp-count" hidden></span>
+          <span id="bp-chevron">▲</span>
+        </div>
+        <div id="bp-body">
+          <!-- Special Designations -->
+          <div id="bp-desig-section" hidden>
+            <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:0.4rem">Special Designations</div>
+            <div class="desig-chip-wrap" id="desig-chips"></div>
+          </div>
+          <!-- Permissible Uses -->
+          <div id="bp-uses-section">
+            <div id="bp-controls">
+              <div class="filter-strip" id="filter-strip" style="padding:0;border:none">
+                <span class="filter-pill active" data-filter="all">All</span>
+                <span class="filter-pill allowed" data-filter="allowed">Allowed</span>
+                <span class="filter-pill discretionary" data-filter="discretionary">Requires Approval</span>
+                <span class="filter-pill see-note" data-filter="see-note">See Note</span>
+              </div>
+              <calcite-button id="csv-export" appearance="outline" scale="s" icon-start="download" style="margin-left:auto">Export CSV</calcite-button>
+            </div>
+            <div class="uses-table-wrap" style="padding:0;margin-top:0.4rem">
+              <table class="uses-table">
+                <thead>
+                  <tr>
+                    <th data-col="Category">Category</th>
+                    <th data-col="Use_Type">Use</th>
+                    <th data-col="Use_Status">Status</th>
+                    <th data-col="Density">Density</th>
+                    <th data-col="Unit">Unit</th>
+                    <th data-col="Notes">Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="uses-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -793,27 +909,37 @@ require([
 
     document.getElementById("zone-block").hidden = false;
 
-    /* Special designations */
-    const desigBlock = document.getElementById("desig-block");
-    const desigChips = document.getElementById("desig-chips");
+    /* LTInfo link */
+    const ltinfoEl = document.getElementById("ltinfo-link");
+    ltinfoEl.href   = `https://parcels.laketahoeinfo.org/Parcel/Detail/${encodeURIComponent(apn)}`;
+    ltinfoEl.hidden = false;
+
+    /* Special designations → bottom panel */
+    const desigSection = document.getElementById("bp-desig-section");
+    const desigChips   = document.getElementById("desig-chips");
     if (designations.length) {
       desigChips.innerHTML = designations.map(d => {
         const note = d.NOTES ? ` — ${d.NOTES}` : "";
         return `<span class="desig-chip">${escHtml(d.SPECIAL_DESIGNATION)}${escHtml(note)}</span>`;
       }).join("");
-      desigBlock.hidden = false;
+      desigSection.hidden = false;
     } else {
-      desigBlock.hidden = true;
+      desigSection.hidden = true;
     }
 
-    /* Permissible uses table */
+    /* Permissible uses → bottom panel */
     allUses      = uses;
     activeFilter = "all";
     sortCol      = null;
     document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
     document.querySelector('.filter-pill[data-filter="all"]').classList.add("active");
     buildTable(uses);
-    document.getElementById("uses-block").hidden = false;
+
+    /* Update count badge and open panel */
+    const countEl = document.getElementById("bp-count");
+    countEl.textContent = `${uses.length} uses`;
+    countEl.hidden = false;
+    openBottomPanel();
   }
 
   function setText(id, value) {
@@ -832,7 +958,47 @@ require([
     return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
-  /* ── AG Grid ── */
+  /* ── Bottom panel open / close / drag ── */
+  const bpEl     = document.getElementById("bottom-panel");
+  const bpHeader = document.getElementById("bp-header");
+  const bpDrag   = document.getElementById("bp-drag");
+  const mapArea  = document.getElementById("map-area");
+
+  function openBottomPanel() {
+    if (!bpEl.classList.contains("open")) bpEl.classList.add("open");
+  }
+
+  bpHeader.addEventListener("click", () => {
+    bpEl.classList.toggle("open");
+  });
+
+  /* Drag-to-resize */
+  bpDrag.addEventListener("mousedown", evt => {
+    evt.preventDefault();
+    const startY    = evt.clientY;
+    const startH    = bpEl.offsetHeight;
+    const maxH      = mapArea.offsetHeight * 0.5;
+
+    function onMove(e) {
+      const delta  = startY - e.clientY;          // dragging up = bigger panel
+      const newH   = Math.min(Math.max(startH + delta, 44), maxH);
+      bpEl.style.transition = "none";
+      bpEl.style.height     = newH + "px";
+      mapArea.style.setProperty("--panel-h", newH + "px");
+      if (newH > 44) bpEl.classList.add("open");
+    }
+
+    function onUp() {
+      bpEl.style.transition = "";
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup",   onUp);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup",   onUp);
+  });
+
+  /* ── Table ── */
   function statusBadge(val) {
     const v = (val || "").toLowerCase().trim();
     let cls = "";
@@ -911,8 +1077,8 @@ require([
     el.querySelector(".empty-hint").textContent = msg;
     document.getElementById("parcel-block").hidden = true;
     document.getElementById("zone-block").hidden   = true;
-    document.getElementById("desig-block").hidden  = true;
-    document.getElementById("uses-block").hidden   = true;
+    bpEl.classList.remove("open");
+    bpEl.style.height = "";
   }
 
 }); // require
