@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zoning Lookup — TRPA</title>
 
-  <!-- Calcite Design System 5.0 -->
-  <script type="module" src="https://js.arcgis.com/calcite-components/5.0/calcite.esm.js"></script>
-  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+  <!-- Calcite Design System (version bundled with ArcGIS SDK 4.31) -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/2.13.0/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.13.0/calcite.css" />
 
   <!-- ArcGIS Maps SDK 4.31 -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
@@ -482,6 +482,7 @@ require([
   const SVC = {
     zoning_district: "https://maps.trpa.org/server/rest/services/Zoning/MapServer/0",
     zoning_parcel:   "https://maps.trpa.org/server/rest/services/Zoning/MapServer/1",
+    parcel_fs:       "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
     perm_use:        "https://maps.trpa.org/server/rest/services/Zoning/MapServer/6",
     spec_desig:      "https://maps.trpa.org/server/rest/services/Zoning/MapServer/7",
     parcel_joins:    "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6"
@@ -497,10 +498,11 @@ require([
     popupEnabled: false
   });
 
+  /* Display layer — MapServer/1 has no geometry in its fields list so
+     it cannot be used for spatial queries; use parcelQueryLayer below instead. */
   const parcelLayer = new FeatureLayer({
     url: SVC.zoning_parcel,
     title: "Parcels",
-    outFields: ["APN"],
     renderer: {
       type: "simple",
       symbol: {
@@ -513,11 +515,19 @@ require([
     popupEnabled: false
   });
 
+  /* Hidden query layer — FeatureServer returns geometry reliably */
+  const parcelQueryLayer = new FeatureLayer({
+    url: SVC.parcel_fs,
+    outFields: ["APN"],
+    visible: false,
+    listMode: "hide"
+  });
+
   const highlightGL = new GraphicsLayer({ listMode: "hide", title: "Selected Parcel" });
 
   const map = new Map({
     basemap: "gray-vector",
-    layers: [districtLayer, parcelLayer, highlightGL]
+    layers: [districtLayer, parcelLayer, highlightGL, parcelQueryLayer]
   });
 
   const view = new MapView({
@@ -602,8 +612,8 @@ require([
     hideError();
 
     try {
-      /* 1. Spatial query against parcel layer for APN + geometry */
-      const pq = parcelLayer.createQuery();
+      /* 1. Spatial query via FeatureServer (geometry-capable) for APN + shape */
+      const pq = parcelQueryLayer.createQuery();
       pq.geometry            = pt;
       pq.spatialRelationship = "intersects";
       pq.outFields           = ["APN"];
@@ -611,7 +621,7 @@ require([
       pq.outSpatialReference = view.spatialReference;
       pq.num                 = 1;
 
-      const pResult = await parcelLayer.queryFeatures(pq);
+      const pResult = await parcelQueryLayer.queryFeatures(pq);
 
       if (!pResult.features.length) {
         showLoader(false);
