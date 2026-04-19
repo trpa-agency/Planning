@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zoning Lookup — TRPA</title>
 
+  <!-- AG Grid must load BEFORE ArcGIS SDK — the SDK defines AMD require/define
+       globally, which causes AG Grid's UMD bundle to load as an AMD module
+       instead of setting window.agGrid. -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
+
   <!-- Calcite Design System (version bundled with ArcGIS SDK 4.31) -->
   <script type="module" src="https://js.arcgis.com/calcite-components/2.13.0/calcite.esm.js"></script>
   <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.13.0/calcite.css" />
@@ -12,9 +17,6 @@
   <!-- ArcGIS Maps SDK 4.31 -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
   <script src="https://js.arcgis.com/4.31/"></script>
-
-  <!-- AG Grid Community -->
-  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 
   <!-- Open Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
