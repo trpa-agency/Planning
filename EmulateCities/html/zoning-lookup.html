@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zoning Lookup — TRPA</title>
 
-  <!-- AG Grid must load BEFORE ArcGIS SDK — the SDK defines AMD require/define
-       globally, which causes AG Grid's UMD bundle to load as an AMD module
-       instead of setting window.agGrid. -->
-  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
-
   <!-- Calcite Design System (version bundled with ArcGIS SDK 4.31) -->
   <script type="module" src="https://js.arcgis.com/calcite-components/2.13.0/calcite.esm.js"></script>
   <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.13.0/calcite.css" />
@@ -306,17 +301,53 @@
     .filter-pill.discretionary.active { background: var(--trpa-earth); border-color: var(--trpa-earth); }
     .filter-pill.see-note.active     { background: var(--trpa-purple); border-color: var(--trpa-purple); }
 
-    /* ── Grid container ── */
-    .grid-wrap {
-      padding: 0.35rem 0.5rem 0.7rem;
-    }
-
-    /* ── CSV export button ── */
+    /* ── Uses table ── */
     .grid-toolbar {
       display: flex;
       justify-content: flex-end;
       padding: 0.35rem 0.5rem 0.25rem;
     }
+
+    .uses-table-wrap {
+      overflow-x: auto;
+      padding: 0 0.35rem 0.7rem;
+    }
+
+    .uses-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    .uses-table thead th {
+      background: var(--trpa-gray-light);
+      color: var(--trpa-navy);
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.4rem 0.55rem;
+      border-bottom: 2px solid var(--trpa-gray-border);
+      white-space: nowrap;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .uses-table thead th:hover { background: #eaeaea; }
+
+    .uses-table tbody tr { border-bottom: 1px solid var(--trpa-gray-border); }
+    .uses-table tbody tr:last-child { border-bottom: none; }
+    .uses-table tbody tr:hover { background: #f9f9f9; }
+
+    .uses-table td {
+      padding: 0.38rem 0.55rem;
+      vertical-align: top;
+      color: var(--trpa-navy);
+      line-height: 1.4;
+    }
+
+    .uses-table .col-notes { color: #666; font-style: italic; }
 
     /* ── Source note ── */
     .source-note {
@@ -430,8 +461,20 @@
             <div class="grid-toolbar">
               <calcite-button id="csv-export" appearance="outline" scale="s" icon-start="download">Export CSV</calcite-button>
             </div>
-            <div class="grid-wrap">
-              <div id="uses-grid" style="width:100%;"></div>
+            <div class="uses-table-wrap">
+              <table class="uses-table">
+                <thead>
+                  <tr>
+                    <th data-col="Category">Category</th>
+                    <th data-col="Use_Type">Use</th>
+                    <th data-col="Use_Status">Status</th>
+                    <th data-col="Density">Density</th>
+                    <th data-col="Unit">Unit</th>
+                    <th data-col="Notes">Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="uses-tbody"></tbody>
+              </table>
             </div>
           </calcite-block>
 
@@ -575,7 +618,6 @@ require([
   /* ── Status filter logic ── */
   let activeFilter = "all";
   let allUses      = [];
-  let gridApi      = null;
 
   document.getElementById("filter-strip").addEventListener("click", evt => {
     const pill = evt.target.closest(".filter-pill");
@@ -589,21 +631,18 @@ require([
   const DISCRETIONARY = ["conditional use", "administrative review", "minor use", "special use"];
 
   function applyGridFilter() {
-    if (!gridApi) return;
     const filtered = activeFilter === "all" ? allUses : allUses.filter(u => {
       const s = (u.Use_Status || "").toLowerCase().trim();
-      if (activeFilter === "allowed")      return s === "allowed";
+      if (activeFilter === "allowed")       return s === "allowed";
       if (activeFilter === "discretionary") return DISCRETIONARY.includes(s);
-      if (activeFilter === "see-note")     return s === "see note" || !u.Use_Status;
+      if (activeFilter === "see-note")      return s === "see note" || !u.Use_Status;
       return true;
     });
-    gridApi.setGridOption("rowData", filtered);
+    buildTable(filtered);
   }
 
   /* ── CSV export ── */
-  document.getElementById("csv-export").addEventListener("click", () => {
-    if (gridApi) gridApi.exportDataAsCsv({ fileName: "permissible-uses.csv" });
-  });
+  document.getElementById("csv-export").addEventListener("click", () => exportCSV(allUses));
 
   /* ════════════════════════════════
      MAP CLICK HANDLER
@@ -770,9 +809,10 @@ require([
     /* Permissible uses table */
     allUses      = uses;
     activeFilter = "all";
+    sortCol      = null;
     document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
     document.querySelector('.filter-pill[data-filter="all"]').classList.add("active");
-    buildGrid(uses);
+    buildTable(uses);
     document.getElementById("uses-block").hidden = false;
   }
 
@@ -793,43 +833,60 @@ require([
   }
 
   /* ── AG Grid ── */
-  function statusRenderer(params) {
-    const v = (params.value || "").toLowerCase().trim();
+  function statusBadge(val) {
+    const v = (val || "").toLowerCase().trim();
     let cls = "";
-    if (v === "allowed")                    cls = "status-allowed";
-    else if (DISCRETIONARY.includes(v))     cls = "status-discretionary";
-    else if (v === "see note" || !v)        cls = "status-see-note";
-    if (!cls) return params.value || "—";
-    return `<span class="${cls}">${escHtml(params.value)}</span>`;
+    if (v === "allowed")                cls = "status-allowed";
+    else if (DISCRETIONARY.includes(v)) cls = "status-discretionary";
+    else if (v === "see note" || !v)    cls = "status-see-note";
+    if (!cls) return escHtml(val || "—");
+    return `<span class="${cls}">${escHtml(val)}</span>`;
   }
 
-  const COLUMN_DEFS = [
-    { field: "Category",   headerName: "Category",  width: 130, pinned: "left" },
-    { field: "Use_Type",   headerName: "Use",        flex: 1,  minWidth: 160 },
-    { field: "Use_Status", headerName: "Status",     width: 125, cellRenderer: statusRenderer },
-    { field: "Density",    headerName: "Density",    width: 85,
-      valueFormatter: p => (p.value != null && p.value !== 0) ? p.value.toLocaleString() : "—" },
-    { field: "Unit",       headerName: "Unit",       width: 110 },
-    { field: "Notes",      headerName: "Notes",      flex: 1, minWidth: 120,
-      valueFormatter: p => p.value || "—" }
-  ];
+  let sortCol = null;
+  let sortAsc = true;
 
-  function buildGrid(data) {
-    const gridDiv = document.getElementById("uses-grid");
-    if (gridApi) {
-      gridApi.setGridOption("rowData", data);
-      return;
-    }
-    const opts = {
-      columnDefs: COLUMN_DEFS,
-      rowData:    data,
-      defaultColDef: { sortable: true, filter: true, resizable: true },
-      pagination:         true,
-      paginationPageSize: 15,
-      domLayout: "autoHeight",
-      onGridReady: p => { gridApi = p.api; }
-    };
-    agGrid.createGrid(gridDiv, opts);
+  function buildTable(data) {
+    const tbody = document.getElementById("uses-tbody");
+    tbody.innerHTML = data.map(u => `
+      <tr>
+        <td>${escHtml(u.Category || "—")}</td>
+        <td>${escHtml(u.Use_Type || "—")}</td>
+        <td>${statusBadge(u.Use_Status)}</td>
+        <td>${(u.Density != null && u.Density !== 0) ? u.Density.toLocaleString() : "—"}</td>
+        <td>${escHtml(u.Unit || "—")}</td>
+        <td class="col-notes">${escHtml(u.Notes || "")}</td>
+      </tr>`).join("");
+  }
+
+  /* Column header sort */
+  document.querySelector(".uses-table thead").addEventListener("click", evt => {
+    const th = evt.target.closest("th[data-col]");
+    if (!th) return;
+    const col = th.dataset.col;
+    sortAsc = (sortCol === col) ? !sortAsc : true;
+    sortCol = col;
+    const sorted = [...allUses].sort((a, b) => {
+      const av = a[col] ?? "", bv = b[col] ?? "";
+      return sortAsc ? String(av).localeCompare(String(bv), undefined, { numeric: true })
+                     : String(bv).localeCompare(String(av), undefined, { numeric: true });
+    });
+    buildTable(sorted);
+  });
+
+  /* CSV export — plain JS, no library needed */
+  function exportCSV(data) {
+    const headers = ["Category", "Use", "Status", "Density", "Unit", "Notes"];
+    const rows = data.map(u => [
+      u.Category, u.Use_Type, u.Use_Status,
+      u.Density ?? "", u.Unit, u.Notes
+    ].map(v => `"${(v ?? "").toString().replace(/"/g, '""')}"`).join(","));
+    const blob = new Blob([[headers.join(","), ...rows].join("\n")], { type: "text/csv" });
+    const a = Object.assign(document.createElement("a"), {
+      href: URL.createObjectURL(blob), download: "permissible-uses.csv"
+    });
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   /* ── UI helpers ── */
