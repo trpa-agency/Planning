@@ -1143,10 +1143,15 @@ require([
     /* Uses → bottom panel */
     allUses      = uses;
     activeFilter = "all";
-    sortCol      = null;
+    sortCol      = "Density";
+    sortAsc      = false;
     document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
     document.querySelector('.filter-pill[data-filter="all"]').classList.add("active");
-    buildTable(uses);
+    buildTable([...uses].sort((a, b) => {
+      const av = a.Density ?? -Infinity;
+      const bv = b.Density ?? -Infinity;
+      return bv - av;
+    }));
 
     const countEl = document.getElementById("bp-count");
     countEl.textContent = `${uses.length} uses`;
