@@ -1089,12 +1089,12 @@ require([
   async function fetchPlanDoc(planId) {
     const params = new URLSearchParams({
       where:          `PLAN_ID = '${planId.replace(/'/g, "''")}'`,
-      outFields:      "PLAN_ID,FILE_URL",
+      outFields:      "PLAN_ID,File_URL",
       returnGeometry: "false", f: "json"
     });
     const resp = await fetch(`${SVC.local_plan}/query?${params}`);
     const json = await resp.json();
-    return json.features?.[0]?.attributes?.FILE_URL ?? null;
+    return json.features?.[0]?.attributes?.File_URL ?? null;
   }
 
   /* ── UI helpers ── */
