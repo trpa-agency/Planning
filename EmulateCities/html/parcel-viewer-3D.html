@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parcel Map Viewer (2D / 3D) — TRPA</title>
+
+  <!-- Calcite Design System 5.0 -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/5.0/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+
+  <!-- ArcGIS Maps SDK 4.31 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
+
+  <!-- Open Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TRPA Brand Tokens ── */
+    :root {
+      --trpa-blue:        #0072CE;
+      --trpa-navy:        #003B71;
+      --trpa-orange:      #E87722;
+      --trpa-earth:       #B47E00;
+      --trpa-forest:      #4A6118;
+      --trpa-brick:       #9C3E27;
+      --trpa-olive:       #B5A64C;
+      --trpa-purple:      #7B6A8A;
+      --trpa-ice:         #B4CBE8;
+      --trpa-gray-light:  #F5F5F5;
+      --trpa-gray-border: #DDDDDD;
+      --trpa-white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+      overflow: hidden;
+      background: #e8ecf1;
+    }
+
+    /* ── App wrapper ── */
+    #app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ── */
+    #app-header {
+      background: var(--trpa-navy);
+      color: var(--trpa-white);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1.25rem;
+      height: 52px;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    }
+
+    /* TRPA logo (TRPALogo_WHITE.png — white variant for dark header) */
+    .header-mark {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .trpa-logo-img {
+      height: 34px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 26px;
+      background: rgba(255,255,255,0.22);
+      flex-shrink: 0;
+    }
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex-shrink: 0;
+    }
+    .header-titles .agency {
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      opacity: 0.72;
+    }
+    .header-titles h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+
+    /* Config pills — colored pills in header showing APN + active layers */
+    #config-pills {
+      margin-left: auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
+      max-width: 60%;
+      justify-content: flex-end;
+    }
+    .header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      color: #fff;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .header-pill.apn-pill {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.03em;
+    }
+    .header-pill .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      flex-shrink: 0;
+    }
+
+    /* ── Main layout: sidebar + map side-by-side ── */
+    #main-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    /* ── Sidebar wrapper (action bar strip + panel content) ── */
+    #sidebar {
+      display: flex;
+      flex-direction: row;
+      width: 360px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--trpa-gray-border);
+      overflow: hidden;
+      z-index: 10;
+    }
+    #sidebar calcite-action-bar {
+      width: 48px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--trpa-gray-border);
+    }
+    #panel-stack {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #panel-stack > calcite-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #panel-stack > calcite-panel[hidden] {
+      display: none !important;
+    }
+
+    /* ── View stack: two map panes occupying the same box, swapped via
+           the `.is-active` class. Keeping both panes mounted avoids
+           tearing down the 3D scene every toggle. ── */
+    #view-stack {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+    }
+    .view-pane {
+      position: absolute;
+      inset: 0;
+      /* Keep the pane laid-out (so WebGL sees real dimensions) but invisible
+         and non-interactive. We opacity-swap instead of visibility:hidden
+         because a visibility:hidden container can prevent the SceneView
+         canvas from allocating a backing buffer. */
+      opacity: 0;
+      pointer-events: none;
+    }
+    .view-pane.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Make sure the ESRI view surface fills its container */
+    .esri-view,
+    .esri-view .esri-view-surface {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── 2D / 3D Toggle — TRPA-styled segmented control over the map ── */
+    .view-toggle {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 50;
+      display: inline-flex;
+      background: var(--trpa-white);
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-family: 'Open Sans', system-ui, sans-serif;
+    }
+    .vt-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--trpa-navy);
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+      min-width: 42px;
+    }
+    .vt-btn + .vt-btn {
+      border-left: 1px solid var(--trpa-gray-border);
+    }
+    .vt-btn:hover:not(.is-active) {
+      background: var(--trpa-gray-light);
+    }
+    .vt-btn.is-active {
+      background: var(--trpa-blue);
+      color: var(--trpa-white);
+    }
+    .vt-btn:focus-visible {
+      outline: 2px solid var(--trpa-orange);
+      outline-offset: -2px;
+    }
+
+    /* ── Info table ── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    .info-table tr {
+      border-bottom: 1px solid var(--trpa-gray-border);
+    }
+    .info-table tr:last-child { border-bottom: none; }
+    .info-table td {
+      padding: 0.38rem 0.6rem;
+      vertical-align: top;
+      line-height: 1.4;
+    }
+    .info-table td:first-child {
+      font-weight: 600;
+      color: var(--trpa-navy);
+      width: 40%;
+      white-space: nowrap;
+    }
+    .info-table td:last-child { color: #2a2a2a; }
+
+    /* ── Narrative popup (Parcels layer) ── */
+    .pop-narr {
+      font-family: 'Open Sans', system-ui, sans-serif;
+      font-size: 0.8rem;
+      color: var(--trpa-navy);
+      line-height: 1.45;
+    }
+    .pop-narr .pop-apn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0 0.5rem;
+      border-bottom: 1px solid var(--trpa-gray-border);
+      margin-bottom: 0.5rem;
+    }
+    .pop-narr .pop-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+    }
+    .pop-narr .pop-apn-val {
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--trpa-navy);
+      letter-spacing: 0.02em;
+    }
+    .pop-narr .pop-section {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 0.35rem;
+    }
+    .pop-narr .pop-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .pop-narr .pop-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .pop-narr .pop-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #fff;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .pop-narr .pop-val {
+      font-weight: 600;
+      color: var(--trpa-navy);
+    }
+    .pop-narr .pop-empty {
+      color: #888;
+      font-style: italic;
+      margin: 0 0 0.6rem;
+    }
+    .pop-narr .pop-link {
+      display: inline-block;
+      margin-top: 0.25rem;
+      padding: 0.4rem 0.7rem;
+      background: var(--trpa-blue);
+      color: #fff !important;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+    .pop-narr .pop-link:hover {
+      background: var(--trpa-navy);
+    }
+
+    .info-empty {
+      font-size: 0.8rem;
+      color: #888;
+      padding: 0.75rem 0.6rem;
+      font-style: italic;
+    }
+
+    /* ── Overlay pills (sidebar "Overlay Attributes" block) ── */
+    .overlay-sub {
+      font-size: 0.68rem;
+      color: #888;
+      padding: 0.4rem 0.6rem 0.1rem;
+      line-height: 1.4;
+    }
+    .badge-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      padding: 0.45rem 0.6rem 0.7rem;
+    }
+    .layer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      color: #fff;
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .badge-swatch {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      flex-shrink: 0;
+    }
+    .layer-badge .badge-value {
+      background: rgba(255,255,255,0.2);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Source notice ── */
+    .source-note {
+      font-size: 0.68rem;
+      color: #888;
+      padding: 0.55rem 0.75rem;
+      border-top: 1px solid var(--trpa-gray-border);
+      line-height: 1.5;
+    }
+    .source-note a {
+      color: var(--trpa-blue);
+      text-decoration: none;
+    }
+    .source-note a:hover { text-decoration: underline; }
+
+    /* ── ArcGIS widget overrides ── */
+    #legend-container .esri-widget,
+    #layer-list-container .esri-widget {
+      background: transparent;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      font-size: 0.78rem;
+    }
+    #legend-container .esri-legend__service-label,
+    #layer-list-container .esri-layer-list__item-title {
+      font-weight: 600;
+      color: var(--trpa-navy);
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+  <!-- ══════════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════════ -->
+  <div id="app-header">
+
+    <div class="header-titles">
+      <span class="agency">Tahoe Regional Planning Agency</span>
+      <h1>Parcel Map Viewer</h1>
+    </div>
+
+    <div id="config-pills"></div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       MAIN LAYOUT — flex sidebar + view-stack (2D + 3D panes)
+  ══════════════════════════════════════════════ -->
+  <div id="main-layout">
+
+    <!-- ── Sidebar: action bar + stacked panels ── -->
+    <aside id="sidebar">
+
+      <!-- Action bar: switches between Info and Layers panels -->
+      <calcite-action-bar layout="vertical" expand-disabled>
+        <calcite-action
+          data-panel-id="info-panel"
+          icon="information"
+          text="Parcel Info"
+          text-enabled="false"
+          active>
+        </calcite-action>
+        <calcite-action
+          data-panel-id="layers-panel"
+          icon="layers"
+          text="Map Layers"
+          text-enabled="false">
+        </calcite-action>
+      </calcite-action-bar>
+
+      <!-- Panel stack (only one visible at a time) -->
+      <div id="panel-stack">
+
+        <!-- ── INFO PANEL ── -->
+        <calcite-panel id="info-panel" heading="Parcel Info">
+
+          <calcite-loader
+            id="parcel-loader"
+            label="Looking up parcel…"
+            type="indeterminate"
+            hidden>
+          </calcite-loader>
+
+          <calcite-notice
+            id="apn-error"
+            kind="danger"
+            icon="exclamation-mark-triangle"
+            closable
+            hidden>
+            <div slot="title">Parcel Not Found</div>
+            <div slot="message" id="apn-error-msg">No parcel matched the provided APN.</div>
+          </calcite-notice>
+
+          <calcite-block id="parcel-block" heading="Parcel Details" open collapsible>
+            <p class="info-empty" id="parcel-empty">Waiting for APN config…</p>
+            <table class="info-table" id="parcel-table" hidden></table>
+          </calcite-block>
+
+          <calcite-block id="active-block" heading="Overlay Attributes" open collapsible hidden>
+            <div class="overlay-sub">Values joined by APN from TRPA Parcel Joins</div>
+            <div class="badge-strip" id="badge-strip"></div>
+          </calcite-block>
+
+          <calcite-block heading="Legend" open collapsible>
+            <div id="legend-container"></div>
+          </calcite-block>
+
+          <div class="source-note">
+            Source: TRPA · <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a> · Tahoe Open Data<br>
+            Updated <span id="parcel-last-edit">…</span>
+          </div>
+
+        </calcite-panel>
+
+        <!-- ── LAYERS PANEL ── -->
+        <calcite-panel id="layers-panel" heading="Map Layers" hidden>
+          <calcite-block heading="Toggle Layers" open collapsible>
+            <div id="layer-list-container"></div>
+          </calcite-block>
+        </calcite-panel>
+
+      </div><!-- #panel-stack -->
+
+    </aside>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         VIEW STACK — 2D MapView pane, 3D SceneView pane, and the
+         segmented 2D/3D toggle that swaps which pane is active.
+    ══════════════════════════════════════════════════════════════════ -->
+    <div id="view-stack">
+
+      <div id="viewDiv2d" class="view-pane is-active"></div>
+      <div id="viewDiv3d" class="view-pane"></div>
+
+      <div id="view-toggle" class="view-toggle" role="group" aria-label="View mode">
+        <button type="button" class="vt-btn is-active" data-view="2d" aria-pressed="true">2D</button>
+        <button type="button" class="vt-btn"            data-view="3d" aria-pressed="false">3D</button>
+      </div>
+
+    </div>
+
+  </div><!-- #main-layout -->
+
+</div><!-- #app-wrapper -->
+
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════════
+   VIEWER CONFIG
+   ─────────────────────────────────────────────────────────────────────────
+   This object is the API surface between the parent app and this viewer.
+   Replace / inject it to drive APN lookup and layer activation.
+
+   INTEGRATION PATTERN A — URL query string (parsed at startup):
+     parcel-viewer-3D.html?apn=031-021-001-000&layers=Highwater+Line+Buffer,Flood+Zone
+
+   INTEGRATION PATTERN B — postMessage from parent iframe:
+     mapIframe.contentWindow.postMessage({ APN: "031-021-001-000", layers: ["Zoning"] }, "*");
+   ════════════════════════════════════════════════════════════════════════════ */
+const VIEWER_CONFIG = {
+  APN:    "130-241-08",                                  // real Tahoe Basin APN for demo/testing
+  layers: ["Highwater Line Buffer", "Flood Zone"]        // layer name(s) to activate on load
+};
+
+/* ── Web Scene hosted in ArcGIS Online — contains the TRPA parcel layer
+      already styled + a photogrammetric mesh / terrain setup. ──        */
+const WEB_SCENE_ID = "b29402d66d8c4a3c8738243cf53d49dc";
+
+/* ── Service URL registry (mirrors config.py MAP_SERVICES) ── */
+const SERVICES = {
+  parcel_fs:       "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
+  parcel_joins:    "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6",
+  parcel_lcv:      "https://maps.trpa.org/server/rest/services/Land_Capability_Verification_Digitized/MapServer/1",
+  parcel_ms:       "https://maps.trpa.org/server/rest/services/Parcels/MapServer",
+  scenic_roadway:  "https://maps.trpa.org/server/rest/services/Scenic_Status/MapServer/2",
+  scenic_shore:    "https://maps.trpa.org/server/rest/services/Scenic_Status/MapServer/3",
+  zoning:          "https://maps.trpa.org/server/rest/services/Zoning/MapServer/0",
+  flood_zone:      "https://maps.trpa.org/server/rest/services/Streams_and_Flood_Zone/MapServer/0",
+  hwl_buffer:      "https://maps.trpa.org/server/rest/services/Shoreline_Resources/MapServer/7",
+  historic:        "https://maps.trpa.org/server/rest/services/Historic/MapServer/0",
+  avalanche:       "https://maps.trpa.org/server/rest/services/Avalanche_Zones/MapServer/0",
+};
+
+
+/* ── Layer definitions
+      name        : human-readable label — must match what config.layers[] sends
+      serviceKey  : key in SERVICES above
+      color       : [r, g, b] TRPA brand color
+      fillOpacity : 0–1
+      strokeWidth : px
+   ── */
+const LAYER_DEFS = [
+  {
+    name: "Parcels",
+    serviceKey: "parcel_fs",          // Parcels/FeatureServer/0 — clickable, visible by default
+    visibleByDefault: true,
+    color: [200, 200, 200],           // light grey — unobtrusive over aerial imagery
+    fillOpacity: 0,                   // outline only, no fill
+    strokeWidth: 0.6,
+    popupTitle: "Parcel"
+  },
+  {
+    name: "Verified Land Capability",
+    serviceKey: "parcel_lcv",         // Parcel_Joins/FeatureServer/1 (keyed by APN)
+    useServiceRenderer: true,         // draw with the service's own symbology
+    color: [74, 97, 24],              // fallback legend swatch color
+    fillOpacity: 0.35,
+    strokeWidth: 1,
+    popupTitle: "Verified Land Capability"
+  },
+  {
+    name: "Zoning",
+    serviceKey: "zoning",
+    attributeField: "ZONING_DESCRIPTION",
+    color: [0, 114, 206],             // TRPA Blue
+    fillOpacity: 0.20,
+    strokeWidth: 1,
+    popupTitle: "Zoning District"
+  },
+  {
+    name: "Scenic Roadway",
+    serviceKey: "scenic_roadway",
+    attributeField: "SCENIC_CORRIDOR_RDWY",
+    color: [232, 119, 34],            // TRPA Orange
+    fillOpacity: 0.25,
+    strokeWidth: 1.5,
+    popupTitle: "Scenic Roadway Corridor"
+  },
+  {
+    name: "Scenic Shoreline",
+    serviceKey: "scenic_shore",
+    attributeField: "SCENIC_CORRIDOR_SHORELINE",
+    color: [180, 126, 0],             // TRPA Earth
+    fillOpacity: 0.25,
+    strokeWidth: 1.5,
+    popupTitle: "Scenic Shoreline Corridor"
+  },
+  {
+    name: "Flood Zone",
+    serviceKey: "flood_zone",
+    attributeField: "FLOOD_ZONE",
+    color: [0, 59, 113],              // TRPA Navy
+    fillOpacity: 0.22,
+    strokeWidth: 1,
+    popupTitle: "Flood Zone"
+  },
+  {
+    name: "Highwater Line Buffer",
+    serviceKey: "hwl_buffer",
+    attributeField: "HWL_BUFFER",
+    color: [0, 114, 206],             // TRPA Blue (ice fill reads well)
+    fillOpacity: 0.18,
+    strokeWidth: 2,
+    fillRgb: [180, 203, 232],         // override fill to TRPA Ice
+    popupTitle: "High Water Line Buffer"
+  },
+  {
+    name: "Historic Districts",
+    serviceKey: "historic",
+    attributeField: "HISTORIC_DISTRICT",
+    color: [123, 106, 138],           // TRPA Purple
+    fillOpacity: 0.25,
+    strokeWidth: 1,
+    popupTitle: "Historic District"
+  },
+  {
+    name: "Avalanche Zones",
+    serviceKey: "avalanche",
+    attributeField: "AVALANCHE_ZONE",
+    color: [156, 62, 39],             // TRPA Brick
+    fillOpacity: 0.25,
+    strokeWidth: 1,
+    popupTitle: "Avalanche Zone"
+  }
+];
+
+/* Badge / pill colors for active layers (used in header pills AND sidebar strip) */
+const BADGE_COLORS = {
+  "parcels":                   "#0072CE",
+  "verified land capability":  "#4A6118",
+  "zoning":                    "#0072CE",
+  "scenic roadway":            "#E87722",
+  "scenic shoreline":          "#B47E00",
+  "flood zone":                "#5E8EB4",
+  "highwater line buffer":     "#4A9FD4",
+  "historic districts":        "#7B6A8A",
+  "avalanche zones":           "#9C3E27"
+};
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   APPLICATION BOOTSTRAP
+   ════════════════════════════════════════════════════════════════════════════ */
+require([
+  "esri/Map",
+  "esri/Basemap",
+  "esri/WebScene",
+  "esri/views/MapView",
+  "esri/views/SceneView",
+  "esri/layers/FeatureLayer",
+  "esri/layers/MapImageLayer",
+  "esri/layers/GraphicsLayer",
+  "esri/layers/WMSLayer",
+  "esri/Graphic",
+  "esri/request",
+  "esri/widgets/ScaleBar",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList"
+], function(
+  Map, Basemap, WebScene, MapView, SceneView,
+  FeatureLayer, MapImageLayer, GraphicsLayer,
+  WMSLayer, Graphic, esriRequest,
+  ScaleBar, Legend, LayerList
+) {
+
+  /* ── Layer registry: lowercase name → layer instance ── */
+  const layerRegistry = {};
+
+  /* ── Closure-scoped state for the popup builder ──
+       currentConfig     : most recently applied { APN, layers }
+       currentOverlayAttrs : attribute map fetched from parcel_joins for that APN
+     The popup content function reads these so the narrative stays in sync
+     with the pills the user sees in the header / sidebar.               */
+  let currentConfig       = null;
+  let currentOverlayAttrs = null;
+
+  /* ── 3D state ──
+       scene, sceneView          : lazily created on first 3D activation
+       currentMode               : "2d" | "3d"
+       currentParcelExtent       : last parcel extent from applyConfig —
+                                   re-used every time 3D is activated so the
+                                   scene always frames the APN (not whatever
+                                   viewpoint the WebScene ships with)
+       currentParcelFeature      : last parcel feature, for 3D highlight */
+  let scene                      = null;
+  let sceneView                  = null;
+  let currentMode                = "2d";
+  let currentParcelExtent        = null;
+  let currentParcelFeature       = null;
+
+  /* Narrative popup for the Parcels layer — declared as a function
+     declaration so it is hoisted above the layer-builder below. */
+  async function buildParcelNarrativePopup(event) {
+    const apn = event && event.graphic && event.graphic.attributes && event.graphic.attributes.APN;
+    if (!apn) return "<em>No APN available for this feature.</em>";
+
+    // If the clicked parcel matches the configured one, reuse the cached
+    // attrs + the active layer list so the popup mirrors the pills exactly.
+    // Otherwise fetch fresh and show every non-null overlay value we know of.
+    const isActiveParcel = currentConfig && currentConfig.APN
+      && currentConfig.APN.trim() === String(apn).trim();
+
+    let attrs       = isActiveParcel ? currentOverlayAttrs : null;
+    let layerNames  = isActiveParcel ? (currentConfig.layers || []) : null;
+
+    if (!attrs) {
+      attrs = await fetchOverlayAttributes(apn);
+    }
+    if (!layerNames) {
+      // Show every LAYER_DEF with an attributeField that returned a value.
+      layerNames = LAYER_DEFS
+        .filter(d => d.attributeField && attrs && attrs[d.attributeField])
+        .map(d => d.name);
+    }
+
+    const pillRows = (layerNames || []).map(name => {
+      const def    = LAYER_DEFS.find(d => d.name.toLowerCase() === name.toLowerCase());
+      const bg     = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const value  = def && def.attributeField && attrs ? attrs[def.attributeField] : null;
+      if (!value) return "";
+      return (
+        `<li class="pop-row">` +
+          `<span class="pop-pill" style="background:${bg}">${name}</span>` +
+          `<span class="pop-val">${value}</span>` +
+        `</li>`
+      );
+    }).filter(Boolean).join("");
+
+    const ltinfoUrl = `https://parcels.laketahoeinfo.org/Parcel/Detail/${encodeURIComponent(apn)}`;
+
+    return (
+      `<div class="pop-narr">` +
+        `<div class="pop-apn"><span class="pop-label">APN</span><span class="pop-apn-val">${apn}</span></div>` +
+        (pillRows
+          ? `<div class="pop-section">Overlay Attributes</div><ul class="pop-list">${pillRows}</ul>`
+          : `<p class="pop-empty">No overlay attributes joined for this parcel.</p>`) +
+        `<a class="pop-link" href="${ltinfoUrl}" target="_blank" rel="noopener">` +
+          `View full parcel details on LTInfo →` +
+        `</a>` +
+      `</div>`
+    );
+  }
+
+  /* ── Highlight GraphicsLayers ──
+       One for the 2D MapView, a parallel one for the 3D SceneView.
+       `addHighlight(feature)` pushes the same Graphic into both.     */
+  const highlightGL = new GraphicsLayer({
+    id: "parcel-highlight",
+    listMode: "hide",
+    title: "Selected Parcel"
+  });
+  const highlightGL3D = new GraphicsLayer({
+    id: "parcel-highlight-3d",
+    listMode: "hide",
+    title: "Selected Parcel"
+  });
+
+  /* ── Build all overlay layers ──
+       Only the Parcels layer shows a popup (APN + Address). All other
+       overlays have popups disabled — the sidebar carries their info.       */
+  const overlayLayers = LAYER_DEFS.map(def => {
+    const url = SERVICES[def.serviceKey];
+    const [sr, sg, sb] = def.fillRgb || def.color;
+    const [or, og, ob] = def.color;
+
+    // Only the Parcels layer has a popup — a narrative summary with APN,
+    // active-overlay values (pills), and a link to LTInfo. All other layers
+    // stay silent so clicks on stacked overlays just surface the parcel.
+    const isParcelLayer = def.serviceKey === "parcel_fs";
+
+    const layerProps = {
+      url,
+      visible: def.visibleByDefault === true,
+      title: def.name,
+      outFields: isParcelLayer ? ["APN"] : ["APN"],
+      popupEnabled: isParcelLayer,
+      popupTemplate: isParcelLayer
+        ? {
+            // No title — the APN row inside the narrative is the heading.
+            title: "",
+            outFields: ["APN"],
+            content: buildParcelNarrativePopup
+          }
+        : null
+    };
+
+    // If useServiceRenderer is set, skip the renderer override so the
+    // FeatureLayer falls back to the service's published drawing info.
+    if (!def.useServiceRenderer) {
+      layerProps.renderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-fill",
+          color: [sr, sg, sb, def.fillOpacity],
+          outline: { color: [or, og, ob, 0.85], width: def.strokeWidth }
+        }
+      };
+    }
+
+    const layer = new FeatureLayer(layerProps);
+
+    layerRegistry[def.name.toLowerCase()] = layer;
+    return layer;
+  });
+
+  /* ── Hidden source layer for APN queries (geometry + attributes) ── */
+  const parcelQueryLayer = new FeatureLayer({
+    url: SERVICES.parcel_fs,
+    visible: false,
+    listMode: "hide",
+    outFields: [
+      "APN","APO_ADDRESS","PSTL_TOWN","JURISDICTION","COUNTY",
+      "ZONING_DESCRIPTION","EXISTING_LANDUSE","REGIONAL_LANDUSE",
+      "PARCEL_ACRES","IPES_SCORE","YEAR_BUILT","UNITS",
+      "HRA_NAME","WATERSHED_NAME","TOWN_CENTER","OWNERSHIP_TYPE"
+    ]
+  });
+
+  /* ── Nearmap WMS basemap (aerial imagery) ──
+       The SDK auto-fetches GetCapabilities from the base WMS URL.          */
+  const NEARMAP_WMS_URL =
+    "https://api.nearmap.com/wms/v1/places/4298ecf1-2e28-4eec-885a-15234c836254/" +
+    "apikey/NGZhMTA4MDEtYTY5Yi00ODQwLWFmNDQtMDUxMmQwNTJhMmFj";
+
+  const nearmapLayer = new WMSLayer({
+    url: NEARMAP_WMS_URL,
+    title: "Nearmap Aerial"
+  });
+
+  const nearmapBasemap = new Basemap({
+    baseLayers: [nearmapLayer],
+    title: "Nearmap Aerial",
+    id: "nearmap-aerial",
+    thumbnailUrl: "https://www.nearmap.com/favicon.ico"
+  });
+
+  /* ── Map + 2D MapView ──
+       Basemap is Nearmap aerial WMS only — no basemap toggle. */
+  const map = new Map({
+    basemap: nearmapBasemap,
+    layers: [...overlayLayers, highlightGL, parcelQueryLayer]
+  });
+
+  const view = new MapView({
+    container: "viewDiv2d",
+    map,
+    center: [-120.04, 39.09],  // Lake Tahoe
+    zoom: 10,
+    popup: {
+      // Float the narrative popup with the parcel feature.
+      autoOpenEnabled: true,
+      dockEnabled: false,
+      collapseEnabled: true
+    },
+    ui: { components: ["zoom"] }
+  });
+
+  /* ── Widgets (bound to 2D view) ── */
+  view.when(() => {
+    view.ui.add(new ScaleBar({ view, unit: "dual" }), "bottom-left");
+
+    // Pass DOM elements (not IDs) so the widgets bind reliably even if a
+    // calcite-panel wraps the container in shadow DOM.
+    const legendEl    = document.getElementById("legend-container");
+    const layerListEl = document.getElementById("layer-list-container");
+
+    new Legend({
+      view,
+      container: legendEl,
+      layerInfos: overlayLayers
+        .filter(l => l.type !== "map-image")
+        .map(l => ({ layer: l }))
+    });
+
+    new LayerList({
+      view,
+      container: layerListEl
+    });
+
+    /* Fetch the Parcels service metadata so we can show its true last-edit
+       date in the source-note footer. editingInfo.lastEditDate is an epoch ms. */
+    esriRequest(SERVICES.parcel_fs, {
+      query: { f: "json" },
+      responseType: "json"
+    }).then(resp => {
+      const ts = resp && resp.data && resp.data.editingInfo && resp.data.editingInfo.lastEditDate;
+      const el = document.getElementById("parcel-last-edit");
+      if (!el) return;
+      if (ts) {
+        const d = new Date(ts);
+        el.textContent = d.toLocaleDateString("en-US", {
+          year: "numeric", month: "long", day: "numeric"
+        });
+      } else {
+        el.textContent = "unknown";
+      }
+    }).catch(err => {
+      console.warn("[parcel-viewer] could not read service metadata:", err);
+      const el = document.getElementById("parcel-last-edit");
+      if (el) el.textContent = "unknown";
+    });
+
+    /* Fire the config on load */
+    applyConfig(resolveConfig());
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     3D SCENE — lazily initialized on first 3D toggle.
+     Loads the WebScene by portal item id (see WEB_SCENE_ID above). The
+     WebScene already contains the TRPA parcel layer styled in 3D, so we
+     only need to add the highlight GraphicsLayer on top.
+  ══════════════════════════════════════════════════════════════════════════ */
+  /* Build the SceneView — the canonical Esri "load a saved WebScene" pattern.
+     The portal URL is required because this item lives on trpa.maps.arcgis.com,
+     not the default www.arcgis.com. */
+  async function ensureSceneView() {
+    if (sceneView) return sceneView;
+
+    scene = new WebScene({
+      portalItem: {
+        id: WEB_SCENE_ID,
+        portal: { url: "https://trpa.maps.arcgis.com" }
+      }
+    });
+
+    sceneView = new SceneView({
+      container: "viewDiv3d",
+      map: scene
+    });
+
+    try {
+      await scene.load();
+
+      /* The scene as authored uses Esri's "Photorealistic Hybrid" basemap,
+         which is premium and requires an AGOL API key to stream tiles to
+         third-party apps. Anonymous sessions get baseLayers: 0 and no
+         ground. Swap to free equivalents so the scene renders for everyone.
+         Remove this block once an API key is wired up via esriConfig.apiKey. */
+      if (!scene.basemap || scene.basemap.baseLayers.length === 0) {
+        scene.basemap = "hybrid";
+      }
+      if (!scene.ground || scene.ground.layers.length === 0) {
+        scene.ground = "world-elevation";
+      }
+
+      await sceneView.when();
+      scene.add(highlightGL3D);
+      if (currentParcelFeature) {
+        highlightGL3D.add(makeHighlightGraphic(currentParcelFeature));
+      }
+    } catch (err) {
+      console.error("[parcel-viewer-3D] WebScene failed to load:", err);
+    }
+
+    return sceneView;
+  }
+
+  /* Zoom the 3D scene to the currently-selected parcel. */
+  function frameSceneOnParcel() {
+    if (!sceneView || !currentParcelExtent) return;
+    sceneView.goTo(
+      { target: currentParcelExtent, tilt: 55 },
+      { animate: true, duration: 800 }
+    ).catch(() => {});
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     VIEW TOGGLE — swaps which pane is active + inherits camera state
+     so the new view opens framed exactly like the previous one.
+  ══════════════════════════════════════════════════════════════════════════ */
+  async function setActiveView(mode) {
+    if (mode === currentMode) return;
+
+    const pane2d = document.getElementById("viewDiv2d");
+    const pane3d = document.getElementById("viewDiv3d");
+
+    /* Swap visibility FIRST — the SceneView canvas needs to be in a
+       visible, laid-out container to allocate its WebGL backing buffer. */
+    pane2d.classList.toggle("is-active", mode === "2d");
+    pane3d.classList.toggle("is-active", mode === "3d");
+
+    document.querySelectorAll(".vt-btn").forEach(btn => {
+      const active = btn.dataset.view === mode;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+
+    currentMode = mode;
+
+    if (mode === "3d") {
+      // Now that #viewDiv3d is visible, build the SceneView (or reuse
+      // the already-built one) and frame on the configured APN.
+      await ensureSceneView();
+      frameSceneOnParcel();
+    }
+    // 3D → 2D: nothing to do — the 2D view is already framed on the parcel.
+  }
+
+  // Wire up the segmented-control buttons
+  document.querySelectorAll(".vt-btn").forEach(btn => {
+    btn.addEventListener("click", () => setActiveView(btn.dataset.view));
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     PANEL SWITCHING — action bar toggles Info ↔ Layers panels
+  ══════════════════════════════════════════════════════════════════════════ */
+  document.querySelectorAll("calcite-action[data-panel-id]").forEach(action => {
+    action.addEventListener("click", () => {
+      const targetId = action.dataset.panelId;
+      document.querySelectorAll("calcite-panel").forEach(p => p.hidden = true);
+      document.querySelectorAll("calcite-action[data-panel-id]").forEach(a => a.active = false);
+      document.getElementById(targetId).hidden = false;
+      action.active = true;
+    });
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     CONFIG RESOLUTION
+     Priority: URL query string → VIEWER_CONFIG object
+  ══════════════════════════════════════════════════════════════════════════ */
+  function resolveConfig() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("apn")) {
+      const rawLayers = params.get("layers") || "";
+      return {
+        APN: params.get("apn"),
+        layers: rawLayers ? rawLayers.split(",").map(s => s.trim()).filter(Boolean) : []
+      };
+    }
+    return VIEWER_CONFIG;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     HEADER PILLS — renders the active APN + each requested overlay as a
+     colored pill in the top-right of the header. If the overlay has an
+     attributeField and a value from Parcel_Joins is available, the value
+     is appended to the pill label.
+  ══════════════════════════════════════════════════════════════════════════ */
+  function updateHeaderPills(apn, layerNames, attrs) {
+    const host = document.getElementById("config-pills");
+    const parts = [];
+    if (apn) {
+      parts.push(`<span class="header-pill apn-pill">APN · ${apn}</span>`);
+    }
+    (layerNames || []).forEach(name => {
+      const def    = LAYER_DEFS.find(d => d.name.toLowerCase() === name.toLowerCase());
+      const bg     = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const value  = def && def.attributeField && attrs ? attrs[def.attributeField] : null;
+      const label  = value ? `${name}: ${value}` : name;
+      parts.push(
+        `<span class="header-pill" style="background:${bg}">` +
+          `<span class="pill-dot"></span>${label}` +
+        `</span>`
+      );
+    });
+    host.innerHTML = parts.join("");
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     FETCH OVERLAY ATTRIBUTES from Parcel_Joins/FeatureServer/6 for a given APN.
+     Returns an attributes dictionary (e.g. { FLOOD_ZONE: "AE - Within", ... }),
+     or {} if the APN is not found in the service.
+  ══════════════════════════════════════════════════════════════════════════ */
+  async function fetchOverlayAttributes(apn) {
+    // Collect every attributeField referenced by LAYER_DEFS so one query
+    // covers all possible overlay pills.
+    const fields = Array.from(new Set(
+      LAYER_DEFS.map(d => d.attributeField).filter(Boolean).concat(["APN"])
+    ));
+    try {
+      const resp = await esriRequest(SERVICES.parcel_joins + "/query", {
+        query: {
+          where: `APN = '${apn.replace(/'/g, "''")}'`,
+          outFields: fields.join(","),
+          returnGeometry: false,
+          f: "json"
+        },
+        responseType: "json"
+      });
+      const feat = resp && resp.data && resp.data.features && resp.data.features[0];
+      return feat && feat.attributes ? feat.attributes : {};
+    } catch (err) {
+      console.warn("[parcel-viewer] parcel_joins lookup failed:", err);
+      return {};
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     APPLY CONFIG  { APN: string, layers: string[] }
+     Called on load, or by postMessage from the parent app.
+     Zooms BOTH views (2D immediately, 3D on first activation) so either
+     toggle state is pre-framed on the target parcel.
+  ══════════════════════════════════════════════════════════════════════════ */
+  async function applyConfig(config) {
+    if (!config || !config.APN) return;
+
+    const apn    = config.APN.trim();
+    const layers = config.layers || [];
+
+    /* Stash the active config so the narrative popup can mirror the pills. */
+    currentConfig       = { APN: apn, layers: layers.slice() };
+    currentOverlayAttrs = null;
+
+    /* Update header pills (APN + colored layer chips, values filled in after
+       the parcel_joins fetch below resolves). */
+    updateHeaderPills(apn, layers, null);
+
+    /* Reset UI state */
+    document.getElementById("parcel-loader").hidden = false;
+    document.getElementById("apn-error").hidden     = true;
+    document.getElementById("parcel-table").hidden  = true;
+    document.getElementById("parcel-empty").hidden  = false;
+    document.getElementById("active-block").hidden  = true;
+
+    /* Reset map state — restore each layer to its default visibility
+       (Parcels stays on as the base layer; overlays start off)   */
+    overlayLayers.forEach((l, idx) => {
+      l.visible = LAYER_DEFS[idx].visibleByDefault === true;
+    });
+    highlightGL.removeAll();
+    highlightGL3D.removeAll();
+    currentParcelExtent  = null;
+    currentParcelFeature = null;
+
+    try {
+      const feature = await queryParcelByAPN(apn);
+
+      if (!feature) {
+        showError(`No parcel found for APN "${apn}". Verify the number and try again.`);
+        return;
+      }
+
+      /* Zoom → Highlight → Info card → Activate layers */
+      const zoomExtent = feature.geometry.extent.expand(2.5);
+
+      // Cache for the 3D path — setActiveView("3d") frames on this extent
+      // every time, and ensureSceneView() highlights this feature on load.
+      currentParcelExtent  = zoomExtent;
+      currentParcelFeature = feature;
+
+      // 2D: always goTo now (view is already created)
+      await view.goTo(zoomExtent, { duration: 800 });
+
+      // 3D: if the SceneView already exists (user toggled once), re-frame it
+      // on the new APN right away so a later toggle shows the right spot.
+      if (sceneView) frameSceneOnParcel();
+
+      addHighlight(feature);
+      populateInfoCard(feature.attributes);
+      const activated = activateLayers(layers);
+
+      /* Look up overlay attribute values (FLOOD_ZONE, HWL_BUFFER, …) from
+         Parcel_Joins for this APN, then decorate both pill surfaces and
+         cache them for the narrative popup. */
+      const overlayAttrs = await fetchOverlayAttributes(apn);
+      currentOverlayAttrs = overlayAttrs;
+      updateHeaderPills(apn, activated, overlayAttrs);
+      renderBadges(activated, overlayAttrs);
+
+    } catch (err) {
+      console.error("[parcel-viewer] lookup error:", err);
+      showError(`Could not load parcel: ${err.message}`);
+    } finally {
+      document.getElementById("parcel-loader").hidden = true;
+    }
+  }
+
+  /* ── Query FeatureServer for APN with geometry ──
+       Tries multiple format variants because county APNs may be stored with
+       different dash patterns or zero-padding in the service.              */
+  async function queryParcelByAPN(apn) {
+    const raw    = apn.trim();
+    const digits = raw.replace(/[^0-9A-Za-z]/g, "");   // strip all non-alphanumeric
+
+    // Build candidate WHERE clauses from most-specific to broadest
+    const candidates = [
+      `APN = '${raw}'`,                                  // exact as provided
+      `APN = '${raw.toUpperCase()}'`,                    // uppercase variant
+      `APN LIKE '${raw}%'`,                              // prefix match (handles padding)
+      `APN LIKE '%${digits}%'`,                          // fuzzy digits match
+    ];
+
+    for (const where of candidates) {
+      const q = parcelQueryLayer.createQuery();
+      q.where               = where;
+      q.outFields           = parcelQueryLayer.outFields;
+      q.returnGeometry      = true;
+      q.outSpatialReference = view.spatialReference;
+      q.num                 = 1;   // we only need the first match
+
+      try {
+        const result = await parcelQueryLayer.queryFeatures(q);
+        if (result.features && result.features.length > 0) {
+          console.log(`[parcel-viewer] Matched APN with: ${where}`);
+          return result.features[0];
+        }
+      } catch (e) {
+        console.warn(`[parcel-viewer] Query failed (${where}):`, e.message);
+      }
+    }
+    return null;
+  }
+
+  /* ── Build the orange highlight Graphic (shared between 2D & 3D) ── */
+  function makeHighlightGraphic(feature) {
+    return new Graphic({
+      geometry: feature.geometry,
+      symbol: {
+        type: "simple-fill",
+        color: [232, 119, 34, 0.16],   // TRPA Orange, 16% fill
+        outline: { color: [232, 119, 34, 1], width: 2.5 }
+      }
+    });
+  }
+
+  /* ── Orange highlight ring around the matched parcel — added to BOTH views.
+     If the SceneView hasn't been built yet, that's fine: ensureSceneView()
+     reads `currentParcelFeature` and draws the highlight on first load. ── */
+  function addHighlight(feature) {
+    highlightGL.add(makeHighlightGraphic(feature));
+    if (sceneView) {
+      highlightGL3D.add(makeHighlightGraphic(feature));
+    }
+  }
+
+  /* ── Populate info card table from feature attributes ── */
+  function populateInfoCard(a) {
+    const acres = a.PARCEL_ACRES != null ? parseFloat(a.PARCEL_ACRES).toFixed(2) : null;
+    const addr  = [a.APO_ADDRESS, a.PSTL_TOWN].filter(Boolean).join(", ");
+
+    const rows = [
+      ["APN",           a.APN],
+      ["Address",       addr || null],
+      ["Jurisdiction",  a.JURISDICTION],
+      ["County",        a.COUNTY],
+      ["Zoning",        a.ZONING_DESCRIPTION],
+      ["Land Use",      a.EXISTING_LANDUSE],
+      ["Regional Use",  a.REGIONAL_LANDUSE],
+      ["Acres",         acres],
+      ["IPES Score",    a.IPES_SCORE],
+      ["Year Built",    a.YEAR_BUILT],
+      ["Units",         a.UNITS],
+      ["HRA",           a.HRA_NAME],
+      ["Watershed",     a.WATERSHED_NAME],
+      ["Ownership",     a.OWNERSHIP_TYPE],
+      ["Town Center",   a.TOWN_CENTER],
+    ];
+
+    const html = rows
+      .filter(([, v]) => v !== null && v !== undefined && v !== "" && String(v) !== "null")
+      .map(([label, value]) =>
+        `<tr><td>${label}</td><td>${value}</td></tr>`
+      ).join("");
+
+    const table = document.getElementById("parcel-table");
+    table.innerHTML = html;
+    document.getElementById("parcel-empty").hidden = true;
+    table.hidden = false;
+  }
+
+  /* ── Turn on layers by name, return successfully activated names ── */
+  function activateLayers(names) {
+    const activated = [];
+    names.forEach(name => {
+      const layer = layerRegistry[name.toLowerCase()];
+      if (layer) {
+        layer.visible = true;
+        activated.push(name);
+      } else {
+        console.warn(`[parcel-viewer] Unknown layer name: "${name}"`);
+      }
+    });
+    return activated;
+  }
+
+  /* ── Render colored pills for active overlays, with their attribute values ── */
+  function renderBadges(names, attrs) {
+    if (!names.length) return;
+    const strip = document.getElementById("badge-strip");
+    strip.innerHTML = names.map(name => {
+      const def   = LAYER_DEFS.find(d => d.name.toLowerCase() === name.toLowerCase());
+      const bg    = BADGE_COLORS[name.toLowerCase()] || "#0072CE";
+      const value = def && def.attributeField && attrs ? attrs[def.attributeField] : null;
+      const valueHtml = value
+        ? `<span class="badge-value">${value}</span>`
+        : "";
+      return `<span class="layer-badge" style="background:${bg}">
+        <span class="badge-swatch"></span>${name}${valueHtml}
+      </span>`;
+    }).join("");
+    document.getElementById("active-block").hidden = false;
+  }
+
+  /* ── Show danger notice in the info panel and ensure panel is visible ── */
+  function showError(msg) {
+    document.getElementById("apn-error-msg").textContent = msg;
+    const notice = document.getElementById("apn-error");
+    notice.hidden = false;
+    notice.open   = true;   // Calcite notice — force open
+    document.getElementById("parcel-empty").hidden = true;
+
+    // Make sure the info panel is the active panel so the user sees the error
+    document.querySelectorAll("calcite-panel").forEach(p => p.hidden = true);
+    document.getElementById("info-panel").hidden = false;
+    document.querySelectorAll("calcite-action[data-panel-id]").forEach(a => {
+      a.active = a.dataset.panelId === "info-panel";
+    });
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     INTEGRATION PATTERN B — postMessage from parent iframe
+     Parent app sends: { APN: "031-021-001-000", layers: ["Highwater Line Buffer"] }
+     In production: replace "*" origin check with your actual parent domain.
+  ════════════════════════════════════════════════════════════════════════ */
+  window.addEventListener("message", (event) => {
+    // TODO: tighten origin check before production deployment
+    // if (event.origin !== "https://your-parent-app.trpa.gov") return;
+    if (event.data && typeof event.data.APN === "string") {
+      applyConfig(event.data);
+    }
+  });
+
+  /* Expose applyConfig globally so the parent can call it directly on the iframe window */
+  window.applyParcelConfig = applyConfig;
+
+  /* Also expose the toggle for parent-app orchestration (e.g. "open in 3D") */
+  window.setParcelViewerMode = setActiveView;
+
+}); // end require()
+</script>
+</body>
+</html>
