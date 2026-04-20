@@ -96,6 +96,40 @@
       font-weight: 400;
     }
 
+    /* ── Mode toggle ── */
+    #mode-toggle {
+      margin-left: auto;
+      display: flex;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .mode-btn {
+      cursor: pointer;
+      padding: 0.28rem 0.8rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: 5px;
+      border: 1.5px solid rgba(255,255,255,0.38);
+      background: transparent;
+      color: rgba(255,255,255,0.72);
+      font-family: inherit;
+      transition: all 0.13s;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .mode-btn:hover {
+      border-color: rgba(255,255,255,0.75);
+      color: #fff;
+    }
+
+    .mode-btn.active {
+      background: rgba(255,255,255,0.18);
+      border-color: #fff;
+      color: #fff;
+    }
+
     /* ── Main layout ── */
     #main-layout {
       display: flex;
@@ -249,6 +283,41 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 0.5rem;
+    }
+
+    /* ── APN search ── */
+    .apn-search-wrap {
+      padding: 0.6rem 0.75rem 0.55rem;
+      border-bottom: 1px solid var(--trpa-gray-border);
+      background: var(--trpa-gray-light);
+    }
+
+    #apn-search-row {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    #apn-input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.32rem 0.55rem;
+      font-size: 0.78rem;
+      font-family: inherit;
+      border: 1.5px solid var(--trpa-gray-border);
+      border-radius: 5px;
+      color: var(--trpa-navy);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.13s;
+    }
+
+    #apn-input:focus { border-color: var(--trpa-blue); }
+
+    #apn-error {
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--trpa-brick);
+      font-weight: 600;
     }
 
     /* ── Empty state ── */
@@ -457,10 +526,75 @@
     .source-note a { color: var(--trpa-blue); text-decoration: none; }
     .source-note a:hover { text-decoration: underline; }
 
-    /* ── AG Grid status cell colors ── */
+    /* ── Status badges ── */
     .status-allowed       { color: #fff; background: var(--trpa-forest); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; }
     .status-discretionary { color: #fff; background: var(--trpa-earth);  padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; }
     .status-see-note      { color: #fff; background: var(--trpa-purple); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; }
+
+    /* ── Explorer / category pills ── */
+    .explorer-section {
+      padding: 0.65rem 0.75rem 0.5rem;
+    }
+
+    .explorer-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    #category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cat-pill {
+      cursor: pointer;
+      padding: 0.28rem 0.75rem;
+      font-size: 0.73rem;
+      font-weight: 600;
+      border-radius: 999px;
+      border: 2px solid var(--pill-color, #666);
+      background: transparent;
+      color: var(--pill-color, #666);
+      font-family: inherit;
+      transition: all 0.13s;
+      letter-spacing: 0.01em;
+    }
+
+    .cat-pill:hover { opacity: 0.78; }
+
+    .cat-pill.active {
+      background: var(--pill-color, #666);
+      color: var(--pill-text, #fff);
+      opacity: 1;
+    }
+
+    #explorer-status {
+      font-size: 0.8rem;
+      color: var(--trpa-navy);
+      line-height: 1.55;
+      border-top: 1px solid var(--trpa-gray-border);
+      padding-top: 0.6rem;
+      margin-top: 0.2rem;
+    }
+
+    .ex-count {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--trpa-navy);
+      line-height: 1.2;
+    }
+
+    .ex-hint {
+      font-size: 0.73rem;
+      color: #888;
+      margin-top: 0.25rem;
+    }
 
     /* ── ArcGIS widget overrides ── */
     #legend-container .esri-widget {
@@ -481,7 +615,12 @@
       <h1>Zoning Lookup</h1>
     </div>
     <div class="header-divider"></div>
-    <span class="header-subtitle">Click any parcel to see what's allowed</span>
+    <span class="header-subtitle" id="header-subtitle">Click any parcel to see what's allowed</span>
+    <!-- Mode toggle -->
+    <div id="mode-toggle">
+      <button class="mode-btn active" data-mode="lookup">What can I do?</button>
+      <button class="mode-btn" data-mode="explorer">Where can I build X?</button>
+    </div>
   </div>
 
   <!-- ══ MAIN ══ -->
@@ -507,48 +646,71 @@
             <div slot="message" id="lookup-error-msg">Could not retrieve zoning data.</div>
           </calcite-notice>
 
-          <!-- Empty state -->
-          <div id="empty-state">
-            <div class="empty-icon">🗺</div>
-            <div class="empty-title">Click a parcel on the map</div>
-            <div class="empty-hint">Select any parcel to see its zoning district, tolerance district, and the full permissible use table.</div>
+          <!-- APN Search (Mode A only) -->
+          <div id="apn-search-wrap" class="apn-search-wrap">
+            <div id="apn-search-row">
+              <input id="apn-input" type="text" placeholder="Search by APN (e.g. 123-456-78)" autocomplete="off" />
+              <calcite-button id="apn-go" icon-start="search" scale="s" appearance="solid">Search</calcite-button>
+            </div>
+            <div id="apn-error" class="apn-error" hidden>APN not found — check the number and try again.</div>
           </div>
 
-          <!-- Parcel card -->
-          <calcite-block id="parcel-block" heading="Parcel" open collapsible hidden>
-            <table class="info-table">
-              <tr><td>APN</td><td id="parcel-apn">—</td></tr>
-              <tr><td>Jurisdiction</td><td id="parcel-jurisdiction">—</td></tr>
-              <tr>
-                <td>Tolerance District</td>
-                <td><span id="parcel-tolerance-wrap">—</span></td>
-              </tr>
-            </table>
-          </calcite-block>
+          <!-- Mode A: parcel lookup results -->
+          <div id="mode-a-content">
 
-          <!-- Zoning card -->
-          <calcite-block id="zone-block" heading="Zoning District" open collapsible hidden>
-            <table class="info-table">
-              <tr><td>Zone</td><td id="zone-description">—</td></tr>
-              <tr><td>Zoning ID</td><td id="zone-id" style="font-family:monospace;font-size:0.8rem">—</td></tr>
-              <tr><td>Plan Name</td><td id="zone-plan-name">—</td></tr>
-              <tr><td>Plan Type</td><td id="zone-plan-type">—</td></tr>
-              <tr><td>Special Area</td><td id="zone-special-area">—</td></tr>
-              <tr><td>Overlay</td><td id="zone-overlay">—</td></tr>
-            </table>
-            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.45rem 0.7rem 0.7rem">
-              <a id="zone-guidelines-link" class="guidelines-link" href="#" target="_blank" rel="noopener" hidden>
-                Design Guidelines ↗
-              </a>
-              <a id="ltinfo-link" class="guidelines-link" style="background:var(--trpa-navy)" href="#" target="_blank" rel="noopener" hidden>
-                LTInfo Parcel Details ↗
-              </a>
+            <!-- Empty state -->
+            <div id="empty-state">
+              <div class="empty-icon">🗺</div>
+              <div class="empty-title">Click a parcel on the map</div>
+              <div class="empty-hint">Select any parcel to see its zoning district, tolerance district, and the full permissible use table.</div>
             </div>
-          </calcite-block>
 
-          <!-- Designations & Uses moved to bottom panel below map -->
+            <!-- Parcel card -->
+            <calcite-block id="parcel-block" heading="Parcel" open collapsible hidden>
+              <table class="info-table">
+                <tr><td>APN</td><td id="parcel-apn">—</td></tr>
+                <tr><td>Jurisdiction</td><td id="parcel-jurisdiction">—</td></tr>
+                <tr>
+                  <td>Tolerance District</td>
+                  <td><span id="parcel-tolerance-wrap">—</span></td>
+                </tr>
+              </table>
+            </calcite-block>
 
-          <!-- Legend -->
+            <!-- Zoning card -->
+            <calcite-block id="zone-block" heading="Zoning District" open collapsible hidden>
+              <table class="info-table">
+                <tr><td>Zone</td><td id="zone-description">—</td></tr>
+                <tr><td>Zoning ID</td><td id="zone-id" style="font-family:monospace;font-size:0.8rem">—</td></tr>
+                <tr><td>Plan Name</td><td id="zone-plan-name">—</td></tr>
+                <tr><td>Plan Type</td><td id="zone-plan-type">—</td></tr>
+                <tr><td>Special Area</td><td id="zone-special-area">—</td></tr>
+                <tr><td>Overlay</td><td id="zone-overlay">—</td></tr>
+              </table>
+              <div style="display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.45rem 0.7rem 0.7rem">
+                <a id="zone-guidelines-link" class="guidelines-link" href="#" target="_blank" rel="noopener" hidden>
+                  Design Guidelines ↗
+                </a>
+                <a id="ltinfo-link" class="guidelines-link" style="background:var(--trpa-navy)" href="#" target="_blank" rel="noopener" hidden>
+                  LTInfo Parcel Details ↗
+                </a>
+              </div>
+            </calcite-block>
+
+          </div><!-- #mode-a-content -->
+
+          <!-- Mode B: Where can I build X? -->
+          <div id="mode-b-content" hidden>
+            <div class="explorer-section">
+              <div class="explorer-label">Select a use category</div>
+              <div id="category-pills"></div>
+              <div id="explorer-status">
+                <div class="ex-hint">Select a category above to highlight matching districts on the map</div>
+              </div>
+            </div>
+          </div><!-- #mode-b-content -->
+
+          <!-- Legend (both modes) -->
           <calcite-block heading="Legend" collapsible>
             <div id="legend-container"></div>
           </calcite-block>
@@ -649,6 +811,24 @@ require([
     parcel_joins:    "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6"
   };
 
+  /* ── App state ── */
+  let appMode               = "lookup";   // "lookup" | "explorer"
+  let activeCategory        = null;
+  let categoryUsesCache     = {};         // cat name → { zoningIds: Set, usesByZone: {} }
+  let defaultDistrictRenderer = null;
+
+  /* ── Category definitions (name + brand color + active text color) ── */
+  const CATEGORIES = [
+    { name: "Residential",           color: "#4A6118", textColor: "#fff" },
+    { name: "Tourist Accommodation",  color: "#9C3E27", textColor: "#fff" },
+    { name: "Commercial",             color: "#E87722", textColor: "#fff" },
+    { name: "Public Services",        color: "#0072CE", textColor: "#fff" },
+    { name: "Recreation",             color: "#007878", textColor: "#fff" },
+    { name: "Resource Management",    color: "#B5A64C", textColor: "#003B71" },
+    { name: "Open Space",             color: "#B4CBE8", textColor: "#003B71" },
+    { name: "General",                color: "#7B6A8A", textColor: "#fff" }
+  ];
+
   /* ── Layers ── */
   const districtLayer = new FeatureLayer({
     url: SVC.zoning_district,
@@ -659,8 +839,10 @@ require([
     popupEnabled: false
   });
 
-  /* Display layer — MapServer/1 has no geometry in its fields list so
-     it cannot be used for spatial queries; use parcelQueryLayer below instead. */
+  districtLayer.when(() => {
+    defaultDistrictRenderer = districtLayer.renderer;
+  });
+
   const parcelLayer = new FeatureLayer({
     url: SVC.zoning_parcel,
     title: "Parcels",
@@ -731,6 +913,45 @@ require([
     });
   });
 
+  /* ── Mode toggle ── */
+  document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const mode = btn.dataset.mode;
+      if (mode === appMode) return;
+      appMode = mode;
+      document.querySelectorAll(".mode-btn").forEach(b => b.classList.toggle("active", b === btn));
+      if (mode === "lookup") enterLookupMode();
+      else                   enterExplorerMode();
+    });
+  });
+
+  function enterLookupMode() {
+    document.getElementById("mode-a-content").hidden    = false;
+    document.getElementById("mode-b-content").hidden    = true;
+    document.getElementById("apn-search-wrap").hidden   = false;
+    document.getElementById("header-subtitle").textContent = "Click any parcel to see what\u2019s allowed";
+    document.getElementById("apn-error").hidden         = true;
+
+    if (defaultDistrictRenderer) districtLayer.renderer = defaultDistrictRenderer;
+    activeCategory = null;
+    highlightGL.removeAll();
+    bpEl.classList.remove("open");
+    bpEl.style.height = "";
+    document.getElementById("bp-title").textContent = "Designations \u0026 Permissible Uses";
+    showEmptyState("Select any parcel or search by APN to look up zoning.");
+  }
+
+  function enterExplorerMode() {
+    document.getElementById("mode-a-content").hidden    = true;
+    document.getElementById("mode-b-content").hidden    = false;
+    document.getElementById("apn-search-wrap").hidden   = true;
+    document.getElementById("header-subtitle").textContent = "Select a category to explore where it\u2019s allowed";
+
+    highlightGL.removeAll();
+    bpEl.classList.remove("open");
+    bpEl.style.height = "";
+  }
+
   /* ── Status filter logic ── */
   let activeFilter = "all";
   let allUses      = [];
@@ -760,16 +981,175 @@ require([
   /* ── CSV export ── */
   document.getElementById("csv-export").addEventListener("click", () => exportCSV(allUses));
 
+  /* ── APN Search ── */
+  document.getElementById("apn-go").addEventListener("click", searchByAPN);
+  document.getElementById("apn-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") searchByAPN();
+  });
+
+  async function searchByAPN() {
+    const raw = document.getElementById("apn-input").value.trim();
+    if (!raw) return;
+
+    const apnErr = document.getElementById("apn-error");
+    apnErr.hidden = true;
+    showLoader(true);
+    hideError();
+
+    try {
+      const q = parcelQueryLayer.createQuery();
+      q.where              = `APN = '${raw.replace(/'/g, "''")}'`;
+      q.outFields          = ["APN"];
+      q.returnGeometry     = true;
+      q.outSpatialReference = view.spatialReference;
+      q.num                = 1;
+
+      const result = await parcelQueryLayer.queryFeatures(q);
+
+      if (!result.features.length) {
+        apnErr.hidden = false;
+        return;
+      }
+
+      const parcelFeat = result.features[0];
+      const centroid   = parcelFeat.geometry.extent.center;
+      await lookupParcel(parcelFeat, centroid);
+
+    } catch (err) {
+      console.error("[apn-search]", err);
+      showError("APN search failed. " + err.message);
+    } finally {
+      showLoader(false);
+    }
+  }
+
+  /* ── Category pills ── */
+  document.getElementById("category-pills").innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-pill" data-cat="${escHtml(c.name)}" style="--pill-color:${c.color};--pill-text:${c.textColor}">${escHtml(c.name)}</button>`
+  ).join("");
+
+  document.getElementById("category-pills").addEventListener("click", async evt => {
+    const pill = evt.target.closest(".cat-pill");
+    if (!pill) return;
+    const cat = pill.dataset.cat;
+
+    if (activeCategory === cat) {
+      /* Deselect */
+      activeCategory = null;
+      pill.classList.remove("active");
+      if (defaultDistrictRenderer) districtLayer.renderer = defaultDistrictRenderer;
+      document.getElementById("explorer-status").innerHTML =
+        '<div class="ex-hint">Select a category above to highlight matching districts on the map</div>';
+      bpEl.classList.remove("open");
+      bpEl.style.height = "";
+      return;
+    }
+
+    document.querySelectorAll(".cat-pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+    activeCategory = cat;
+
+    document.getElementById("explorer-status").innerHTML =
+      '<div class="ex-hint" style="opacity:0.65">Loading\u2026</div>';
+
+    try {
+      await loadCategory(cat);
+    } catch (err) {
+      console.error("[loadCategory]", err);
+      document.getElementById("explorer-status").innerHTML =
+        '<div class="ex-hint" style="color:var(--trpa-brick)">Failed to load category data.</div>';
+    }
+  });
+
+  async function loadCategory(cat) {
+    if (categoryUsesCache[cat]) {
+      applyExplorerRenderer(cat, categoryUsesCache[cat]);
+      return;
+    }
+
+    const params = new URLSearchParams({
+      where:             `Category = '${cat.replace(/'/g, "''")}' AND Use_Status IN ('Allowed', 'Conditional Use')`,
+      outFields:         "Zoning_ID,Category,Use_Type,Use_Status,Density,Unit,Notes",
+      returnGeometry:    "false",
+      resultRecordCount: "2000",
+      f:                 "json"
+    });
+    const resp = await fetch(`${SVC.perm_use}/query?${params}`);
+    const json = await resp.json();
+    const rows = (json.features ?? []).map(f => f.attributes);
+
+    const usesByZone = {};
+    const zoningIds  = new Set();
+    rows.forEach(r => {
+      const zid = r.Zoning_ID;
+      if (!zid) return;
+      zoningIds.add(zid);
+      if (!usesByZone[zid]) usesByZone[zid] = [];
+      usesByZone[zid].push(r);
+    });
+
+    const entry = { zoningIds, usesByZone };
+    categoryUsesCache[cat] = entry;
+    applyExplorerRenderer(cat, entry);
+  }
+
+  function applyExplorerRenderer(cat, entry) {
+    const catDef = CATEGORIES.find(c => c.name === cat);
+    const color  = catDef?.color || "#666";
+    const rgb    = hexToRgb(color);
+    const count  = entry.zoningIds.size;
+
+    districtLayer.renderer = {
+      type: "unique-value",
+      field: "ZONING_ID",
+      defaultSymbol: {
+        type: "simple-fill",
+        color: [200, 200, 200, 0.1],
+        outline: { color: [180, 180, 180, 0.22], width: 0.4 }
+      },
+      uniqueValueInfos: [...entry.zoningIds].map(id => ({
+        value: id,
+        symbol: {
+          type: "simple-fill",
+          color: [...rgb, 0.55],
+          outline: { color: [...rgb, 0.9], width: 1.5 }
+        }
+      }))
+    };
+
+    document.getElementById("explorer-status").innerHTML = `
+      <div><span class="ex-count">${count}</span> district${count !== 1 ? "s" : ""}</div>
+      <div style="font-size:0.8rem">allow <strong>${escHtml(cat)}</strong> uses</div>
+      <div class="ex-hint">Click a highlighted district on the map to see its uses below</div>
+    `;
+  }
+
+  function hexToRgb(hex) {
+    return [
+      parseInt(hex.slice(1, 3), 16),
+      parseInt(hex.slice(3, 5), 16),
+      parseInt(hex.slice(5, 7), 16)
+    ];
+  }
+
   /* ════════════════════════════════
      MAP CLICK HANDLER
   ════════════════════════════════ */
   view.on("click", async evt => {
     const pt = evt.mapPoint;
+
+    /* Mode B: district explorer click */
+    if (appMode === "explorer") {
+      if (!activeCategory) return;
+      await lookupDistrictForCategory(pt);
+      return;
+    }
+
+    /* Mode A: parcel lookup */
     showLoader(true);
     hideError();
 
     try {
-      /* 1. Spatial query via FeatureServer (geometry-capable) for APN + shape */
       const pq = parcelQueryLayer.createQuery();
       pq.geometry            = pt;
       pq.spatialRelationship = "intersects";
@@ -781,40 +1161,11 @@ require([
       const pResult = await parcelQueryLayer.queryFeatures(pq);
 
       if (!pResult.features.length) {
-        showLoader(false);
         showEmptyState("No parcel found at that location. Try clicking inside a parcel boundary.");
         return;
       }
 
-      const parcelFeat = pResult.features[0];
-      const apn        = parcelFeat.attributes.APN;
-
-      /* 2. Spatial query for zoning district */
-      const dq = districtLayer.createQuery();
-      dq.geometry            = pt;
-      dq.spatialRelationship = "intersects";
-      dq.outFields           = ["ZONING_ID","ZONING_DESCRIPTION","PLAN_NAME","PLAN_TYPE",
-                                 "SPECIAL_AREA_NAME","OVERLAY","DESIGN_GUIDELINES_HYPERLINK"];
-      dq.returnGeometry      = false;
-      dq.num                 = 1;
-
-      const dResult  = await districtLayer.queryFeatures(dq);
-      const district = dResult.features[0]?.attributes ?? null;
-      const zoningId = district?.ZONING_ID ?? null;
-
-      /* 3. Parallel: parcel attrs + permissible uses + special designations */
-      const [parcelAttrs, usesData, desigData] = await Promise.all([
-        fetchParcelAttrs(apn),
-        zoningId ? fetchPermUses(zoningId) : Promise.resolve([]),
-        zoningId ? fetchSpecDesig(zoningId) : Promise.resolve([])
-      ]);
-
-      /* Highlight + zoom */
-      highlightParcel(parcelFeat);
-      view.goTo(parcelFeat.geometry.extent.expand(3), { duration: 600 });
-
-      /* Populate panel */
-      populatePanel({ apn, district, parcelAttrs, uses: usesData, designations: desigData });
+      await lookupParcel(pResult.features[0], pt);
 
     } catch (err) {
       console.error("[zoning-lookup] error:", err);
@@ -823,6 +1174,76 @@ require([
       showLoader(false);
     }
   });
+
+  /* ── Parcel lookup (shared by map click + APN search) ── */
+  async function lookupParcel(parcelFeat, queryPoint) {
+    const apn = parcelFeat.attributes.APN;
+
+    const dq = districtLayer.createQuery();
+    dq.geometry            = queryPoint;
+    dq.spatialRelationship = "intersects";
+    dq.outFields           = ["ZONING_ID","ZONING_DESCRIPTION","PLAN_NAME","PLAN_TYPE",
+                               "SPECIAL_AREA_NAME","OVERLAY","DESIGN_GUIDELINES_HYPERLINK"];
+    dq.returnGeometry      = false;
+    dq.num                 = 1;
+
+    const [dResult, parcelAttrs] = await Promise.all([
+      districtLayer.queryFeatures(dq),
+      fetchParcelAttrs(apn)
+    ]);
+
+    const district = dResult.features[0]?.attributes ?? null;
+    const zoningId = district?.ZONING_ID ?? null;
+
+    const [usesData, desigData] = await Promise.all([
+      zoningId ? fetchPermUses(zoningId)  : Promise.resolve([]),
+      zoningId ? fetchSpecDesig(zoningId) : Promise.resolve([])
+    ]);
+
+    highlightParcel(parcelFeat);
+    view.goTo(parcelFeat.geometry.extent.expand(3), { duration: 600 });
+    populatePanel({ apn, district, parcelAttrs, uses: usesData, designations: desigData });
+  }
+
+  /* ── District click for Mode B ── */
+  async function lookupDistrictForCategory(pt) {
+    showLoader(true);
+    try {
+      const dq = districtLayer.createQuery();
+      dq.geometry            = pt;
+      dq.spatialRelationship = "intersects";
+      dq.outFields           = ["ZONING_ID","ZONING_DESCRIPTION"];
+      dq.returnGeometry      = false;
+      dq.num                 = 1;
+
+      const dResult = await districtLayer.queryFeatures(dq);
+      const dist    = dResult.features[0]?.attributes;
+      if (!dist) return;
+
+      const zoningId = dist.ZONING_ID;
+      const cached   = categoryUsesCache[activeCategory];
+      const uses     = cached?.usesByZone[zoningId] ?? [];
+
+      document.getElementById("bp-title").textContent = dist.ZONING_DESCRIPTION || zoningId;
+      const countEl = document.getElementById("bp-count");
+      countEl.textContent = `${uses.length} uses`;
+      countEl.hidden      = false;
+
+      allUses      = uses;
+      activeFilter = "all";
+      sortCol      = null;
+      document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+      document.querySelector('.filter-pill[data-filter="all"]').classList.add("active");
+      buildTable(uses);
+      document.getElementById("bp-desig-section").hidden = true;
+      openBottomPanel();
+
+    } catch (err) {
+      console.error("[explorer-click]", err);
+    } finally {
+      showLoader(false);
+    }
+  }
 
   /* ── REST helpers ── */
   async function fetchParcelAttrs(apn) {
@@ -874,7 +1295,6 @@ require([
 
   /* ── Populate sidebar panel ── */
   function populatePanel({ apn, district, parcelAttrs, uses, designations }) {
-    /* Hide empty state */
     document.getElementById("empty-state").style.display = "none";
 
     /* Parcel card */
@@ -919,7 +1339,7 @@ require([
     const desigChips   = document.getElementById("desig-chips");
     if (designations.length) {
       desigChips.innerHTML = designations.map(d => {
-        const note = d.NOTES ? ` — ${d.NOTES}` : "";
+        const note = d.NOTES ? ` \u2014 ${d.NOTES}` : "";
         return `<span class="desig-chip">${escHtml(d.SPECIAL_DESIGNATION)}${escHtml(note)}</span>`;
       }).join("");
       desigSection.hidden = false;
@@ -935,7 +1355,8 @@ require([
     document.querySelector('.filter-pill[data-filter="all"]').classList.add("active");
     buildTable(uses);
 
-    /* Update count badge and open panel */
+    /* Update bottom panel header */
+    document.getElementById("bp-title").textContent = "Designations \u0026 Permissible Uses";
     const countEl = document.getElementById("bp-count");
     countEl.textContent = `${uses.length} uses`;
     countEl.hidden = false;
@@ -975,13 +1396,13 @@ require([
   /* Drag-to-resize */
   bpDrag.addEventListener("mousedown", evt => {
     evt.preventDefault();
-    const startY    = evt.clientY;
-    const startH    = bpEl.offsetHeight;
-    const maxH      = mapArea.offsetHeight * 0.5;
+    const startY = evt.clientY;
+    const startH = bpEl.offsetHeight;
+    const maxH   = mapArea.offsetHeight * 0.5;
 
     function onMove(e) {
-      const delta  = startY - e.clientY;          // dragging up = bigger panel
-      const newH   = Math.min(Math.max(startH + delta, 44), maxH);
+      const delta = startY - e.clientY;
+      const newH  = Math.min(Math.max(startH + delta, 44), maxH);
       bpEl.style.transition = "none";
       bpEl.style.height     = newH + "px";
       mapArea.style.setProperty("--panel-h", newH + "px");
@@ -1040,7 +1461,7 @@ require([
     buildTable(sorted);
   });
 
-  /* CSV export — plain JS, no library needed */
+  /* CSV export */
   function exportCSV(data) {
     const headers = ["Category", "Use", "Status", "Density", "Unit", "Notes"];
     const rows = data.map(u => [
