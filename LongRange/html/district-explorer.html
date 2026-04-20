@@ -34,6 +34,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
 
     html, body {
       height: 100%;
@@ -146,7 +147,7 @@
       background: #fff;
       border-radius: 12px;
       border: 1px solid rgba(0,0,0,0.08);
-      border-left: 4px solid var(--cat-color);
+      border-top: 3px solid var(--cat-color);
       padding: 1.25rem 1.1rem 1rem;
       cursor: pointer;
       transition: transform 150ms ease-out, box-shadow 150ms ease-out;
@@ -154,7 +155,11 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      text-align: left;
+      font-family: inherit;
       -webkit-tap-highlight-color: transparent;
+      animation: cardEnter 280ms ease-out both;
+      animation-delay: calc(var(--i, 0) * 35ms);
     }
     .cat-card:hover {
       transform: translateY(-3px);
@@ -164,6 +169,15 @@
       transform: translateY(-1px) scale(0.98);
       box-shadow: 0 3px 10px rgba(0,0,0,0.09);
       transition-duration: 80ms;
+    }
+    .cat-card:focus-visible {
+      outline: 2px solid var(--cat-color);
+      outline-offset: 3px;
+    }
+
+    @keyframes cardEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
     }
 
     .cat-card-icon {
@@ -244,6 +258,9 @@
       gap: 0.75rem;
       transition: transform 150ms ease-out, box-shadow 150ms ease-out;
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      text-align: left;
+      width: 100%;
+      font-family: inherit;
       -webkit-tap-highlight-color: transparent;
     }
     .use-row:hover {
@@ -253,6 +270,10 @@
     .use-row:active {
       transform: translateY(0) scale(0.99);
       transition-duration: 80ms;
+    }
+    .use-row:focus-visible {
+      outline: 2px solid var(--cat-color, var(--trpa-blue));
+      outline-offset: 2px;
     }
 
     .use-row-name {
@@ -264,23 +285,24 @@
     }
 
     .use-row-count {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--trpa-white);
       background: var(--cat-color, var(--trpa-navy));
-      padding: 0.18rem 0.55rem;
+      padding: 0.22rem 0.6rem;
       border-radius: 999px;
       white-space: nowrap;
       flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
     }
 
     .use-row-arrow {
       font-size: 0.85rem;
-      color: #aaa;
+      color: #64748b;
       transition: transform 150ms ease-out, color 150ms ease-out;
       flex-shrink: 0;
     }
-    .use-row:hover .use-row-arrow { transform: translateX(3px); color: var(--trpa-navy); }
+    .use-row:hover .use-row-arrow { transform: translateX(3px); color: var(--cat-color, var(--trpa-navy)); }
 
     #use-loader {
       margin: 2rem auto;
@@ -426,7 +448,7 @@
       font-weight: 600;
       color: #666;
       width: 40%;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       padding-right: 0.5rem;
@@ -435,9 +457,9 @@
     .info-table td.empty-val { color: #bbb; font-weight: 400; font-style: italic; }
 
     /* ── Status badges ── */
-    .status-allowed       { color:#fff; background:var(--trpa-forest); padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.7rem; white-space:nowrap; }
-    .status-discretionary { color:#fff; background:var(--trpa-earth);  padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.7rem; white-space:nowrap; }
-    .status-see-note      { color:#fff; background:var(--trpa-purple); padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.7rem; white-space:nowrap; }
+    .status-allowed       { color:#fff; background:var(--trpa-forest); padding:3px 9px; border-radius:4px; font-weight:600; font-size:0.75rem; white-space:nowrap; }
+    .status-discretionary { color:#fff; background:var(--trpa-earth);  padding:3px 9px; border-radius:4px; font-weight:600; font-size:0.75rem; white-space:nowrap; }
+    .status-see-note      { color:#fff; background:var(--trpa-purple); padding:3px 9px; border-radius:4px; font-weight:600; font-size:0.75rem; white-space:nowrap; }
 
     .use-notes {
       font-size: 0.75rem;
@@ -514,7 +536,7 @@
     /* ── Source note at sidebar bottom ── */
     .source-note {
       margin-top: auto;
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       color: #94a3b8;
       padding: 0.65rem 1rem;
       border-top: 1px solid var(--trpa-gray-border);
@@ -523,6 +545,36 @@
     }
     .source-note a { color: var(--trpa-blue); text-decoration: none; }
     .source-note a:hover { text-decoration: underline; }
+
+    /* ── Screen enter animation ── */
+    @keyframes screenEnter {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: none; }
+    }
+    #use-screen.entering,
+    #map-screen.entering {
+      animation: screenEnter 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* ── Focus rings ── */
+    .breadcrumb-btn:focus-visible {
+      outline: 2px solid var(--trpa-blue);
+      outline-offset: 3px;
+      border-radius: 3px;
+    }
+    .action-link:focus-visible {
+      outline: 2px solid rgba(255,255,255,0.8);
+      outline-offset: 2px;
+    }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+      }
+    }
 
     /* ── Responsive ── */
     @media (max-width: 700px) {
@@ -644,11 +696,13 @@ require([
   ════════════════════════════════ */
   (function buildCatGrid() {
     const grid = document.getElementById("cat-grid");
-    CATEGORIES.forEach(cat => {
-      const card = document.createElement("div");
+    CATEGORIES.forEach((cat, i) => {
+      const card = document.createElement("button");
+      card.type      = "button";
       card.className = "cat-card";
       card.style.setProperty("--cat-color", cat.color);
       card.style.setProperty("--cat-bg",    cat.bg);
+      card.style.setProperty("--i",         String(i));
       card.innerHTML = `
         <div class="cat-card-icon">${cat.icon}</div>
         <div class="cat-card-name">${escHtml(cat.name)}</div>
@@ -709,7 +763,8 @@ require([
     );
 
     sorted.forEach(([useType, entry]) => {
-      const row = document.createElement("div");
+      const row = document.createElement("button");
+      row.type      = "button";
       row.className = "use-row";
       row.style.setProperty("--cat-color", catObj?.color ?? "var(--trpa-navy)");
       row.innerHTML = `
@@ -739,7 +794,7 @@ require([
     const zoningIds = entry?.zoningIds ?? new Set();
 
     document.getElementById("map-back-label").textContent = activeCat;
-    document.getElementById("sb-use-title").innerHTML = `<div id="sb-use-title" style="font-size:1rem;font-weight:700;color:var(--trpa-navy);line-height:1.3;margin-top:0.45rem;margin-bottom:0.3rem">${escHtml(useType)}</div>`;
+    document.getElementById("sb-use-title").textContent   = useType;
     renderStats(entry, catObj);
     showSbPlaceholder();
 
@@ -1042,9 +1097,15 @@ require([
 
   /* ── UI helpers ── */
   function showScreen(name) {
-    document.getElementById("cat-screen").hidden = name !== "cat";
-    document.getElementById("use-screen").hidden = name !== "use";
-    document.getElementById("map-screen").hidden = name !== "map";
+    ["cat", "use", "map"].forEach(s => {
+      const el = document.getElementById(`${s}-screen`);
+      el.hidden = name !== s;
+      if (name === s && s !== "cat") {
+        el.classList.remove("entering");
+        void el.offsetWidth;
+        el.classList.add("entering");
+      }
+    });
   }
 
   function showCatScreen() {

@@ -92,10 +92,10 @@
       background: #fff;
       border-radius: 14px;
       border: 1px solid rgba(0,0,0,0.07);
+      border-top: 3px solid var(--card-color);
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
       text-decoration: none;
       color: inherit;
-      border-left: 4px solid var(--card-color);
       cursor: pointer;
       transition: transform 150ms ease-out, box-shadow 150ms ease-out;
       -webkit-tap-highlight-color: transparent;
@@ -110,6 +110,11 @@
       transform: translateY(-1px) scale(0.99);
       box-shadow: 0 4px 14px rgba(0,0,0,0.08);
       transition-duration: 80ms;
+    }
+
+    .card:focus-visible {
+      outline: 2px solid var(--card-color);
+      outline-offset: 3px;
     }
 
     .card-parcel   { --card-color: var(--trpa-blue); }
@@ -167,7 +172,7 @@
     /* ── Footer ── */
     .source-note {
       margin-top: 3rem;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: #94a3b8;
       text-align: center;
       line-height: 1.6;
@@ -175,6 +180,11 @@
 
     .source-note a { color: var(--trpa-blue); text-decoration: none; }
     .source-note a:hover { text-decoration: underline; }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      .card, .card-arrow { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
 
     /* ── Responsive ── */
     @media (max-width: 700px) {

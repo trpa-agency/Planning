@@ -33,6 +33,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
 
     html, body {
       height: 100%;
@@ -104,6 +105,7 @@
     }
     #new-search-btn:hover { border-color: #fff; color: #fff; }
     #new-search-btn:active { transform: scale(0.97); }
+    #new-search-btn:focus-visible { outline: 2px solid rgba(255,255,255,0.7); outline-offset: 2px; }
 
     /* ── Search Screen ── */
     #search-screen {
@@ -193,6 +195,7 @@
     #search-btn:hover { background: var(--trpa-navy); }
     #search-btn:active { transform: scale(0.97); }
     #search-btn:disabled { opacity: 0.55; cursor: default; transform: none; }
+    #search-btn:focus-visible { outline: 2px solid var(--trpa-blue); outline-offset: 2px; }
 
     #search-error {
       font-size: 0.78rem;
@@ -203,7 +206,7 @@
     }
 
     .search-examples {
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       color: #94a3b8;
       line-height: 1.8;
     }
@@ -277,7 +280,6 @@
       height: 44px;
       max-height: 50%;
       overflow: hidden;
-      transition: height 0.22s ease;
       z-index: 10;
     }
 
@@ -426,16 +428,19 @@
 
     .filter-pill {
       cursor: pointer;
-      padding: 0.22rem 0.65rem;
-      font-size: 0.7rem;
+      padding: 0.28rem 0.7rem;
+      font-size: 0.75rem;
       font-weight: 600;
       border-radius: 999px;
       border: 1.5px solid var(--trpa-gray-border);
       background: #fff;
       color: #666;
+      font-family: inherit;
       transition: all 120ms ease-out;
+      min-height: 32px;
     }
     .filter-pill:hover { border-color: var(--trpa-blue); color: var(--trpa-blue); }
+    .filter-pill:focus-visible { outline: 2px solid var(--trpa-blue); outline-offset: 2px; }
     .filter-pill.active { background: var(--trpa-navy); border-color: var(--trpa-navy); color: #fff; }
     .filter-pill.allowed.active      { background: var(--trpa-forest); border-color: var(--trpa-forest); }
     .filter-pill.discretionary.active { background: var(--trpa-earth);  border-color: var(--trpa-earth); }
@@ -476,13 +481,13 @@
     .uses-table .col-notes { color: #666; font-style: italic; }
 
     /* ── Status badges ── */
-    .status-allowed       { color:#fff; background:var(--trpa-forest); padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.7rem; }
-    .status-discretionary { color:#fff; background:var(--trpa-earth);  padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.7rem; }
-    .status-see-note      { color:#fff; background:var(--trpa-purple); padding:2px 8px; border-radius:4px; font-weight:600; font-size:0.7rem; }
+    .status-allowed       { color:#fff; background:var(--trpa-forest); padding:3px 9px; border-radius:4px; font-weight:600; font-size:0.75rem; }
+    .status-discretionary { color:#fff; background:var(--trpa-earth);  padding:3px 9px; border-radius:4px; font-weight:600; font-size:0.75rem; }
+    .status-see-note      { color:#fff; background:var(--trpa-purple); padding:3px 9px; border-radius:4px; font-weight:600; font-size:0.75rem; }
 
     /* ── Source note ── */
     .source-note {
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       color: #888;
       padding: 0.55rem 0.75rem;
       border-top: 1px solid var(--trpa-gray-border);
@@ -490,6 +495,54 @@
     }
     .source-note a { color: var(--trpa-blue); text-decoration: none; }
     .source-note a:hover { text-decoration: underline; }
+
+    /* ── Screen enter animation ── */
+    @keyframes screenEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
+    }
+    #results-screen.entering {
+      animation: screenEnter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* ── Drag handle grip ── */
+    #bp-drag {
+      position: relative;
+    }
+    #bp-drag::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px; height: 3px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.45);
+    }
+
+    /* ── Bottom panel spring ── */
+    #bottom-panel {
+      transition: height 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ── Action link focus ── */
+    .action-link:focus-visible {
+      outline: 2px solid rgba(255,255,255,0.8);
+      outline-offset: 2px;
+    }
+
+    /* ── Tabular numbers for data columns ── */
+    .uses-table td:nth-child(4) {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+      }
+    }
 
     /* ── ArcGIS overrides ── */
     #legend-container .esri-widget {
@@ -633,10 +686,10 @@
           <div id="bp-uses-section">
             <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem">
               <div id="filter-strip">
-                <span class="filter-pill active" data-filter="all">All</span>
-                <span class="filter-pill allowed"       data-filter="allowed">Allowed</span>
-                <span class="filter-pill discretionary" data-filter="discretionary">Requires Approval</span>
-                <span class="filter-pill see-note"      data-filter="see-note">See Note</span>
+                <button type="button" class="filter-pill active" data-filter="all">All</button>
+                <button type="button" class="filter-pill allowed"       data-filter="allowed">Allowed</button>
+                <button type="button" class="filter-pill discretionary" data-filter="discretionary">Requires Approval</button>
+                <button type="button" class="filter-pill see-note"      data-filter="see-note">See Note</button>
               </div>
               <calcite-button id="csv-export" appearance="outline" scale="s" icon-start="download" style="margin-left:auto">Export CSV</calcite-button>
             </div>
@@ -753,7 +806,11 @@ require([
 
       /* Transition to results */
       document.getElementById("search-screen").hidden  = true;
-      document.getElementById("results-screen").hidden = false;
+      const resultsEl = document.getElementById("results-screen");
+      resultsEl.hidden = false;
+      resultsEl.classList.remove("entering");
+      void resultsEl.offsetWidth; // force reflow
+      resultsEl.classList.add("entering");
       document.getElementById("new-search-btn").hidden = false;
 
       /* Init map lazily */
@@ -955,6 +1012,28 @@ require([
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup",   onUp);
     });
+
+    bpDrag.addEventListener("touchstart", evt => {
+      evt.preventDefault();
+      const touch  = evt.touches[0];
+      const startY = touch.clientY;
+      const startH = bpEl.offsetHeight;
+      const maxH   = mapArea.offsetHeight * 0.5;
+      function onMove(e) {
+        const t    = e.touches[0];
+        const newH = Math.min(Math.max(startH + (startY - t.clientY), 44), maxH);
+        bpEl.style.transition = "none";
+        bpEl.style.height     = newH + "px";
+        if (newH > 44) bpEl.classList.add("open");
+      }
+      function onEnd() {
+        bpEl.style.transition = "";
+        document.removeEventListener("touchmove", onMove);
+        document.removeEventListener("touchend",  onEnd);
+      }
+      document.addEventListener("touchmove", onMove, { passive: false });
+      document.addEventListener("touchend",  onEnd);
+    }, { passive: false });
   }
 
   /* ── REST helpers ── */
