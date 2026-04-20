@@ -641,7 +641,7 @@
             </table>
             <div class="action-links">
               <a id="zone-guidelines-link" class="action-link primary" href="#" target="_blank" rel="noopener" hidden>Design Guidelines ↗</a>
-              <a id="zone-plandoc-link"    class="action-link tertiary" href="#" target="_blank" rel="noopener" hidden>Planning Document ↗</a>
+              <a id="zone-plandoc-link"    class="action-link tertiary" href="#" hidden>Planning Document ↗</a>
               <a id="ltinfo-link"          class="action-link secondary" href="#" target="_blank" rel="noopener" hidden>LTInfo Details ↗</a>
             </div>
           </calcite-block>
@@ -1119,8 +1119,10 @@ require([
     } else { guideLink.hidden = true; }
 
     const planDocEl = document.getElementById("zone-plandoc-link");
-    if (planDocUrl) { planDocEl.href = planDocUrl; planDocEl.hidden = false; }
-    else            { planDocEl.hidden = true; }
+    if (planDocUrl) {
+      planDocEl.onclick = e => { e.preventDefault(); window.open(planDocUrl, 'plandoc', 'width=1000,height=750,resizable=yes,scrollbars=yes'); };
+      planDocEl.hidden = false;
+    } else { planDocEl.hidden = true; }
 
     const ltEl = document.getElementById("ltinfo-link");
     ltEl.href   = `https://parcels.laketahoeinfo.org/Parcel/Detail/${encodeURIComponent(apn)}`;

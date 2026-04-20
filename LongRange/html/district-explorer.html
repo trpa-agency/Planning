@@ -1010,15 +1010,16 @@ require([
     }
     if (planId) {
       const planBtn = document.createElement("a");
-      planBtn.className = "action-link secondary";
-      planBtn.target    = "_blank";
-      planBtn.rel       = "noopener";
+      planBtn.className   = "action-link secondary";
       planBtn.textContent = "Planning Document ↗";
-      planBtn.href      = "#";
-      planBtn.hidden    = true;
+      planBtn.href        = "#";
+      planBtn.hidden      = true;
       actionDiv.appendChild(planBtn);
       fetchPlanDoc(planId).then(url => {
-        if (url) { planBtn.href = url; planBtn.hidden = false; }
+        if (url) {
+          planBtn.onclick = e => { e.preventDefault(); window.open(url, 'plandoc', 'width=1000,height=750,resizable=yes,scrollbars=yes'); };
+          planBtn.hidden = false;
+        }
       }).catch(() => {});
     }
     if (actionDiv.children.length || planId) {
