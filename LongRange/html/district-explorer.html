@@ -654,6 +654,8 @@
 
 
 <script>
+const NativeMap = Map;
+const NativeSet = Set;
 require([
   "esri/Map",
   "esri/views/MapView",
@@ -791,7 +793,7 @@ require([
 
     const catObj  = CATEGORIES.find(c => c.name === activeCat);
     const entry   = usesCache[activeCat].get(useType);
-    const zoningIds = entry?.zoningIds ?? new Set();
+    const zoningIds = entry?.zoningIds ?? new NativeSet();
 
     document.getElementById("map-back-label").textContent = activeCat;
     document.getElementById("sb-use-title").textContent   = useType;
@@ -848,7 +850,7 @@ require([
       popupEnabled: false
     });
 
-    map = new Map({ basemap: "gray-vector", layers: [districtLayer] });
+    map = new EsriMap({ basemap: "gray-vector", layers: [districtLayer] });
 
     view = new MapView({
       container: "viewDiv",
@@ -1057,11 +1059,11 @@ require([
   }
 
   function groupByUseType(uses) {
-    const map = new Map();
+    const map = new NativeMap();
     for (const u of uses) {
       const key = u.Use_Type;
       if (!map.has(key)) {
-        map.set(key, { uses: [], zoningIds: new Set(), allowed: 0, conditional: 0 });
+        map.set(key, { uses: [], zoningIds: new NativeSet(), allowed: 0, conditional: 0 });
       }
       const e = map.get(key);
       e.uses.push(u);
