@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deed Restriction Explorer — TRPA</title>
+
+  <!-- Calcite Design System (pinned to match sibling LongRange tools) -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/2.13.0/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.13.0/calcite.css" />
+
+  <!-- AG Grid Community (UMD). Safe here — this page does NOT load the ArcGIS SDK
+       so the AMD loader cannot hijack AG Grid's UMD bundle. -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/ag-grid-community.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-grid.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-theme-quartz.css" />
+
+  <!-- Open Sans (TRPA web font) -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --trpa-blue:        #0072CE;
+      --trpa-navy:        #003B71;
+      --trpa-orange:      #E87722;
+      --trpa-earth:       #B47E00;
+      --trpa-forest:      #4A6118;
+      --trpa-gray-light:  #F5F5F5;
+      --trpa-gray-border: #DDDDDD;
+      --trpa-white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+      overflow: hidden;
+      background: #e8ecf1;
+    }
+
+    #app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ── */
+    #app-header {
+      background: var(--trpa-navy);
+      color: var(--trpa-white);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1.25rem;
+      height: 52px;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    }
+    .back-link {
+      color: rgba(255,255,255,0.72);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: color 150ms ease-out;
+      white-space: nowrap;
+    }
+    .back-link:hover { color: #fff; }
+
+    .header-divider {
+      width: 1px; height: 24px;
+      background: rgba(255,255,255,0.22);
+      flex-shrink: 0;
+    }
+
+    .header-titles { display: flex; flex-direction: column; gap: 1px; }
+    .header-titles .agency {
+      font-size: 0.6rem; font-weight: 400;
+      letter-spacing: 0.07em; text-transform: uppercase; opacity: 0.72;
+    }
+    .header-titles h1 {
+      font-size: 1rem; font-weight: 700; line-height: 1;
+    }
+
+    /* ── Filter bar ── */
+    #filter-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--trpa-gray-border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    #filter-bar .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #5a6577;
+      margin-right: 0.35rem;
+    }
+    .filter-field {
+      min-width: 200px;
+      max-width: 260px;
+    }
+    .filter-field calcite-combobox,
+    .filter-field calcite-input {
+      --calcite-color-brand: var(--trpa-blue);
+    }
+    #search-input {
+      min-width: 220px;
+    }
+    #filter-bar-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    #row-count {
+      font-size: 0.8rem;
+      color: #5a6577;
+    }
+    #row-count strong { color: var(--trpa-navy); }
+
+    /* ── Grid area ── */
+    #grid-wrapper {
+      flex: 1;
+      min-height: 0;
+      padding: 0.75rem 1rem 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    #grid {
+      flex: 1;
+      min-height: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    /* AG Grid quartz theme tweaks to align with TRPA */
+    .ag-theme-quartz {
+      --ag-font-family: 'Open Sans', system-ui, sans-serif;
+      --ag-header-background-color: #f5f7fa;
+      --ag-header-foreground-color: var(--trpa-navy);
+      --ag-odd-row-background-color: #fafbfc;
+      --ag-row-hover-color: #eef5fd;
+      --ag-selected-row-background-color: #d6eafc;
+      --ag-border-color: var(--trpa-gray-border);
+      --ag-font-size: 13px;
+    }
+
+    /* ── Loading overlay ── */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.88);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 1000;
+    }
+    #loading-overlay .msg {
+      font-size: 0.9rem;
+      color: var(--trpa-navy);
+      font-weight: 600;
+    }
+    #loading-overlay .sub {
+      font-size: 0.75rem;
+      color: #5a6577;
+    }
+
+    /* ── Notice bar ── */
+    #notice-bar {
+      padding: 0 1.25rem;
+      padding-top: 0.6rem;
+    }
+    #notice-bar calcite-notice {
+      --calcite-color-brand: var(--trpa-orange);
+    }
+
+    /* ── Export button style (Calcite) ── */
+    #export-btn::part(button) {
+      background: var(--trpa-blue);
+      border-color: var(--trpa-blue);
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+  <!-- ══ HEADER ══ -->
+  <div id="app-header">
+    <a href="index.html" class="back-link">← Home</a>
+    <div class="header-divider"></div>
+    <div class="header-titles">
+      <span class="agency">Tahoe Regional Planning Agency</span>
+      <h1>Deed Restriction Explorer</h1>
+    </div>
+  </div>
+
+  <!-- ══ NOTICE (errors / retry) ══ -->
+  <div id="notice-bar" hidden>
+    <calcite-notice id="error-notice" icon="exclamation-mark-triangle" kind="warning" open scale="s">
+      <div slot="title">Could not load data</div>
+      <div slot="message" id="error-msg">—</div>
+      <calcite-link slot="link" id="retry-link">Retry</calcite-link>
+    </calcite-notice>
+  </div>
+
+  <!-- ══ FILTER BAR ══ -->
+  <div id="filter-bar" hidden>
+    <span class="label">Filters</span>
+
+    <div class="filter-field">
+      <calcite-combobox id="filter-type" placeholder="Type" selection-mode="multiple" scale="s"></calcite-combobox>
+    </div>
+    <div class="filter-field">
+      <calcite-combobox id="filter-status" placeholder="Status" selection-mode="multiple" scale="s"></calcite-combobox>
+    </div>
+    <div class="filter-field">
+      <calcite-combobox id="filter-county" placeholder="County" selection-mode="multiple" scale="s"></calcite-combobox>
+    </div>
+
+    <calcite-input
+      id="search-input"
+      type="search"
+      placeholder="Search APN, description, address…"
+      icon="search"
+      scale="s"
+      clearable></calcite-input>
+
+    <div id="filter-bar-actions">
+      <span id="row-count"><strong>0</strong> of 0 records</span>
+      <calcite-button id="export-btn" icon-start="file-csv" scale="s" disabled>
+        Export CSV
+      </calcite-button>
+    </div>
+  </div>
+
+  <!-- ══ GRID ══ -->
+  <div id="grid-wrapper" hidden>
+    <div id="grid" class="ag-theme-quartz"></div>
+  </div>
+
+</div>
+
+<!-- ══ LOADING OVERLAY ══ -->
+<div id="loading-overlay">
+  <calcite-loader scale="l" label="Loading deed restrictions"></calcite-loader>
+  <div class="msg">Loading deed restrictions…</div>
+  <div class="sub" id="loading-sub">Fetching records from Lake Tahoe Info</div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const DR_URL = "https://laketahoeinfo.org/WebServices/GetDeedRestrictedParcels/JSON/e17aeb86-85e3-4260-83fd-a2b32501c476";
+  const PARCELS_URL = "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0/query";
+  const PARCEL_FIELDS = [
+    "APN", "APO_ADDRESS", "PSTL_TOWN", "PSTL_STATE",
+    "MAIL_ADD1", "MAIL_CITY", "MAIL_STATE", "MAIL_ZIP5", "COUNTY"
+  ];
+  const CHUNK_SIZE = 100;       // APNs per Parcels query
+  const CONCURRENCY = 6;        // parallel chunk requests
+
+  const els = {
+    loadingOverlay: document.getElementById("loading-overlay"),
+    loadingSub:     document.getElementById("loading-sub"),
+    filterBar:      document.getElementById("filter-bar"),
+    gridWrapper:    document.getElementById("grid-wrapper"),
+    gridDiv:        document.getElementById("grid"),
+    filterType:     document.getElementById("filter-type"),
+    filterStatus:   document.getElementById("filter-status"),
+    filterCounty:   document.getElementById("filter-county"),
+    searchInput:    document.getElementById("search-input"),
+    rowCount:       document.getElementById("row-count"),
+    exportBtn:      document.getElementById("export-btn"),
+    noticeBar:      document.getElementById("notice-bar"),
+    errorMsg:       document.getElementById("error-msg"),
+    retryLink:      document.getElementById("retry-link"),
+  };
+
+  let gridApi = null;
+  const activeFilters = { type: new Set(), status: new Set(), county: new Set() };
+
+  // ── Fetch helpers ─────────────────────────────────────────────
+  async function fetchDeedRestrictions() {
+    const resp = await fetch(DR_URL);
+    if (!resp.ok) throw new Error(`LTinfo ${resp.status}`);
+    const rows = await resp.json();
+    if (!Array.isArray(rows)) throw new Error("LTinfo returned non-array");
+    return rows;
+  }
+
+  async function fetchParcelsChunk(apns) {
+    const where = "APN IN (" + apns.map(a => `'${a.replace(/'/g, "''")}'`).join(",") + ")";
+    const body = new URLSearchParams({
+      where,
+      outFields: PARCEL_FIELDS.join(","),
+      returnGeometry: "false",
+      f: "json"
+    });
+    const resp = await fetch(PARCELS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString()
+    });
+    if (!resp.ok) throw new Error(`Parcels ${resp.status}`);
+    const json = await resp.json();
+    if (json.error) throw new Error(`Parcels: ${json.error.message}`);
+    return (json.features || []).map(f => f.attributes);
+  }
+
+  async function fetchAllParcels(apns) {
+    const chunks = [];
+    for (let i = 0; i < apns.length; i += CHUNK_SIZE) {
+      chunks.push(apns.slice(i, i + CHUNK_SIZE));
+    }
+    const parcelByApn = new Map();
+    let failed = 0;
+    let done = 0;
+
+    // Simple concurrency pool
+    const queue = chunks.slice();
+    async function worker() {
+      while (queue.length) {
+        const chunk = queue.shift();
+        try {
+          const attrs = await fetchParcelsChunk(chunk);
+          for (const a of attrs) {
+            if (a.APN) parcelByApn.set(a.APN, a);
+          }
+        } catch (err) {
+          failed += chunk.length;
+          console.warn("Parcels chunk failed:", err);
+        }
+        done++;
+        els.loadingSub.textContent =
+          `Matching parcel addresses… ${done} of ${chunks.length} batches`;
+      }
+    }
+    await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+    return { parcelByApn, failedApnCount: failed };
+  }
+
+  // ── Merge + grid ──────────────────────────────────────────────
+  function mergeRecords(deedRows, parcelByApn) {
+    return deedRows.map(d => {
+      const p = parcelByApn.get(d.APN) || {};
+      return {
+        APN:                   d.APN ?? "",
+        RecordingNumber:       d.RecordingNumber ?? "",
+        RecordingDate:         d.RecordingDate ?? "",
+        Description:           d.Description ?? "",
+        DeedRestrictionStatus: d.DeedRestrictionStatus ?? "",
+        DeedRestrictionType:   d.DeedRestrictionType ?? "",
+        ProjectAreaFileNumber: d.ProjectAreaFileNumber ?? "",
+        NumberOfHousingUnits:  d.NumberOfHousingUnits ?? "",
+        COUNTY:                p.COUNTY ?? "",
+        APO_ADDRESS:           p.APO_ADDRESS ?? "",
+        PSTL_TOWN:             p.PSTL_TOWN ?? "",
+        PSTL_STATE:            p.PSTL_STATE ?? "",
+        MAIL_ADD1:             p.MAIL_ADD1 ?? "",
+        MAIL_CITY:             p.MAIL_CITY ?? "",
+        MAIL_STATE:            p.MAIL_STATE ?? "",
+        MAIL_ZIP5:             p.MAIL_ZIP5 ?? "",
+      };
+    });
+  }
+
+  const COLUMN_DEFS = [
+    { field: "APN",                   headerName: "APN",                width: 120, pinned: "left" },
+    { field: "RecordingNumber",       headerName: "Recording #",        width: 150 },
+    { field: "RecordingDate",         headerName: "Recording Date",     width: 130,
+      comparator: (a, b) => parseMDY(a) - parseMDY(b) },
+    { field: "DeedRestrictionType",   headerName: "Type",               width: 170 },
+    { field: "DeedRestrictionStatus", headerName: "Status",             width: 110 },
+    { field: "ProjectAreaFileNumber", headerName: "Project File #",     width: 140 },
+    { field: "NumberOfHousingUnits",  headerName: "Housing Units",      width: 110, type: "numericColumn" },
+    { field: "Description",           headerName: "Description",        flex: 2, minWidth: 260, tooltipField: "Description" },
+    { field: "COUNTY",                headerName: "County",             width: 90 },
+    { field: "APO_ADDRESS",           headerName: "Property Address",   width: 200 },
+    { field: "PSTL_TOWN",             headerName: "Postal Town",        width: 140 },
+    { field: "PSTL_STATE",            headerName: "Postal State",       width: 110 },
+    { field: "MAIL_ADD1",             headerName: "Mail Address",       width: 220 },
+    { field: "MAIL_CITY",             headerName: "Mail City",          width: 140 },
+    { field: "MAIL_STATE",            headerName: "Mail State",         width: 100 },
+    { field: "MAIL_ZIP5",             headerName: "Mail ZIP",           width: 100 },
+  ];
+
+  function parseMDY(s) {
+    if (!s) return 0;
+    const m = String(s).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (!m) return 0;
+    return Date.UTC(+m[3], +m[1] - 1, +m[2]);
+  }
+
+  function buildGrid(rowData) {
+    const gridOptions = {
+      columnDefs: COLUMN_DEFS,
+      rowData,
+      defaultColDef: {
+        sortable: true,
+        filter: true,
+        resizable: true,
+        suppressHeaderMenuButton: false,
+      },
+      animateRows: false,
+      rowSelection: "multiple",
+      suppressRowClickSelection: true,
+      isExternalFilterPresent: () =>
+        activeFilters.type.size > 0 ||
+        activeFilters.status.size > 0 ||
+        activeFilters.county.size > 0,
+      doesExternalFilterPass: (node) => {
+        const d = node.data;
+        if (activeFilters.type.size   && !activeFilters.type.has(d.DeedRestrictionType))   return false;
+        if (activeFilters.status.size && !activeFilters.status.has(d.DeedRestrictionStatus)) return false;
+        if (activeFilters.county.size && !activeFilters.county.has(d.COUNTY))              return false;
+        return true;
+      },
+      onFilterChanged: updateRowCount,
+      onSortChanged:   updateRowCount,
+      onGridReady: updateRowCount,
+    };
+    gridApi = agGrid.createGrid(els.gridDiv, gridOptions);
+  }
+
+  function updateRowCount() {
+    if (!gridApi) return;
+    const total = gridApi.getDisplayedRowCount();
+    const all = gridApi.getModel().getRootNode().allLeafChildren?.length ?? 0;
+    els.rowCount.innerHTML = `<strong>${total.toLocaleString()}</strong> of ${all.toLocaleString()} records`;
+    els.exportBtn.disabled = total === 0;
+  }
+
+  // ── Filter wiring ─────────────────────────────────────────────
+  function populateCombobox(el, values) {
+    const sorted = [...values].filter(v => v !== "" && v != null).sort();
+    for (const v of sorted) {
+      const item = document.createElement("calcite-combobox-item");
+      item.setAttribute("value", v);
+      item.setAttribute("text-label", v);
+      el.appendChild(item);
+    }
+  }
+
+  function wireFilters(rows) {
+    const types    = new Set(rows.map(r => r.DeedRestrictionType));
+    const statuses = new Set(rows.map(r => r.DeedRestrictionStatus));
+    const counties = new Set(rows.map(r => r.COUNTY));
+
+    populateCombobox(els.filterType,   types);
+    populateCombobox(els.filterStatus, statuses);
+    populateCombobox(els.filterCounty, counties);
+
+    const bind = (el, setRef) => {
+      el.addEventListener("calciteComboboxChange", () => {
+        setRef.clear();
+        const val = el.value;
+        if (Array.isArray(val)) val.forEach(v => setRef.add(v));
+        else if (val) setRef.add(val);
+        gridApi?.onFilterChanged();
+      });
+    };
+    bind(els.filterType,   activeFilters.type);
+    bind(els.filterStatus, activeFilters.status);
+    bind(els.filterCounty, activeFilters.county);
+
+    els.searchInput.addEventListener("calciteInputInput", () => {
+      gridApi?.setGridOption("quickFilterText", els.searchInput.value || "");
+    });
+
+    els.exportBtn.addEventListener("click", () => {
+      const today = new Date();
+      const yyyymmdd =
+        today.getFullYear().toString() +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        String(today.getDate()).padStart(2, "0");
+      gridApi?.exportDataAsCsv({
+        fileName: `DR_Property_Owners_List_${yyyymmdd}.csv`,
+        columnKeys: COLUMN_DEFS.map(c => c.field),
+      });
+    });
+  }
+
+  // ── Error / retry ─────────────────────────────────────────────
+  function showError(msg) {
+    els.errorMsg.textContent = msg;
+    els.noticeBar.hidden = false;
+    els.loadingOverlay.hidden = true;
+  }
+
+  els.retryLink.addEventListener("click", () => {
+    els.noticeBar.hidden = true;
+    els.loadingOverlay.hidden = false;
+    start();
+  });
+
+  // ── Main ──────────────────────────────────────────────────────
+  async function start() {
+    try {
+      els.loadingSub.textContent = "Fetching records from Lake Tahoe Info";
+      const deedRows = await fetchDeedRestrictions();
+
+      const uniqApns = [...new Set(deedRows.map(d => d.APN).filter(Boolean))];
+      els.loadingSub.textContent = `Matching ${uniqApns.length.toLocaleString()} parcel addresses…`;
+      const { parcelByApn, failedApnCount } = await fetchAllParcels(uniqApns);
+
+      const merged = mergeRecords(deedRows, parcelByApn);
+
+      // First-time grid build (on retry, replace row data)
+      if (!gridApi) {
+        wireFilters(merged);
+        buildGrid(merged);
+      } else {
+        gridApi.setGridOption("rowData", merged);
+      }
+
+      els.loadingOverlay.hidden = true;
+      els.filterBar.hidden = false;
+      els.gridWrapper.hidden = false;
+
+      if (failedApnCount > 0) {
+        els.errorMsg.textContent =
+          `${failedApnCount.toLocaleString()} APNs could not be matched to parcel addresses. Those rows show blank address fields.`;
+        els.noticeBar.hidden = false;
+      }
+    } catch (err) {
+      console.error(err);
+      showError(err.message || "Unknown error");
+    }
+  }
+
+  start();
+})();
+</script>
+
+</body>
+</html>
