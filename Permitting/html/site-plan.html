@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Plan Finder — TRPA</title>
+
+  <!-- Calcite Design System 5.0 -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/5.0/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+
+  <!-- ArcGIS Maps SDK 4.31 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
+
+  <!-- Open Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --trpa-blue:        #0072CE;
+      --trpa-navy:        #003B71;
+      --trpa-orange:      #E87722;
+      --trpa-earth:       #B47E00;
+      --trpa-forest:      #4A6118;
+      --trpa-brick:       #9C3E27;
+      --trpa-olive:       #B5A64C;
+      --trpa-purple:      #7B6A8A;
+      --trpa-ice:         #B4CBE8;
+      --trpa-gray-light:  #F5F5F5;
+      --trpa-gray-border: #DDDDDD;
+      --trpa-white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+      background: var(--trpa-gray-light);
+    }
+
+    *:focus-visible {
+      outline: 2px solid var(--trpa-blue);
+      outline-offset: 2px;
+    }
+
+    #app-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    #app-header {
+      background: var(--trpa-navy);
+      color: var(--trpa-white);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1.25rem;
+      height: 52px;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    }
+    .header-divider {
+      width: 1px; height: 26px;
+      background: rgba(255,255,255,0.22); flex-shrink: 0;
+    }
+    .header-titles { display: flex; flex-direction: column; gap: 1px; flex-shrink: 0; }
+    .header-titles .agency {
+      font-size: 0.62rem; font-weight: 400;
+      letter-spacing: 0.07em; text-transform: uppercase; opacity: 0.72;
+    }
+    .header-titles h1 { font-size: 1rem; font-weight: 700; line-height: 1; }
+
+    /* ── Main content ── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2.5rem 1.5rem 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .hero h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--trpa-navy);
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      color: #555;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    /* ── Big search bar ── */
+    .search-wrap {
+      position: relative;
+      margin: 0 auto 1rem;
+      max-width: 720px;
+      width: 100%;
+    }
+    .search-input-wrap {
+      display: flex;
+      gap: 0.5rem;
+      background: #fff;
+      border: 2px solid var(--trpa-gray-border);
+      border-radius: 8px;
+      padding: 0.4rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input-wrap:focus-within {
+      border-color: var(--trpa-blue);
+      box-shadow: 0 0 0 3px rgba(0,114,206,0.15), 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .search-input-wrap .search-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.6rem;
+      color: var(--trpa-navy);
+      font-size: 1.3rem;
+    }
+    .search-input-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--trpa-navy);
+      background: transparent;
+      padding: 0.65rem 0.4rem;
+    }
+    .search-input-wrap input::placeholder {
+      color: #999;
+      font-weight: 400;
+    }
+    .search-go-btn {
+      background: var(--trpa-blue);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 0.55rem 1.5rem;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .search-go-btn:hover { background: var(--trpa-navy); }
+    .search-go-btn:disabled { background: #888; cursor: not-allowed; }
+
+    /* ── Suggestions dropdown ── */
+    #suggest {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 5px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+      z-index: 50;
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+    }
+    #suggest.open { display: block; }
+    .suggest-item {
+      padding: 0.55rem 0.85rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--trpa-gray-border);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .suggest-item:last-child { border-bottom: none; }
+    .suggest-item:hover,
+    .suggest-item.highlighted {
+      background: var(--trpa-gray-light);
+    }
+    .suggest-item .si-primary {
+      font-weight: 600;
+      color: var(--trpa-navy);
+      font-size: 0.9rem;
+    }
+    .suggest-item .si-secondary {
+      font-size: 0.75rem;
+      color: #666;
+    }
+    .suggest-item .si-pill {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      background: var(--trpa-blue);
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-right: 0.3rem;
+    }
+
+    /* ── Search hint row ── */
+    .search-hint {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+    .search-hint kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      background: #fff;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 3px;
+      color: var(--trpa-navy);
+    }
+
+    /* ── Result card ──
+       Always rendered (display: block) so #viewDiv has stable real-world
+       dimensions from page load — that's what ArcGIS captures at view
+       construction. Without this, lazy-init lands the canvas at the
+       default 300×150 and nothing we do later reliably resizes it.
+       The banner / parcel-info sections stay empty until a search runs. */
+    #result-card {
+      display: block;
+      background: #fff;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    #result-card .rc-banner,
+    #result-card .rc-info {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #result-card.visible .rc-banner,
+    #result-card.visible .rc-info {
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .rc-banner {
+      background: linear-gradient(90deg, var(--trpa-navy), #002f5b);
+      color: #fff;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .rc-banner .rc-apn {
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      background: rgba(255,255,255,0.15);
+      padding: 0.25rem 0.7rem;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .rc-banner .rc-address {
+      flex: 1;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .rc-banner .rc-cta {
+      background: var(--trpa-orange);
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 4px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+    }
+    .rc-banner .rc-cta:hover { background: #c25e13; }
+    .rc-banner .rc-cta:disabled {
+      background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.5);
+      cursor: not-allowed;
+    }
+    .rc-banner .rc-copy {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.32);
+      padding: 0.5rem 0.85rem;
+      border-radius: 4px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.78rem;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .rc-banner .rc-copy:hover:not(:disabled) {
+      background: rgba(255,255,255,0.22);
+    }
+    .rc-banner .rc-copy.copied {
+      background: var(--trpa-forest);
+      border-color: var(--trpa-forest);
+      color: #fff;
+    }
+
+    .rc-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .rc-info {
+      padding: 1rem 1.25rem;
+      border-right: 1px solid var(--trpa-gray-border);
+    }
+    .rc-info h3 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--trpa-navy);
+      margin-bottom: 0.6rem;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .info-table tr { border-bottom: 1px solid var(--trpa-gray-border); }
+    .info-table tr:last-child { border-bottom: none; }
+    .info-table td {
+      padding: 0.4rem 0.5rem;
+      vertical-align: top;
+      line-height: 1.4;
+    }
+    .info-table td:first-child {
+      font-weight: 600;
+      color: var(--trpa-navy);
+      width: 38%;
+      white-space: nowrap;
+    }
+
+    .badge-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.85rem;
+    }
+    .layer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      color: #fff;
+      letter-spacing: 0.01em;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .layer-badge .badge-value {
+      background: rgba(255,255,255,0.2);
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .rc-map-wrap {
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+    }
+    .rc-map-toolbar {
+      padding: 0.5rem 0.75rem;
+      background: var(--trpa-gray-light);
+      border-bottom: 1px solid var(--trpa-gray-border);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.78rem;
+      flex-wrap: wrap;
+    }
+    .rc-map-toolbar label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+    }
+    .rc-map-toolbar a {
+      margin-left: auto;
+      color: var(--trpa-blue);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.78rem;
+    }
+    .rc-map-toolbar a:hover { text-decoration: underline; }
+    #viewDiv {
+      flex: 1;
+      min-height: 320px;
+      position: relative;
+    }
+    .esri-view, .esri-view .esri-view-surface {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── No result / loading states ── */
+    .status-msg {
+      text-align: center;
+      padding: 1.5rem;
+      color: #888;
+      font-size: 0.9rem;
+    }
+    .status-msg.error { color: var(--trpa-brick); }
+
+    /* ── Recent / shortcuts ── */
+    .shortcuts {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .shortcut-btn {
+      padding: 0.45rem 0.85rem;
+      background: #fff;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 999px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--trpa-navy);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .shortcut-btn:hover {
+      background: var(--trpa-blue);
+      color: #fff;
+      border-color: var(--trpa-blue);
+    }
+
+    .source-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #888;
+      padding: 1rem;
+    }
+    .source-note a { color: var(--trpa-blue); text-decoration: none; }
+    .source-note a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      .rc-body { grid-template-columns: 1fr; }
+      .rc-info { border-right: none; border-bottom: 1px solid var(--trpa-gray-border); }
+      .hero h2 { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+  <div id="app-header">
+    <div class="header-titles">
+      <span class="agency">Tahoe Regional Planning Agency</span>
+      <h1>Site Plan Finder</h1>
+    </div>
+  </div>
+
+  <main>
+    <div class="hero">
+      <h2>Find your parcel</h2>
+      <p>
+        Enter an address or APN to pull up your parcel for a permit site plan.
+        From here you can review zoning, sensitive-area flags, and open the
+        Site Planner to draw structures, setbacks, and dimensions to scale.
+      </p>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-input-wrap" role="search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          id="search-input"
+          type="text"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          placeholder="Address or APN — e.g. 1560 Debra Ln  or  130-241-08"
+          aria-label="Search by address or APN" />
+        <button id="search-go" class="search-go-btn">Search</button>
+      </div>
+      <div id="suggest" role="listbox"></div>
+    </div>
+
+    <div class="search-hint">
+      Press <kbd>Enter</kbd> to search · <kbd>↑</kbd><kbd>↓</kbd> to pick a suggestion
+    </div>
+
+    <div id="result-card" aria-live="polite">
+      <div class="rc-banner">
+        <span class="rc-apn" id="rc-apn">—</span>
+        <span class="rc-address" id="rc-address">—</span>
+        <button id="rc-copy-geojson" class="rc-copy"
+          title="Copy parcel polygon + attributes as GeoJSON to your clipboard">
+          Copy GeoJSON
+        </button>
+        <button id="rc-cta" class="rc-cta">Open Site Planner →</button>
+      </div>
+      <div class="rc-body">
+        <div class="rc-info">
+          <h3>Parcel info</h3>
+          <table class="info-table" id="rc-info-table"></table>
+          <h3 style="margin-top: 1rem;">Sensitive area flags</h3>
+          <div id="rc-badges" class="badge-strip"></div>
+          <p id="rc-no-flags" class="status-msg" style="padding: 0.5rem 0; text-align: left; font-style: italic;" hidden>
+            None of the tracked sensitive areas apply to this parcel.
+          </p>
+        </div>
+        <div class="rc-map-wrap">
+          <div class="rc-map-toolbar">
+            <label>
+              <input type="checkbox" id="map-toggle" checked />
+              Show map
+            </label>
+            <a href="#" id="open-old-viewer" target="_blank">Open full Parcel Viewer →</a>
+          </div>
+          <div id="viewDiv"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="status-area"></div>
+
+    <div class="source-note">
+      Parcels &amp; reference data: TRPA ·
+      <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a>
+    </div>
+  </main>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   SITE PLAN FINDER — search-first discovery
+   Big search bar drives a parcel/address lookup against TRPA's Parcels
+   FeatureServer. Picking a result opens an inline card with parcel info,
+   sensitive-area flags, and a small map. From there, "Open Site Planner"
+   hands the parcel + project info off to the Konva-based editor.
+══════════════════════════════════════════════════════════════════════ */
+
+const SERVICES = {
+  parcel_fs:    "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
+  parcel_joins: "https://maps.trpa.org/server/rest/services/Parcel_Joins/FeatureServer/6"
+};
+
+/* Sensitive-area attribute fields tracked in Parcel_Joins */
+const SENSITIVE_FIELDS = [
+  { field: "FLOOD_ZONE",                 label: "Flood Zone",            color: "#5E8EB4" },
+  { field: "HWL_BUFFER",                 label: "Highwater Line Buffer", color: "#4A9FD4" },
+  { field: "SCENIC_CORRIDOR_RDWY",       label: "Scenic Roadway",        color: "#E87722" },
+  { field: "SCENIC_CORRIDOR_SHORELINE",  label: "Scenic Shoreline",      color: "#B47E00" },
+  { field: "AVALANCHE_ZONE",             label: "Avalanche Zone",        color: "#9C3E27" },
+  { field: "HISTORIC_DISTRICT",          label: "Historic District",     color: "#7B6A8A" }
+];
+
+/* APN normalization — accept both "130-241-08" and "13024108" */
+function looksLikeApn(s) {
+  const cleaned = s.replace(/\s+/g, "");
+  return /^[0-9]{2,3}[\s-]?[0-9]{2,3}[\s-]?[0-9]{2,3}([-\s][0-9]{1,3})?$/.test(cleaned);
+}
+
+let selectedFeature = null;
+let viewRef = null;
+let highlightRef = null;
+let suggestionTimer = null;
+let suggestions = [];
+let suggestHighlightedIdx = -1;
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   SEARCH — debounced suggestions on input, full search on Enter / button
+══════════════════════════════════════════════════════════════════════ */
+const $input  = document.getElementById("search-input");
+const $go     = document.getElementById("search-go");
+const $sugg   = document.getElementById("suggest");
+const $card   = document.getElementById("result-card");
+
+$input.addEventListener("input", () => {
+  clearTimeout(suggestionTimer);
+  const q = $input.value.trim();
+  if (q.length < 3) { closeSuggest(); return; }
+  suggestionTimer = setTimeout(() => fetchSuggestions(q), 220);
+});
+$input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    if (suggestHighlightedIdx >= 0 && suggestions[suggestHighlightedIdx]) {
+      pickSuggestion(suggestions[suggestHighlightedIdx]);
+    } else {
+      runSearch($input.value.trim());
+    }
+  } else if (e.key === "ArrowDown") {
+    e.preventDefault();
+    moveSuggest(1);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    moveSuggest(-1);
+  } else if (e.key === "Escape") {
+    closeSuggest();
+  }
+});
+$go.addEventListener("click", () => runSearch($input.value.trim()));
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".search-wrap")) closeSuggest();
+});
+
+async function fetchSuggestions(q) {
+  const useApn = looksLikeApn(q);
+  const where = useApn
+    ? `APN LIKE '${q.replace(/'/g, "''")}%'`
+    : `UPPER(APO_ADDRESS) LIKE '%${q.toUpperCase().replace(/'/g, "''")}%'`;
+  const url = `${SERVICES.parcel_fs}/query?` +
+    `where=${encodeURIComponent(where)}` +
+    `&outFields=APN,APO_ADDRESS,PSTL_TOWN,JURISDICTION` +
+    `&returnGeometry=false&f=json&resultRecordCount=8`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    suggestions = (data.features || []).map(f => f.attributes);
+    renderSuggest();
+  } catch (err) {
+    console.warn("[finder] suggest fetch failed:", err);
+    closeSuggest();
+  }
+}
+
+function renderSuggest() {
+  if (!suggestions.length) { closeSuggest(); return; }
+  suggestHighlightedIdx = 0;
+  $sugg.innerHTML = suggestions.map((a, i) => {
+    const addr = [a.APO_ADDRESS, a.PSTL_TOWN].filter(Boolean).join(", ") || "(no address on file)";
+    return `<div class="suggest-item ${i === 0 ? "highlighted" : ""}" data-idx="${i}">
+      <span class="si-primary"><span class="si-pill">APN</span>${escHtml(a.APN || "—")}</span>
+      <span class="si-secondary">${escHtml(addr)} · ${escHtml(a.JURISDICTION || "")}</span>
+    </div>`;
+  }).join("");
+  $sugg.classList.add("open");
+  $sugg.querySelectorAll(".suggest-item").forEach(el => {
+    el.addEventListener("click", () => {
+      const i = parseInt(el.dataset.idx, 10);
+      pickSuggestion(suggestions[i]);
+    });
+    el.addEventListener("mouseenter", () => {
+      suggestHighlightedIdx = parseInt(el.dataset.idx, 10);
+      $sugg.querySelectorAll(".suggest-item").forEach(x => x.classList.remove("highlighted"));
+      el.classList.add("highlighted");
+    });
+  });
+}
+function moveSuggest(dir) {
+  if (!suggestions.length) return;
+  suggestHighlightedIdx = (suggestHighlightedIdx + dir + suggestions.length) % suggestions.length;
+  $sugg.querySelectorAll(".suggest-item").forEach((el, i) => {
+    el.classList.toggle("highlighted", i === suggestHighlightedIdx);
+  });
+}
+function closeSuggest() {
+  $sugg.classList.remove("open");
+  $sugg.innerHTML = "";
+  suggestions = [];
+  suggestHighlightedIdx = -1;
+}
+
+function pickSuggestion(s) {
+  closeSuggest();
+  $input.value = `${s.APN}${s.APO_ADDRESS ? "  ·  " + s.APO_ADDRESS : ""}`;
+  loadParcelByApn(s.APN);
+}
+
+async function runSearch(q) {
+  if (!q) return;
+  closeSuggest();
+  const apnHit = looksLikeApn(q) ? q : null;
+  if (apnHit) {
+    loadParcelByApn(apnHit);
+  } else {
+    /* Fallback — search by address and pick top result */
+    const url = `${SERVICES.parcel_fs}/query?` +
+      `where=${encodeURIComponent(`UPPER(APO_ADDRESS) LIKE '%${q.toUpperCase().replace(/'/g, "''")}%'`)}` +
+      `&outFields=APN&returnGeometry=false&f=json&resultRecordCount=1`;
+    try {
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (data.features && data.features[0]) {
+        loadParcelByApn(data.features[0].attributes.APN);
+      } else {
+        showStatus(`No parcels matched "${q}". Try a different spelling, partial address, or an APN.`, true);
+      }
+    } catch (err) {
+      showStatus("Search failed: " + err.message, true);
+    }
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   PARCEL LOAD — pulls full attributes + Parcel_Joins flags, populates
+   the result card, zooms the small map.
+══════════════════════════════════════════════════════════════════════ */
+async function loadParcelByApn(apn) {
+  showStatus("Loading parcel " + apn + "…");
+  /* Fetch full attributes + geometry */
+  const url = `${SERVICES.parcel_fs}/query?` +
+    `where=${encodeURIComponent(`APN = '${apn.replace(/'/g, "''")}'`)}` +
+    `&outFields=APN,APO_ADDRESS,PSTL_TOWN,JURISDICTION,COUNTY,ZONING_DESCRIPTION,` +
+    `EXISTING_LANDUSE,REGIONAL_LANDUSE,PARCEL_ACRES,IPES_SCORE,YEAR_BUILT,UNITS,` +
+    `HRA_NAME,WATERSHED_NAME,TOWN_CENTER,OWNERSHIP_TYPE` +
+    `&returnGeometry=true&outSR=4326&f=json`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const feat = data.features && data.features[0];
+    if (!feat) {
+      showStatus(`No parcel found for APN "${apn}".`, true);
+      return;
+    }
+    selectedFeature = feat;
+    populateCard(feat);
+    /* Parallel fetches for sensitive flags + map zoom */
+    fetchSensitiveFlags(apn);
+    showCard();
+    if (viewRef) zoomMapToParcel(feat);
+    clearStatus();
+  } catch (err) {
+    showStatus("Lookup failed: " + err.message, true);
+  }
+}
+
+function populateCard(feat) {
+  const a = feat.attributes;
+  document.getElementById("rc-apn").textContent = a.APN || "—";
+  const addr = [a.APO_ADDRESS, a.PSTL_TOWN].filter(Boolean).join(", ");
+  document.getElementById("rc-address").textContent = addr || "(no address on file)";
+  document.getElementById("rc-cta").disabled = false;
+
+  const acres = a.PARCEL_ACRES != null ? parseFloat(a.PARCEL_ACRES).toFixed(2) : null;
+  const rows = [
+    ["Jurisdiction", a.JURISDICTION],
+    ["County",       a.COUNTY],
+    ["Zoning",       a.ZONING_DESCRIPTION],
+    ["Land Use",     a.EXISTING_LANDUSE],
+    ["Regional Use", a.REGIONAL_LANDUSE],
+    ["Acres",        acres],
+    ["IPES Score",   a.IPES_SCORE],
+    ["Year Built",   a.YEAR_BUILT],
+    ["Units",        a.UNITS],
+    ["Watershed",    a.WATERSHED_NAME],
+    ["Ownership",    a.OWNERSHIP_TYPE]
+  ];
+  document.getElementById("rc-info-table").innerHTML = rows
+    .filter(([, v]) => v !== null && v !== undefined && v !== "" && String(v) !== "null")
+    .map(([k, v]) => `<tr><td>${escHtml(k)}</td><td>${escHtml(String(v))}</td></tr>`)
+    .join("");
+
+  /* External link to full parcel viewer */
+  const link = document.getElementById("open-old-viewer");
+  link.href = `parcel-viewer.html?apn=${encodeURIComponent(a.APN)}`;
+}
+
+async function fetchSensitiveFlags(apn) {
+  const fields = SENSITIVE_FIELDS.map(s => s.field).concat(["APN"]);
+  try {
+    const url = `${SERVICES.parcel_joins}/query?` +
+      `where=${encodeURIComponent(`APN = '${apn.replace(/'/g, "''")}'`)}` +
+      `&outFields=${fields.join(",")}&returnGeometry=false&f=json`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const attrs = (data.features && data.features[0] && data.features[0].attributes) || {};
+    renderBadges(attrs);
+  } catch (err) {
+    console.warn("[finder] sensitive flags fetch failed:", err);
+    renderBadges({});
+  }
+}
+
+function renderBadges(attrs) {
+  const strip = document.getElementById("rc-badges");
+  const empty = document.getElementById("rc-no-flags");
+  const flags = SENSITIVE_FIELDS
+    .filter(s => attrs[s.field])
+    .map(s => ({ label: s.label, value: attrs[s.field], color: s.color }));
+  if (!flags.length) {
+    strip.innerHTML = "";
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+  strip.innerHTML = flags.map(f =>
+    `<span class="layer-badge" style="background:${f.color}">
+      ${escHtml(f.label)}
+      <span class="badge-value">${escHtml(f.value)}</span>
+    </span>`
+  ).join("");
+}
+
+function showCard() {
+  $card.classList.add("visible");
+  /* Map is initialized upfront on page load — see bootstrap() — so
+     #viewDiv has been at its real size since then. Nothing to do here. */
+}
+function showStatus(msg, isError) {
+  const el = document.getElementById("status-area");
+  el.innerHTML = `<div class="status-msg ${isError ? "error" : ""}">${escHtml(msg)}</div>`;
+}
+function clearStatus() {
+  document.getElementById("status-area").innerHTML = "";
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   MAP (optional, lazy-loaded)
+══════════════════════════════════════════════════════════════════════ */
+const mapToggle = document.getElementById("map-toggle");
+let mapInited = false;
+mapToggle.addEventListener("change", () => {
+  document.getElementById("viewDiv").style.display = mapToggle.checked ? "block" : "none";
+  if (mapToggle.checked && !mapInited) initMap();
+  else if (mapToggle.checked && viewRef && selectedFeature) zoomMapToParcel(selectedFeature);
+});
+
+function initMap() {
+  if (mapInited) return;
+  mapInited = true;
+  require([
+    "esri/Map", "esri/Basemap", "esri/views/MapView",
+    "esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
+    "esri/layers/WMSLayer", "esri/Graphic"
+  ], function(Map, Basemap, MapView, FeatureLayer, GraphicsLayer, WMSLayer, Graphic) {
+    const NEARMAP_WMS_URL =
+      "https://api.nearmap.com/wms/v1/places/4298ecf1-2e28-4eec-885a-15234c836254/" +
+      "apikey/NGZhMTA4MDEtYTY5Yi00ODQwLWFmNDQtMDUxMmQwNTJhMmFj";
+    const wms = new WMSLayer({ url: NEARMAP_WMS_URL, title: "Nearmap Aerial" });
+    const bm  = new Basemap({ baseLayers: [wms], title: "Nearmap" });
+    const parcelsLayer = new FeatureLayer({
+      url: SERVICES.parcel_fs,
+      visible: true,
+      title: "Parcels",
+      outFields: ["APN"],
+      popupEnabled: false,
+      renderer: { type: "simple", symbol: {
+        type: "simple-fill",
+        color: [200, 200, 200, 0],
+        outline: { color: [255, 255, 255, 0.85], width: 0.5 }
+      }}
+    });
+    const highlightGL = new GraphicsLayer({ id: "highlight", listMode: "hide" });
+    highlightRef = highlightGL;
+
+    const map = new Map({
+      basemap: bm,
+      layers: [parcelsLayer, highlightGL]
+    });
+    const view = new MapView({
+      container: "viewDiv",
+      map,
+      center: [-120.04, 39.09],
+      zoom: 10,
+      popup: { autoOpenEnabled: false },
+      ui: { components: ["zoom"] }
+    });
+    viewRef = view;
+
+    /* ArcGIS occasionally creates the WebGL canvas at the default 300×150
+       intrinsic size even when the container is properly laid out — the CSS
+       stretches it to fit the container, but everything renders blurry / at
+       too-low resolution. Force the canvas's pixel buffer to match the
+       container, then nudge the view to redraw at full quality. */
+    function _fixCanvasResolution() {
+      const surface = document.querySelector("#viewDiv .esri-view-surface")
+                   || document.querySelector("#viewDiv");
+      const canvases = surface.querySelectorAll("canvas");
+      if (!canvases.length) return false;
+      const r = surface.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.round(r.width * dpr);
+      const targetH = Math.round(r.height * dpr);
+      let changed = false;
+      canvases.forEach(c => {
+        if (c.width !== targetW || c.height !== targetH) {
+          c.width = targetW;
+          c.height = targetH;
+          changed = true;
+        }
+      });
+      if (changed && view.ready) {
+        /* Touch padding to force ArcGIS to redraw the resized buffer. */
+        const cur = view.padding;
+        view.padding = { top: 0, right: 0, bottom: 0, left: 0 };
+        view.padding = cur || { top: 0, right: 0, bottom: 0, left: 0 };
+      }
+      return changed;
+    }
+
+    /* Re-fix on every container size change. */
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => _fixCanvasResolution())
+        .observe(document.getElementById("viewDiv"));
+    }
+
+    view.when(() => {
+      /* First fix may need a moment for ArcGIS to finish setting up its
+         render pipeline. Re-try a couple of times. */
+      _fixCanvasResolution();
+      setTimeout(_fixCanvasResolution, 200);
+      setTimeout(_fixCanvasResolution, 600);
+      setTimeout(() => {
+        if (selectedFeature) zoomMapToParcel(selectedFeature);
+      }, 250);
+    });
+    /* Click-to-select */
+    view.on("click", async (evt) => {
+      const hit = await view.hitTest(evt);
+      const g = hit.results.find(r => r.graphic && r.graphic.layer && r.graphic.layer.title === "Parcels");
+      if (g) {
+        const apn = g.graphic.attributes && g.graphic.attributes.APN;
+        if (apn) {
+          $input.value = apn;
+          loadParcelByApn(apn);
+        }
+      }
+    });
+
+    /* Stash Graphic in case we need it elsewhere */
+    window.__GraphicCtor = Graphic;
+  });
+}
+
+function zoomMapToParcel(feat) {
+  if (!viewRef || !feat) return;
+  const Graphic = window.__GraphicCtor;
+  const ring = feat.geometry && feat.geometry.rings && feat.geometry.rings[0];
+  if (!ring || !Graphic) return;
+
+  /* 1) Render the highlight FIRST so we have a Graphic to anchor the zoom on. */
+  const highlightGraphic = new Graphic({
+    geometry: {
+      type: "polygon",
+      rings: feat.geometry.rings,
+      spatialReference: { wkid: 4326 }
+    },
+    symbol: {
+      type: "simple-fill",
+      color: [232, 119, 34, 0.18],
+      outline: { color: [232, 119, 34, 1], width: 2.5 }
+    }
+  });
+  if (highlightRef) {
+    highlightRef.removeAll();
+    highlightRef.add(highlightGraphic);
+  }
+
+  /* 2) Compute target extent from the ring. ArcGIS `goTo` zooms to fit the
+     extent — but at very small parcel sizes (<0.01° span), goTo can settle
+     on a far-out zoom level. We pass an explicit `target` + `zoom` to force
+     a sensible zoom-in. */
+  const lons = ring.map(p => p[0]);
+  const lats = ring.map(p => p[1]);
+  const cx = (Math.min(...lons) + Math.max(...lons)) / 2;
+  const cy = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const lonSpan = Math.max(...lons) - Math.min(...lons);
+  const latSpan = Math.max(...lats) - Math.min(...lats);
+  /* Pick a zoom level by parcel span. ArcGIS web-mercator zoom levels:
+       z=18 ≈ 1m/px, z=19 ≈ 0.5m/px. A typical TRPA residential lot is
+       50–150 ft wide → zoom 18–19 frames it nicely with a small buffer. */
+  let zoom = 19;
+  const maxSpan = Math.max(lonSpan, latSpan);
+  if      (maxSpan > 0.02)   zoom = 14;   // > ~2.2 km
+  else if (maxSpan > 0.01)   zoom = 15;
+  else if (maxSpan > 0.005)  zoom = 16;
+  else if (maxSpan > 0.002)  zoom = 17;
+  else if (maxSpan > 0.0008) zoom = 18;
+  else                       zoom = 19;
+
+  viewRef.goTo({ center: [cx, cy], zoom }, { duration: 700 }).catch(err => {
+    /* Some "user-initiated cancel" rejections during back-to-back searches are
+       expected; suppress them so they don't surface in the console. */
+    if (err && err.name !== "view:goto-interrupted") {
+      console.warn("[finder] goTo failed:", err);
+    }
+  });
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   "Open Site Planner" button
+══════════════════════════════════════════════════════════════════════ */
+document.getElementById("rc-cta").addEventListener("click", () => {
+  if (!selectedFeature) return;
+  const a = selectedFeature.attributes;
+  const params = new URLSearchParams();
+  params.set("apn", a.APN || "");
+  if (a.APO_ADDRESS) {
+    params.set("address", [a.APO_ADDRESS, a.PSTL_TOWN].filter(Boolean).join(", "));
+  }
+  window.open(`site-planner.html?${params.toString()}`, "_blank");
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   "Copy GeoJSON" button — RFC 7946 Feature with parcel polygon + attrs.
+   ArcGIS rings come in clockwise; GeoJSON wants the exterior ring CCW so
+   we reverse if needed.
+══════════════════════════════════════════════════════════════════════ */
+document.getElementById("rc-copy-geojson").addEventListener("click", async () => {
+  if (!selectedFeature) return;
+  const a = selectedFeature.attributes || {};
+  const rings = (selectedFeature.geometry && selectedFeature.geometry.rings) || [];
+  if (!rings.length) {
+    showStatus("This parcel has no geometry to copy.", true);
+    return;
+  }
+
+  /* Round to 7 decimal places (~1 cm at the equator) and reverse to CCW
+     for the exterior ring per RFC 7946. */
+  function ringToCcw(ring) {
+    let signed = 0;
+    for (let i = 0; i < ring.length; i++) {
+      const [x1, y1] = ring[i];
+      const [x2, y2] = ring[(i + 1) % ring.length];
+      signed += (x2 - x1) * (y2 + y1);
+    }
+    /* In lon/lat (Y-up), positive signed-trapezoid sum = CW. Reverse it. */
+    const ordered = signed > 0 ? ring.slice().reverse() : ring.slice();
+    return ordered.map(([lon, lat]) => [+lon.toFixed(7), +lat.toFixed(7)]);
+  }
+
+  const coordinates = rings.map(ringToCcw);
+  const geometry = coordinates.length === 1
+    ? { type: "Polygon",      coordinates }
+    : { type: "MultiPolygon", coordinates: [coordinates] };
+
+  /* Drop empty/null attributes — keep the JSON tidy. */
+  const propsRaw = {
+    APN: a.APN, address: a.APO_ADDRESS, town: a.PSTL_TOWN,
+    jurisdiction: a.JURISDICTION, county: a.COUNTY,
+    zoning: a.ZONING_DESCRIPTION,
+    land_use: a.EXISTING_LANDUSE, regional_use: a.REGIONAL_LANDUSE,
+    acres: a.PARCEL_ACRES, ipes_score: a.IPES_SCORE,
+    year_built: a.YEAR_BUILT, units: a.UNITS,
+    hra: a.HRA_NAME, watershed: a.WATERSHED_NAME,
+    town_center: a.TOWN_CENTER, ownership_type: a.OWNERSHIP_TYPE,
+    source: "TRPA Parcels FeatureServer/0",
+    crs: "EPSG:4326"
+  };
+  const properties = {};
+  Object.entries(propsRaw).forEach(([k, v]) => {
+    if (v !== null && v !== undefined && v !== "" && String(v) !== "null") properties[k] = v;
+  });
+
+  const feature = { type: "Feature", properties, geometry };
+  const text    = JSON.stringify(feature, null, 2);
+
+  const btn = document.getElementById("rc-copy-geojson");
+  const orig = btn.textContent;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = "✓ Copied";
+    btn.classList.add("copied");
+  } catch (err) {
+    /* Fallback for browsers without async clipboard (or insecure context):
+       use a hidden textarea + execCommand("copy"). */
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity  = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      btn.textContent = "✓ Copied";
+      btn.classList.add("copied");
+    } catch (e2) {
+      showStatus("Could not copy to clipboard: " + e2.message, true);
+      return;
+    }
+  }
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.classList.remove("copied");
+  }, 1800);
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   URL bootstrap — ?apn= or ?q= prefills the search and loads
+══════════════════════════════════════════════════════════════════════ */
+(function bootstrap() {
+  /* Defer map init by a couple of frames so layout finalizes before
+     ArcGIS captures the container size. */
+  setTimeout(initMap, 60);
+
+  const p = new URLSearchParams(window.location.search);
+  const apn = p.get("apn");
+  const q   = p.get("q");
+  if (apn) {
+    $input.value = apn;
+    loadParcelByApn(apn);
+  } else if (q) {
+    $input.value = q;
+    runSearch(q);
+  }
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════════════════════ */
+function escHtml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+</script>
+
+</body>
+</html>

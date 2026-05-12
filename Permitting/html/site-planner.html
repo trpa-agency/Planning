@@ -1,0 +1,3900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Planner — TRPA</title>
+
+  <!-- Calcite Design System 5.0 -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/5.0/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+
+  <!-- Open Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Konva.js — 2D canvas framework. Loaded synchronously; no ArcGIS in this
+       page so no AMD conflict. -->
+  <script src="https://cdn.jsdelivr.net/npm/konva@9.3.18/konva.min.js"></script>
+
+  <!-- proj4js — reproject the parcel polygon from WGS84 lon/lat to a local
+       feet plane so all drawing math is in real-world feet. -->
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
+
+  <!-- jsPDF — used for the final PDF export. Single page, no html2canvas. -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --trpa-blue:        #0072CE;
+      --trpa-navy:        #003B71;
+      --trpa-orange:      #E87722;
+      --trpa-earth:       #B47E00;
+      --trpa-forest:      #4A6118;
+      --trpa-brick:       #9C3E27;
+      --trpa-olive:       #B5A64C;
+      --trpa-purple:      #7B6A8A;
+      --trpa-ice:         #B4CBE8;
+      --trpa-gray-light:  #F5F5F5;
+      --trpa-gray-border: #DDDDDD;
+      --trpa-white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+      overflow: hidden;
+      background: var(--trpa-gray-light);
+    }
+
+    *:focus-visible {
+      outline: 2px solid var(--trpa-blue);
+      outline-offset: 2px;
+    }
+
+    #app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ── */
+    #app-header {
+      background: var(--trpa-navy);
+      color: var(--trpa-white);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1.25rem;
+      height: 52px;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    }
+    .header-divider {
+      width: 1px; height: 26px;
+      background: rgba(255,255,255,0.22); flex-shrink: 0;
+    }
+    .header-titles { display: flex; flex-direction: column; gap: 1px; flex-shrink: 0; }
+    .header-titles .agency {
+      font-size: 0.62rem; font-weight: 400;
+      letter-spacing: 0.07em; text-transform: uppercase; opacity: 0.72;
+    }
+    .header-titles h1 { font-size: 1rem; font-weight: 700; line-height: 1; }
+
+    #project-meta { display: flex; gap: 0.4rem; align-items: center; margin-left: 0.5rem; }
+    .header-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 0.25rem 0.65rem; border-radius: 999px;
+      color: #fff; line-height: 1; white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .header-pill.apn-pill {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.28);
+      font-family: 'Courier New', monospace; letter-spacing: 0.03em;
+    }
+    .header-pill.project-pill { background: var(--trpa-blue); }
+
+    #header-actions { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; }
+    .header-btn {
+      padding: 0.45rem 1rem;
+      background: var(--trpa-orange); color: #fff;
+      border: none; border-radius: 4px;
+      font-family: inherit; font-weight: 700; font-size: 0.78rem;
+      cursor: pointer; letter-spacing: 0.03em;
+      transition: background 0.15s;
+    }
+    .header-btn:hover:not(:disabled) { background: #C25E13; }
+    .header-btn:disabled {
+      background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.5);
+      cursor: not-allowed;
+    }
+    .header-btn.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .header-btn.secondary:hover:not(:disabled) {
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* ── Export dropdown ── */
+    .export-menu-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .export-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      min-width: 320px;
+      background: #fff;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 4px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      padding: 0.25rem;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+    }
+    .export-menu[hidden] { display: none; }
+    .export-menu button {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      background: transparent;
+      border: none;
+      border-radius: 3px;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      color: var(--trpa-navy);
+    }
+    .export-menu button strong {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .export-menu button span {
+      font-size: 0.72rem;
+      color: #666;
+      font-weight: 400;
+    }
+    .export-menu button:hover {
+      background: var(--trpa-navy);
+      color: #fff;
+    }
+    .export-menu button:hover span { color: rgba(255,255,255,0.85); }
+    .export-menu button.primary {
+      background: var(--trpa-orange);
+      color: #fff;
+    }
+    .export-menu button.primary span { color: rgba(255,255,255,0.85); }
+    .export-menu button.primary:hover { background: #C25E13; }
+    .export-menu button + button { margin-top: 1px; }
+
+    /* ── Main layout ── */
+    #main-layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    #sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid var(--trpa-gray-border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-block {
+      border-bottom: 1px solid var(--trpa-gray-border);
+      padding: 0.75rem 0.85rem;
+    }
+    .panel-block h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--trpa-navy);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 0.55rem;
+    }
+
+    /* ── Tool buttons ── */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+    }
+    .tool-btn {
+      padding: 0.55rem 0.5rem;
+      border: 1px solid var(--trpa-gray-border);
+      background: #fff;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--trpa-navy);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .tool-btn:hover { background: var(--trpa-gray-light); }
+    .tool-btn.active {
+      background: var(--trpa-blue);
+      color: #fff;
+      border-color: var(--trpa-blue);
+    }
+    .tool-btn .tool-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    /* ── Sidebar buttons ── */
+    .full-btn {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      background: var(--trpa-blue);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .full-btn:hover:not(:disabled) { background: var(--trpa-navy); }
+    .full-btn:disabled {
+      background: var(--trpa-gray-border);
+      color: #888;
+      cursor: not-allowed;
+    }
+    .full-btn.secondary {
+      background: #fff; color: var(--trpa-navy);
+      border: 1px solid var(--trpa-navy);
+    }
+    .full-btn.secondary:hover:not(:disabled) { background: var(--trpa-gray-light); }
+    .full-btn.danger {
+      background: #fff; color: var(--trpa-brick);
+      border: 1px solid var(--trpa-brick);
+    }
+    .full-btn.danger:hover:not(:disabled) { background: var(--trpa-brick); color: #fff; }
+
+    .row { display: flex; gap: 0.4rem; }
+    .row > * { flex: 1; }
+
+    /* ── Setback inputs ── */
+    .setback-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.4rem;
+    }
+    .setback-grid label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--trpa-navy);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .setback-grid input {
+      width: 100%;
+      padding: 0.35rem 0.4rem;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--trpa-navy);
+    }
+
+    /* ── Layer toggles ── */
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .layer-row input { cursor: pointer; }
+    .layer-row .swatch {
+      width: 14px; height: 14px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      border: 1px solid var(--trpa-gray-border);
+    }
+
+    /* ── Feature list ── */
+    .feature-list {
+      list-style: none;
+      max-height: 240px;
+      overflow-y: auto;
+      font-size: 0.78rem;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 4px;
+      margin-bottom: 0.3rem;
+      background: #fff;
+    }
+    .feature-list li.selected {
+      border-color: var(--trpa-blue);
+      box-shadow: 0 0 0 1px var(--trpa-blue) inset;
+    }
+    .feature-list .fl-pill {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      color: #fff;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .fl-pill.kind-structure { background: var(--trpa-blue); }
+    .fl-pill.kind-path      { background: var(--trpa-earth); }
+    .fl-pill.kind-point     { background: var(--trpa-orange); }
+    .fl-pill.kind-setback   { background: var(--trpa-brick); }
+    .feature-list .fl-label {
+      flex: 1;
+      color: var(--trpa-navy);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .feature-list .fl-meta {
+      font-size: 0.7rem;
+      color: #666;
+    }
+    .feature-list .fl-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--trpa-brick);
+      font-size: 0.85rem;
+      padding: 0 0.2rem;
+    }
+    .empty-msg {
+      color: #888;
+      font-size: 0.78rem;
+      font-style: italic;
+      padding: 0.4rem 0;
+    }
+
+    /* ── Title block form ── */
+    .form-row {
+      margin-bottom: 0.5rem;
+    }
+    .form-row label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--trpa-navy);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+      width: 100%;
+      padding: 0.4rem 0.5rem;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      color: var(--trpa-navy);
+      background: #fff;
+    }
+    .form-row textarea { min-height: 60px; resize: vertical; }
+
+    /* ── Canvas area ── */
+    #canvas-area {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      background: #fff;
+      overflow: hidden;
+    }
+    #konva-container { width: 100%; height: 100%; }
+
+    /* Floating helper bar */
+    #status-bar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0, 59, 113, 0.92);
+      color: #fff;
+      padding: 0.45rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      pointer-events: none;
+      max-width: 60%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    #zoom-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #fff;
+      border: 1px solid var(--trpa-gray-border);
+      border-radius: 4px;
+      padding: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #zoom-controls button {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--trpa-navy);
+      border-radius: 2px;
+    }
+    #zoom-controls button:hover { background: var(--trpa-gray-light); }
+
+    .source-note {
+      font-size: 0.68rem;
+      color: #888;
+      padding: 0.55rem 0.85rem;
+      border-top: 1px solid var(--trpa-gray-border);
+      background: var(--trpa-gray-light);
+    }
+    .source-note a { color: var(--trpa-blue); text-decoration: none; }
+    .source-note a:hover { text-decoration: underline; }
+
+    /* Loading overlay */
+    #loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.92);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    #loading-overlay .msg {
+      color: var(--trpa-navy);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    #loading-overlay .err {
+      color: var(--trpa-brick);
+      font-weight: 600;
+      max-width: 420px;
+      text-align: center;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+  <div id="app-header">
+    <div class="header-titles">
+      <span class="agency">Tahoe Regional Planning Agency</span>
+      <h1>Site Planner</h1>
+    </div>
+    <div class="header-divider"></div>
+    <div id="project-meta"></div>
+    <div id="header-actions">
+      <button id="header-back" class="header-btn secondary"
+        onclick="window.history.length > 1 ? window.history.back() : window.location.href='site-plan.html'">
+        ← Back to Discovery
+      </button>
+      <div class="export-menu-wrap">
+        <button id="header-export" class="header-btn" disabled
+          aria-haspopup="menu" aria-expanded="false">
+          Export ▾
+        </button>
+        <div id="export-menu" class="export-menu" role="menu" hidden>
+          <button data-fmt="pdf"     class="primary" role="menuitem">
+            <strong>PDF</strong><span>24×36 architectural sheet</span>
+          </button>
+          <button data-fmt="svg"     role="menuitem">
+            <strong>SVG</strong><span>Illustrator / Photoshop markup</span>
+          </button>
+          <button data-fmt="dxf"     role="menuitem">
+            <strong>DXF</strong><span>AutoCAD / Civil 3D / Revit</span>
+          </button>
+          <button data-fmt="dae"     role="menuitem">
+            <strong>DAE</strong><span>SketchUp / 3D modelers</span>
+          </button>
+          <button data-fmt="kml"     role="menuitem">
+            <strong>KML</strong><span>Google Earth / Maps</span>
+          </button>
+          <button data-fmt="png"     role="menuitem">
+            <strong>PNG</strong><span>Raster snapshot (email / Slack)</span>
+          </button>
+          <button data-fmt="geojson" role="menuitem">
+            <strong>GeoJSON</strong><span>GIS / scripts (FeatureCollection)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-layout">
+    <aside id="sidebar">
+      <div class="panel-block">
+        <h2>Tools</h2>
+        <div class="tool-grid">
+          <button class="tool-btn active" data-tool="select" aria-label="Select / move">
+            <span class="tool-icon">↖</span><span>Select</span>
+          </button>
+          <button class="tool-btn" data-tool="rectangle" aria-label="Rectangle (structure)">
+            <span class="tool-icon">▭</span><span>Rectangle</span>
+          </button>
+          <button class="tool-btn" data-tool="polygon" aria-label="Polygon (structure)">
+            <span class="tool-icon">⬠</span><span>Polygon</span>
+          </button>
+          <button class="tool-btn" data-tool="line" aria-label="Line (path / driveway)">
+            <span class="tool-icon">╱</span><span>Path</span>
+          </button>
+          <button class="tool-btn" data-tool="point" aria-label="Point with label">
+            <span class="tool-icon">●</span><span>Point</span>
+          </button>
+          <button class="tool-btn" data-tool="dimension" aria-label="Dimension">
+            <span class="tool-icon">⇿</span><span>Dimension</span>
+          </button>
+          <button class="tool-btn" data-tool="edgeType" aria-label="Mark parcel edge as front, side, or rear">
+            <span class="tool-icon">⌘</span><span>Edge type</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-block">
+        <h2>Setbacks</h2>
+        <div class="setback-grid">
+          <div>
+            <label for="sb-front">Front</label>
+            <input id="sb-front" type="number" min="0" step="1" value="20" />
+          </div>
+          <div>
+            <label for="sb-side">Side</label>
+            <input id="sb-side" type="number" min="0" step="1" value="10" />
+          </div>
+          <div>
+            <label for="sb-rear">Rear</label>
+            <input id="sb-rear" type="number" min="0" step="1" value="15" />
+          </div>
+        </div>
+        <p style="font-size: 0.68rem; color: #888; margin: 0.4rem 0 0.6rem; line-height: 1.4;">
+          Distances in feet. The default front edge is the longest one — use
+          the <strong>Edge type</strong> tool to click an edge and reclassify
+          (front&nbsp;→&nbsp;rear&nbsp;→&nbsp;side). Verify against TRPA Code
+          Ch.&nbsp;33 or your pre-app packet.
+        </p>
+        <button id="generate-setbacks-btn" class="full-btn secondary" disabled>
+          Generate Setback Offset
+        </button>
+      </div>
+
+      <div class="panel-block">
+        <h2>Snap &amp; Grid</h2>
+        <label class="layer-row">
+          <input type="checkbox" id="snap-grid" checked />
+          Snap to grid (1&apos;)
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" id="snap-edge" checked />
+          Snap to parcel/edges
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" id="show-grid" checked />
+          Show grid
+        </label>
+      </div>
+
+      <div class="panel-block">
+        <h2>Layers</h2>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="aerial" />
+          <span class="swatch" style="background: linear-gradient(135deg, #5a7e3a, #c9b876);"></span>
+          Aerial photo (Nearmap)
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="neighbors" checked />
+          <span class="swatch" style="background: #999;"></span>
+          Surrounding parcels
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="buildings" checked />
+          <span class="swatch" style="background: #555; border: 1px solid #333;"></span>
+          Existing buildings
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="parcel" checked />
+          <span class="swatch" style="background: var(--trpa-navy);"></span>
+          Selected parcel
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="parcelDims" checked />
+          <span class="swatch" style="background: #003B71; border: 1px dashed #003B71;"></span>
+          Parcel dimensions
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="setbacks" checked />
+          <span class="swatch" style="background: var(--trpa-brick); opacity: 0.8;"></span>
+          Setbacks
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="structures" checked />
+          <span class="swatch" style="background: var(--trpa-blue); opacity: 0.5;"></span>
+          Structures
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="paths" checked />
+          <span class="swatch" style="background: var(--trpa-earth);"></span>
+          Paths / driveways
+        </label>
+        <label class="layer-row">
+          <input type="checkbox" data-layer-key="points" checked />
+          <span class="swatch" style="background: var(--trpa-orange);"></span>
+          Points
+        </label>
+      </div>
+
+      <div class="panel-block">
+        <h2>Drawn Features</h2>
+        <ul id="feature-list" class="feature-list" aria-live="polite">
+          <li class="empty-msg" id="feature-empty">No features drawn yet.</li>
+        </ul>
+        <button id="clear-all-btn" class="full-btn danger" style="margin-top: 0.5rem;">
+          Clear All Drawn
+        </button>
+      </div>
+
+      <div class="panel-block">
+        <h2>Title Block</h2>
+        <div class="form-row">
+          <label for="tb-project-name">Project name</label>
+          <input id="tb-project-name" type="text" data-tb-field="projectName"
+            placeholder="e.g. Smith Garage Addition" />
+        </div>
+        <div class="form-row">
+          <label for="tb-owner">Owner</label>
+          <input id="tb-owner" type="text" data-tb-field="ownerName" />
+        </div>
+        <div class="form-row">
+          <label for="tb-address">Address</label>
+          <input id="tb-address" type="text" data-tb-field="siteAddress" />
+        </div>
+        <div class="form-row">
+          <label for="tb-permit">Permit #</label>
+          <input id="tb-permit" type="text" data-tb-field="permitNumber" />
+        </div>
+        <div class="form-row">
+          <label for="tb-notes">Project notes</label>
+          <textarea id="tb-notes" data-tb-field="notes"
+            placeholder="e.g. Scope of work, BMPs, slope notes — appears in the sheet's notes block."
+            style="min-height: 70px;"></textarea>
+        </div>
+        <div class="form-row">
+          <label for="tb-format">Page</label>
+          <select id="tb-format">
+            <option value="archd" selected>ARCH D (24×36)</option>
+            <option value="archc">ARCH C (18×24)</option>
+            <option value="tabloid">Tabloid (11×17)</option>
+            <option value="letter">Letter (8.5×11)</option>
+          </select>
+          <p style="font-size: 0.65rem; color: #888; margin-top: 0.3rem;">
+            Plot scale is auto-fit to page so the parcel fills the plot area.
+            Effective scale is printed in the title block.
+          </p>
+        </div>
+      </div>
+
+      <div class="source-note">
+        Parcel from TRPA · <a href="site-plan.html">Discovery view</a>
+      </div>
+    </aside>
+
+    <div id="canvas-area">
+      <div id="konva-container"></div>
+
+      <div id="zoom-controls">
+        <button id="zoom-in"  aria-label="Zoom in">+</button>
+        <button id="zoom-out" aria-label="Zoom out">−</button>
+        <button id="zoom-fit" aria-label="Fit parcel" style="font-size: 0.8rem;">Fit</button>
+      </div>
+
+      <div id="status-bar">Loading parcel…</div>
+
+      <div id="loading-overlay">
+        <calcite-loader label="Loading parcel" type="indeterminate"></calcite-loader>
+        <div class="msg" id="loading-msg">Loading parcel from TRPA…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   SITE PLANNER — 2D CAD-style site-plan editor
+   Receives APN via ?apn=… query param, fetches parcel polygon from TRPA,
+   reprojects to a local feet plane, renders in Konva for free-form drawing.
+   Outputs PDF at scale with title block, ready for permit submission.
+══════════════════════════════════════════════════════════════════════════ */
+
+const PARCEL_SERVICE_URL =
+  "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0";
+
+/* Existing building footprints — Impervious_Surface_2019, filtered to
+   Feature = 'Building'. MapServer (not FeatureServer) but supports query. */
+const BUILDINGS_SERVICE_URL =
+  "https://maps.trpa.org/server/rest/services/Impervious_Surface_2019/MapServer/0";
+
+/* California State Plane Zone 2 (NAD83), units = US Survey feet.
+   Covers Lake Tahoe basin on the California side. Definition pulled from
+   spatialreference.org (EPSG:2226). proj4js needs the proj4 string. */
+const SPCS_CA2_FT = "+proj=lcc +lat_1=39.83333333333334 +lat_2=38.33333333333334 " +
+  "+lat_0=37.66666666666666 +lon_0=-122 +x_0=2000000.0001016 +y_0=500000.0001016001 " +
+  "+ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs";
+proj4.defs("EPSG:2226", SPCS_CA2_FT);
+
+/* ── State ───────────────────────────────────────────────────────────── */
+const state = {
+  apn:           "",
+  /* parcel ring in local feet, anchored to bbox.min => (0,0) */
+  parcelFeet:    null,
+  parcelBbox:    null,        // { minX, minY, maxX, maxY } in feet
+  /* WGS84 lon/lat bbox of the original parcel — needed for Nearmap GetMap
+     and the surrounding-parcels query. */
+  parcelLonLatBbox: null,     // { minLon, minLat, maxLon, maxLat }
+  /* SPCS feet origin used for the local frame (we translate so bbox.min == 0,0).
+     Stored so we can convert other geometries (neighbors) to the same frame. */
+  origin: { spcsX: 0, spcsY_top: 0 },  // top is maxY in SPCS (we flip Y)
+  /* Surrounding parcel rings, in local feet (already translated to selected
+     parcel's local frame). */
+  neighborRings: [],
+  /* Existing building footprints (from TRPA Impervious_Surface_2019, filtered
+     to Feature = 'Building'), reprojected to the same local feet frame. */
+  buildingRings: [],
+  /* Per-parcel-edge classification: "front" | "side" | "rear", indexed
+     parallel to state.parcelFeet (entry i applies to the edge from
+     parcelFeet[i] to parcelFeet[i+1]). */
+  parcelEdgeKinds: [],
+  /* Currently-hovered parcel edge index when the "edgeType" tool is active —
+     drives the highlight color while the user picks. */
+  hoverEdgeIdx:    -1,
+  /* Aerial photo (Nearmap) — HTMLImageElement + cached dataURL for PDF. */
+  aerial: { img: null, dataUrl: null, lonLatBbox: null, loading: false },
+  /* drawn features, all in feet world coordinates */
+  features:      [],
+  selectedId:    null,
+  nextId:        1,
+  tool:          "select",
+  scale:         null,         // pixels per foot (Konva)
+  pan:           { x: 0, y: 0 },
+  inProgress:    null,         // currently-drawing feature
+  /* layer visibility */
+  layerVis:      { parcel: true, parcelDims: true, neighbors: true, aerial: false,
+                   buildings: true, setbacks: true, structures: true, paths: true, points: true },
+  /* snap state */
+  snapGrid:      true,
+  snapEdge:      true,
+  showGrid:      true,
+  /* title block */
+  tb:            { projectName:"", ownerName:"", siteAddress:"", permitNumber:"",
+                   projectType:"", notes:"", scale: 240, format: "archd" },
+  /* setback distances in feet */
+  setback:       { front: 20, side: 10, rear: 15 }
+};
+
+const stage = new Konva.Stage({
+  container: "konva-container",
+  width:  1, height: 1
+});
+/* Z-order: aerial (bottom) → grid → neighbors → buildings (existing) → parcel
+            → setbacks → user structures → paths → points → ghost → labels.
+   Konva renders layers in the order they're added to the stage. */
+const layers = {
+  aerial:     new Konva.Layer({ listening: false }),  // Nearmap photo
+  grid:       new Konva.Layer({ listening: false }),
+  neighbors:  new Konva.Layer({ listening: false }),  // surrounding parcel outlines
+  buildings:  new Konva.Layer({ listening: false }),  // existing building footprints
+  parcel:     new Konva.Layer({ listening: false }),  // selected parcel + edge dims
+  setbacks:   new Konva.Layer({ listening: true }),
+  structures: new Konva.Layer({ listening: true }),
+  paths:      new Konva.Layer({ listening: true }),
+  points:     new Konva.Layer({ listening: true }),
+  ghost:      new Konva.Layer({ listening: false }),  // in-progress preview
+  labels:     new Konva.Layer({ listening: false })   // dimensions / area labels
+};
+Object.values(layers).forEach(l => stage.add(l));
+
+
+/* ── URL params → state + title block form ───────────────────────────── */
+(function readUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+  state.apn = p.get("apn") || "";
+  const fields = {
+    project:  "projectName",
+    owner:    "ownerName",
+    address:  "siteAddress",
+    permit:   "permitNumber",
+    ptype:    "projectType"
+  };
+  Object.entries(fields).forEach(([k, v]) => {
+    const val = p.get(k);
+    if (val) state.tb[v] = val;
+  });
+  /* Push defaults into form inputs */
+  document.querySelectorAll("[data-tb-field]").forEach(el => {
+    const k = el.dataset.tbField;
+    if (state.tb[k]) el.value = state.tb[k];
+  });
+})();
+
+
+/* ── Project meta pills in header ────────────────────────────────────── */
+function updateHeaderMeta() {
+  const host = document.getElementById("project-meta");
+  const parts = [];
+  if (state.apn) {
+    parts.push(`<span class="header-pill apn-pill">APN · ${escHtml(state.apn)}</span>`);
+  }
+  if (state.tb.projectName) {
+    parts.push(`<span class="header-pill project-pill">${escHtml(state.tb.projectName)}</span>`);
+  }
+  host.innerHTML = parts.join("");
+}
+updateHeaderMeta();
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   PARCEL FETCH + PROJECTION
+   Pull the parcel polygon from TRPA's Parcels FeatureServer in WGS84,
+   reproject to California State Plane Zone 2 (feet), translate so the
+   bounding box minimum is (0,0) in our local "site" coordinate frame.
+══════════════════════════════════════════════════════════════════════ */
+async function loadParcel(apn) {
+  if (!apn) {
+    showError("No APN provided. Open this page from the discovery view, or pass ?apn=…");
+    return;
+  }
+  setLoadingMsg(`Fetching parcel ${apn}…`);
+  const candidates = [
+    `APN = '${apn}'`,
+    `APN = '${apn.toUpperCase()}'`,
+    `APN LIKE '${apn}%'`,
+    `APN LIKE '%${apn.replace(/[^0-9A-Za-z]/g, "")}%'`
+  ];
+  let feature = null;
+  for (const where of candidates) {
+    const url = `${PARCEL_SERVICE_URL}/query?where=${encodeURIComponent(where)}` +
+                `&outFields=APN,APO_ADDRESS,PSTL_TOWN,JURISDICTION,COUNTY,ZONING_DESCRIPTION,PARCEL_ACRES` +
+                `&outSR=4326&returnGeometry=true&f=json`;
+    try {
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (data.features && data.features.length > 0) {
+        feature = data.features[0];
+        break;
+      }
+    } catch (e) {
+      console.warn("[planner] parcel query failed:", e);
+    }
+  }
+  if (!feature) {
+    showError(`No parcel found for APN "${apn}".`);
+    return;
+  }
+  const ring = feature.geometry && feature.geometry.rings && feature.geometry.rings[0];
+  if (!ring) {
+    showError("Parcel record has no geometry.");
+    return;
+  }
+
+  /* Compute WGS84 bbox of the original parcel — used for Nearmap GetMap
+     and the surrounding-parcels query. */
+  const lons = ring.map(p => p[0]);
+  const lats = ring.map(p => p[1]);
+  state.parcelLonLatBbox = {
+    minLon: Math.min(...lons), maxLon: Math.max(...lons),
+    minLat: Math.min(...lats), maxLat: Math.max(...lats)
+  };
+
+  /* Reproject each [lon, lat] point to California State Plane Zone 2 (feet) */
+  const ftRaw = ring.map(([lon, lat]) => proj4("EPSG:4326", "EPSG:2226", [lon, lat]));
+
+  /* Translate to local origin so bbox min == (0, 0) */
+  const xs = ftRaw.map(p => p[0]);
+  const ys = ftRaw.map(p => p[1]);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const local = ftRaw.map(([x, y]) => [x - minX, maxY - y]);  // flip Y so screen-down = south
+  /* Dedupe consecutive duplicate vertices and the polygon-closing duplicate.
+     ArcGIS rings typically end with the same point as the first; some parcels
+     also have near-duplicate vertices that produce zero-length edges and
+     break the per-edge offset math. */
+  const cleaned = [];
+  for (const pt of local) {
+    const last = cleaned[cleaned.length - 1];
+    if (!last || Math.hypot(pt[0] - last[0], pt[1] - last[1]) > 0.05) {
+      cleaned.push(pt);
+    }
+  }
+  /* Drop the closing duplicate if present */
+  if (cleaned.length > 1) {
+    const first = cleaned[0];
+    const last  = cleaned[cleaned.length - 1];
+    if (Math.hypot(first[0] - last[0], first[1] - last[1]) < 0.05) cleaned.pop();
+  }
+
+  state.parcelFeet = cleaned;
+  state.parcelBbox = { minX: 0, minY: 0, maxX: maxX - minX, maxY: maxY - minY };
+  /* Stash origin in SPCS coords — neighbors get the same translation. */
+  state.origin = { spcsX: minX, spcsY_top: maxY };
+  /* Auto-classify the parcel edges (longest = front, most-anti-parallel = rear).
+     Reset on every new parcel load so old classifications don't leak. */
+  state.parcelEdgeKinds = classifyEdges(cleaned);
+  state.hoverEdgeIdx    = -1;
+
+  /* Stash useful attrs for the PDF header */
+  const a = feature.attributes || {};
+  if (!state.tb.siteAddress) {
+    state.tb.siteAddress = [a.APO_ADDRESS, a.PSTL_TOWN].filter(Boolean).join(", ");
+    const inp = document.getElementById("tb-address");
+    if (inp) inp.value = state.tb.siteAddress;
+  }
+  state.tb.zoning      = a.ZONING_DESCRIPTION || "";
+  state.tb.jurisdiction = a.JURISDICTION || "";
+  state.tb.acres       = a.PARCEL_ACRES != null ? parseFloat(a.PARCEL_ACRES).toFixed(2) : "";
+
+  hideLoading();
+  fitParcelToView();
+  drawAll();
+  document.getElementById("header-export").disabled = false;
+  document.getElementById("generate-setbacks-btn").disabled = false;
+  setStatus(`Parcel ${apn} loaded — ${state.parcelBbox.maxX.toFixed(0)}' × ${state.parcelBbox.maxY.toFixed(0)}'.`);
+
+  /* Fire-and-forget background fetches — neighbors + buildings + aerial can
+     render incrementally as they arrive. */
+  loadNeighbors();
+  loadBuildings();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   EXISTING BUILDING FOOTPRINTS
+   Query Impervious_Surface_2019 for polygons where Feature = 'Building'
+   that intersect a padded bbox around the selected parcel. Reproject each
+   ring into the same local feet frame and render as gray fill.
+══════════════════════════════════════════════════════════════════════ */
+async function loadBuildings() {
+  if (!state.parcelLonLatBbox) return;
+  const padDeg = 0.0015;
+  const b = state.parcelLonLatBbox;
+  const env = {
+    xmin: b.minLon - padDeg, ymin: b.minLat - padDeg,
+    xmax: b.maxLon + padDeg, ymax: b.maxLat + padDeg,
+    spatialReference: { wkid: 4326 }
+  };
+  const url = `${BUILDINGS_SERVICE_URL}/query?` +
+    `where=${encodeURIComponent("Feature = 'Building'")}` +
+    `&geometry=${encodeURIComponent(JSON.stringify(env))}` +
+    `&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects` +
+    `&inSR=4326&outFields=Feature&outSR=4326&returnGeometry=true&f=json`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const features = (data && data.features) || [];
+    const rings = [];
+    features.forEach(f => {
+      const polyRings = f.geometry && f.geometry.rings;
+      if (!polyRings) return;
+      /* Some buildings are multipolygons — iterate every ring. */
+      polyRings.forEach(r => {
+        const local = r.map(([lon, lat]) => {
+          const [x, y] = proj4("EPSG:4326", "EPSG:2226", [lon, lat]);
+          return [x - state.origin.spcsX, state.origin.spcsY_top - y];
+        });
+        rings.push(local);
+      });
+    });
+    state.buildingRings = rings;
+    drawBuildings();
+  } catch (err) {
+    console.warn("[planner] buildings query failed:", err);
+  }
+}
+
+function drawBuildings() {
+  layers.buildings.destroyChildren();
+  if (!state.layerVis.buildings || !state.buildingRings.length) {
+    layers.buildings.draw();
+    return;
+  }
+  state.buildingRings.forEach(ring => {
+    const flat = [];
+    ring.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      flat.push(p.x, p.y);
+    });
+    layers.buildings.add(new Konva.Line({
+      points: flat,
+      stroke: "#333",
+      strokeWidth: 0.8,
+      closed: true,
+      fill: "rgba(80, 80, 80, 0.45)",
+      listening: false
+    }));
+  });
+  layers.buildings.draw();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   SURROUNDING PARCELS
+   Query the same Parcels FeatureServer with an envelope that surrounds
+   the selected parcel, reproject each ring to the same local feet frame,
+   and render thin gray lines for context.
+══════════════════════════════════════════════════════════════════════ */
+async function loadNeighbors() {
+  if (!state.parcelLonLatBbox) return;
+  /* Pad the WGS84 bbox by ~400 ft (~0.0011 degrees lat at Tahoe lat). */
+  const padDeg = 0.0015;
+  const b = state.parcelLonLatBbox;
+  const env = {
+    xmin: b.minLon - padDeg,
+    ymin: b.minLat - padDeg,
+    xmax: b.maxLon + padDeg,
+    ymax: b.maxLat + padDeg,
+    spatialReference: { wkid: 4326 }
+  };
+  const url = `${PARCEL_SERVICE_URL}/query?` +
+    `geometry=${encodeURIComponent(JSON.stringify(env))}` +
+    `&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects` +
+    `&inSR=4326&outFields=APN&outSR=4326&returnGeometry=true&f=json`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const features = (data && data.features) || [];
+    state.neighborRings = features
+      .filter(f => f.attributes && f.attributes.APN !== state.apn)
+      .map(f => {
+        const r = f.geometry && f.geometry.rings && f.geometry.rings[0];
+        if (!r) return null;
+        return r.map(([lon, lat]) => {
+          const [x, y] = proj4("EPSG:4326", "EPSG:2226", [lon, lat]);
+          return [x - state.origin.spcsX, state.origin.spcsY_top - y];
+        });
+      })
+      .filter(Boolean);
+    drawNeighbors();
+  } catch (err) {
+    console.warn("[planner] neighbor query failed:", err);
+  }
+}
+
+function setLoadingMsg(msg) {
+  const el = document.getElementById("loading-msg");
+  if (el) el.textContent = msg;
+}
+function hideLoading() {
+  const el = document.getElementById("loading-overlay");
+  if (el) el.style.display = "none";
+}
+function showError(msg) {
+  const el = document.getElementById("loading-overlay");
+  el.innerHTML = `<div class="err">${escHtml(msg)}</div>` +
+    `<button class="header-btn secondary" style="background:var(--trpa-blue);color:#fff" ` +
+    `onclick="window.location.href='site-plan.html'">Back to Discovery</button>`;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   COORDINATE HELPERS — feet ↔ pixels
+   World coords are feet; the canvas applies a uniform scale (px/ft) plus
+   a pan offset.
+══════════════════════════════════════════════════════════════════════ */
+function ftToPx(ft) { return ft * state.scale; }
+function pxToFt(px) { return px / state.scale; }
+function worldToScreen(x, y) {
+  return { x: x * state.scale + state.pan.x, y: y * state.scale + state.pan.y };
+}
+function screenToWorld(x, y) {
+  return { x: (x - state.pan.x) / state.scale, y: (y - state.pan.y) / state.scale };
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   CANVAS SIZING + PAN/ZOOM
+══════════════════════════════════════════════════════════════════════ */
+function resizeStage() {
+  const c = document.getElementById("canvas-area");
+  stage.width(c.offsetWidth);
+  stage.height(c.offsetHeight);
+  drawAll();
+}
+window.addEventListener("resize", resizeStage);
+
+function fitParcelToView() {
+  if (!state.parcelBbox) return;
+  const c = document.getElementById("canvas-area");
+  stage.width(c.offsetWidth);
+  stage.height(c.offsetHeight);
+  const pad = 60;
+  const wPx = stage.width()  - pad * 2;
+  const hPx = stage.height() - pad * 2;
+  const sx = wPx / state.parcelBbox.maxX;
+  const sy = hPx / state.parcelBbox.maxY;
+  state.scale = Math.min(sx, sy);
+  state.pan.x = pad + (wPx - state.parcelBbox.maxX * state.scale) / 2;
+  state.pan.y = pad + (hPx - state.parcelBbox.maxY * state.scale) / 2;
+}
+
+function zoomBy(factor, centerScreen) {
+  const c = centerScreen || { x: stage.width() / 2, y: stage.height() / 2 };
+  const before = screenToWorld(c.x, c.y);
+  state.scale *= factor;
+  state.scale = Math.max(0.05, Math.min(40, state.scale));
+  const after = screenToWorld(c.x, c.y);
+  state.pan.x += (after.x - before.x) * state.scale;
+  state.pan.y += (after.y - before.y) * state.scale;
+  drawAll();
+}
+
+document.getElementById("zoom-in").onclick  = () => zoomBy(1.2);
+document.getElementById("zoom-out").onclick = () => zoomBy(1/1.2);
+document.getElementById("zoom-fit").onclick = () => { fitParcelToView(); drawAll(); };
+
+stage.on("wheel", (e) => {
+  e.evt.preventDefault();
+  const factor = e.evt.deltaY < 0 ? 1.1 : 1/1.1;
+  const ptr = stage.getPointerPosition();
+  zoomBy(factor, ptr);
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   GRID
+══════════════════════════════════════════════════════════════════════ */
+function drawGrid() {
+  layers.grid.destroyChildren();
+  if (!state.showGrid || !state.parcelBbox) {
+    layers.grid.draw();
+    return;
+  }
+  const tl = screenToWorld(0, 0);
+  const br = screenToWorld(stage.width(), stage.height());
+  /* Choose grid step in feet that gives ~10px on screen minimum */
+  const minPxStep = 10;
+  const stepCandidates = [1, 2, 5, 10, 20, 50, 100];
+  let step = 1;
+  for (const s of stepCandidates) {
+    if (ftToPx(s) >= minPxStep) { step = s; break; }
+  }
+  const startX = Math.floor(tl.x / step) * step;
+  const startY = Math.floor(tl.y / step) * step;
+  const endX = Math.ceil(br.x / step) * step;
+  const endY = Math.ceil(br.y / step) * step;
+  for (let x = startX; x <= endX; x += step) {
+    const isMajor = (Math.abs(x % (step * 5)) < 0.0001);
+    layers.grid.add(new Konva.Line({
+      points: [worldToScreen(x, startY).x, worldToScreen(x, startY).y,
+               worldToScreen(x, endY).x,   worldToScreen(x, endY).y],
+      stroke: isMajor ? "#bbb" : "#eee",
+      strokeWidth: isMajor ? 0.5 : 0.3,
+      listening: false
+    }));
+  }
+  for (let y = startY; y <= endY; y += step) {
+    const isMajor = (Math.abs(y % (step * 5)) < 0.0001);
+    layers.grid.add(new Konva.Line({
+      points: [worldToScreen(startX, y).x, worldToScreen(startX, y).y,
+               worldToScreen(endX,   y).x, worldToScreen(endX,   y).y,
+               ],
+      stroke: isMajor ? "#bbb" : "#eee",
+      strokeWidth: isMajor ? 0.5 : 0.3,
+      listening: false
+    }));
+  }
+  layers.grid.draw();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   PARCEL DRAWING — selected parcel + per-edge dimension labels
+══════════════════════════════════════════════════════════════════════ */
+function drawParcel() {
+  layers.parcel.destroyChildren();
+  if (!state.parcelFeet) {
+    layers.parcel.draw();
+    return;
+  }
+  if (state.layerVis.parcel) {
+    /* Soft fill behind the parcel (still useful when neighbors / aerial
+       are present) — drawn as a closed polygon with no stroke. */
+    const fillFlat = [];
+    state.parcelFeet.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      fillFlat.push(p.x, p.y);
+    });
+    layers.parcel.add(new Konva.Line({
+      points: fillFlat,
+      stroke: null,
+      strokeWidth: 0,
+      closed: true,
+      fill: "rgba(232,119,34,0.04)",
+      listening: false
+    }));
+
+    /* Per-edge stroke — color and weight depend on the edge's kind. */
+    const ring = state.parcelFeet;
+    const n    = ring.length;
+    const EDGE_STYLE = {
+      front: { stroke: "#E87722", width: 3 },   // TRPA Orange
+      rear:  { stroke: "#9C3E27", width: 3 },   // TRPA Brick
+      side:  { stroke: "#003B71", width: 2 }    // TRPA Navy
+    };
+    for (let i = 0; i < n; i++) {
+      const a = worldToScreen(ring[i][0], ring[i][1]);
+      const b = worldToScreen(ring[(i + 1) % n][0], ring[(i + 1) % n][1]);
+      const kind = state.parcelEdgeKinds[i] || "side";
+      const style = EDGE_STYLE[kind];
+      const isHover = state.tool === "edgeType" && state.hoverEdgeIdx === i;
+      layers.parcel.add(new Konva.Line({
+        points: [a.x, a.y, b.x, b.y],
+        stroke: isHover ? "#0072CE" : style.stroke,
+        strokeWidth: isHover ? style.width + 2 : style.width,
+        listening: false
+      }));
+    }
+    /* Vertex markers */
+    state.parcelFeet.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      layers.parcel.add(new Konva.Circle({
+        x: p.x, y: p.y, radius: 3,
+        fill: "#003B71", listening: false
+      }));
+    });
+  }
+
+  /* Per-edge dimension labels — placed at the midpoint of each edge,
+     offset slightly to the OUTSIDE of the polygon so they don't sit on
+     the boundary line itself. Prefixed with F / S / R so the user can see
+     the classification at a glance. */
+  if (state.layerVis.parcelDims) {
+    const ring = state.parcelFeet;
+    const centroid = polygonCentroid(ring);
+    const n = ring.length;
+    const KIND_PREFIX = { front: "F", side: "S", rear: "R" };
+    const KIND_FILL   = { front: "#E87722", side: "#003B71", rear: "#9C3E27" };
+    for (let i = 0; i < n; i++) {
+      const [x1, y1] = ring[i];
+      const [x2, y2] = ring[(i + 1) % n];
+      const dx = x2 - x1, dy = y2 - y1;
+      const lenFt = Math.hypot(dx, dy);
+      if (lenFt < 3) continue;
+      const kind = state.parcelEdgeKinds[i] || "side";
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const ox = mx - (centroid ? centroid.x : mx);
+      const oy = my - (centroid ? centroid.y : my);
+      const ol = Math.hypot(ox, oy) || 1;
+      const offsetFt = pxToFt(14);
+      const lx = mx + (ox / ol) * offsetFt;
+      const ly = my + (oy / ol) * offsetFt;
+      const sm = worldToScreen(lx, ly);
+      const txt = `${KIND_PREFIX[kind]} · ${lenFt.toFixed(1)}'`;
+      const t = new Konva.Text({
+        x: sm.x, y: sm.y,
+        text: txt,
+        fontFamily: "Open Sans, sans-serif",
+        fontSize: 11,
+        fontStyle: "bold",
+        fill: KIND_FILL[kind],
+        listening: false
+      });
+      t.offsetX(t.width() / 2);
+      t.offsetY(t.height() / 2);
+      t.shadowColor("#fff");
+      t.shadowBlur(4);
+      t.shadowOpacity(1);
+      layers.parcel.add(t);
+    }
+  }
+
+  layers.parcel.draw();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   NEARMAP AERIAL — WMS GetMap, fetched once and cached.
+   We pad the parcel WGS84 bbox to match what's visible in the canvas
+   plus a buffer for surrounding parcels. The image is anchored in the
+   local feet frame using the same SPCS reprojection logic as the parcel.
+══════════════════════════════════════════════════════════════════════ */
+const NEARMAP_WMS_BASE =
+  "https://api.nearmap.com/wms/v1/places/4298ecf1-2e28-4eec-885a-15234c836254/" +
+  "apikey/NGZhMTA4MDEtYTY5Yi00ODQwLWFmNDQtMDUxMmQwNTJhMmFj";
+
+async function loadAerial() {
+  if (!state.parcelLonLatBbox || state.aerial.loading) return;
+  state.aerial.loading = true;
+  /* Pad the bbox by ~600 ft so we get context around the parcel. */
+  const padDeg = 0.0022;
+  const b = state.parcelLonLatBbox;
+  const ll = {
+    minLon: b.minLon - padDeg, maxLon: b.maxLon + padDeg,
+    minLat: b.minLat - padDeg, maxLat: b.maxLat + padDeg
+  };
+  /* Use a square-ish image proportional to the bbox aspect, capped at 2048px. */
+  const lonSpan = ll.maxLon - ll.minLon;
+  const latSpan = ll.maxLat - ll.minLat;
+  const aspect = lonSpan / Math.max(latSpan, 1e-9);
+  const imgH = 2048;
+  const imgW = Math.min(2048, Math.max(512, Math.round(imgH * aspect)));
+  /* WMS 1.3.0 uses lat,lon order for EPSG:4326. Older servers often expect
+     1.1.1 with lon,lat — try 1.1.1 first since it's more widely compatible. */
+  const url = `${NEARMAP_WMS_BASE}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap` +
+    `&LAYERS=Vert&STYLES=&FORMAT=image/jpeg&SRS=EPSG:4326` +
+    `&BBOX=${ll.minLon},${ll.minLat},${ll.maxLon},${ll.maxLat}` +
+    `&WIDTH=${imgW}&HEIGHT=${imgH}`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const blob = await resp.blob();
+    /* Convert to dataURL so we can reuse it for the PDF without re-fetching. */
+    const dataUrl = await new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload  = () => resolve(fr.result);
+      fr.onerror = () => reject(new Error("FileReader failed"));
+      fr.readAsDataURL(blob);
+    });
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    await new Promise((res, rej) => {
+      img.onload  = res;
+      img.onerror = () => rej(new Error("aerial image load failed"));
+      img.src = dataUrl;
+    });
+    state.aerial.img = img;
+    state.aerial.dataUrl = dataUrl;
+    state.aerial.lonLatBbox = ll;
+    /* Cache the SPCS-feet bbox of the aerial so we can place it on canvas */
+    const sw = proj4("EPSG:4326", "EPSG:2226", [ll.minLon, ll.minLat]);
+    const ne = proj4("EPSG:4326", "EPSG:2226", [ll.maxLon, ll.maxLat]);
+    state.aerial.localBbox = {
+      minX: sw[0] - state.origin.spcsX,
+      maxX: ne[0] - state.origin.spcsX,
+      /* Y is flipped (south = +Y in our local frame) */
+      minY: state.origin.spcsY_top - ne[1],
+      maxY: state.origin.spcsY_top - sw[1]
+    };
+    drawAerial();
+    setStatus("Nearmap aerial loaded.");
+  } catch (err) {
+    console.warn("[planner] Nearmap aerial failed:", err);
+    setStatus("Aerial photo unavailable: " + err.message);
+    /* Reset toggle so the UI stays consistent */
+    const cb = document.querySelector('[data-layer-key="aerial"]');
+    if (cb) cb.checked = false;
+    state.layerVis.aerial = false;
+  } finally {
+    state.aerial.loading = false;
+  }
+}
+
+function drawAerial() {
+  layers.aerial.destroyChildren();
+  if (!state.layerVis.aerial || !state.aerial.img || !state.aerial.localBbox) {
+    layers.aerial.draw();
+    return;
+  }
+  const lb = state.aerial.localBbox;
+  const tl = worldToScreen(lb.minX, lb.minY);
+  const br = worldToScreen(lb.maxX, lb.maxY);
+  layers.aerial.add(new Konva.Image({
+    image: state.aerial.img,
+    x: tl.x,
+    y: tl.y,
+    width:  br.x - tl.x,
+    height: br.y - tl.y,
+    listening: false,
+    opacity: 0.95
+  }));
+  layers.aerial.draw();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   SURROUNDING PARCELS — thin gray lines for context
+══════════════════════════════════════════════════════════════════════ */
+function drawNeighbors() {
+  layers.neighbors.destroyChildren();
+  if (!state.layerVis.neighbors || !state.neighborRings.length) {
+    layers.neighbors.draw();
+    return;
+  }
+  state.neighborRings.forEach(ring => {
+    const flat = [];
+    ring.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      flat.push(p.x, p.y);
+    });
+    layers.neighbors.add(new Konva.Line({
+      points: flat,
+      stroke: "#999",
+      strokeWidth: 0.6,
+      closed: true,
+      listening: false
+    }));
+  });
+  layers.neighbors.draw();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   FEATURE RENDERING
+══════════════════════════════════════════════════════════════════════ */
+function layerForKind(kind) {
+  return kind === "structure" ? layers.structures
+       : kind === "path"      ? layers.paths
+       : kind === "point"     ? layers.points
+       : kind === "setback"   ? layers.setbacks
+       : layers.structures;
+}
+
+const FEATURE_STYLE = {
+  structure: { fill: "rgba(0,114,206,0.30)", stroke: "#003B71", strokeWidth: 2 },
+  path:      { fill: null,                   stroke: "#B47E00", strokeWidth: 3 },
+  point:     { fill: "#E87722",              stroke: "#fff",    strokeWidth: 1.5, radius: 6 },
+  setback:   { fill: null,                   stroke: "#9C3E27", strokeWidth: 1.6, dash: [8, 5] }
+};
+
+function drawFeatures() {
+  ["setbacks", "structures", "paths", "points", "labels"].forEach(k => layers[k].destroyChildren());
+  state.features.forEach(f => drawFeature(f));
+  layers.labels.draw();
+  layers.setbacks.draw();
+  layers.structures.draw();
+  layers.paths.draw();
+  layers.points.draw();
+}
+
+function drawFeature(f) {
+  const layer = layerForKind(f.kind);
+  /* Layer visibility */
+  const visKey = f.kind === "setback" ? "setbacks"
+              : f.kind === "structure" ? "structures"
+              : f.kind === "path" ? "paths"
+              : f.kind === "point" ? "points" : null;
+  if (visKey && !state.layerVis[visKey]) return;
+
+  const sel = state.selectedId === f.id;
+  const style = FEATURE_STYLE[f.kind] || FEATURE_STYLE.structure;
+
+  if (f.kind === "structure" || f.kind === "setback") {
+    const flat = [];
+    f.points.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      flat.push(p.x, p.y);
+    });
+    layer.add(new Konva.Line({
+      points: flat,
+      stroke: sel ? "#0072CE" : style.stroke,
+      strokeWidth: sel ? style.strokeWidth + 1 : style.strokeWidth,
+      fill: style.fill,
+      closed: true,
+      dash: style.dash,
+      id: "feat-" + f.id,
+      listening: f.kind !== "setback"   // setbacks are passive
+    }));
+    /* Auto-label area at centroid */
+    const c = polygonCentroid(f.points);
+    if (c) {
+      const sc = worldToScreen(c.x, c.y);
+      const area = polygonArea(f.points);
+      const lines = [f.label || (f.kind === "setback" ? "Setback" : "Structure")];
+      if (f.kind !== "setback") lines.push(area.toLocaleString() + " sf");
+      layers.labels.add(new Konva.Text({
+        x: sc.x, y: sc.y,
+        text: lines.join("\n"),
+        fontFamily: "Open Sans, sans-serif",
+        fontSize: 11,
+        fontStyle: "bold",
+        fill: "#003B71",
+        align: "center",
+        offsetX: 0,
+        listening: false
+      }));
+      const tx = layers.labels.children[layers.labels.children.length - 1];
+      tx.offsetX(tx.width() / 2);
+      tx.offsetY(tx.height() / 2);
+    }
+  } else if (f.kind === "path") {
+    const flat = [];
+    f.points.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      flat.push(p.x, p.y);
+    });
+    layer.add(new Konva.Line({
+      points: flat,
+      stroke: sel ? "#0072CE" : style.stroke,
+      strokeWidth: sel ? style.strokeWidth + 1 : style.strokeWidth,
+      lineCap: "round",
+      lineJoin: "round",
+      id: "feat-" + f.id
+    }));
+    /* Auto-label length at midpoint */
+    const len = polylineLength(f.points);
+    const mid = polylineMidpoint(f.points);
+    if (mid) {
+      const sm = worldToScreen(mid.x, mid.y);
+      const txt = (f.label || "Path") + " — " + len.toFixed(0) + " ft";
+      layers.labels.add(new Konva.Text({
+        x: sm.x, y: sm.y - 16,
+        text: txt,
+        fontFamily: "Open Sans, sans-serif",
+        fontSize: 11,
+        fontStyle: "bold",
+        fill: "#003B71",
+        listening: false
+      }));
+    }
+  } else if (f.kind === "point") {
+    const p = worldToScreen(f.points[0][0], f.points[0][1]);
+    layer.add(new Konva.Circle({
+      x: p.x, y: p.y, radius: style.radius,
+      fill: style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth,
+      id: "feat-" + f.id
+    }));
+    layers.labels.add(new Konva.Text({
+      x: p.x + 10, y: p.y - 6,
+      text: f.label || "Point",
+      fontFamily: "Open Sans, sans-serif",
+      fontSize: 11,
+      fontStyle: "bold",
+      fill: "#003B71",
+      listening: false
+    }));
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   GHOST PREVIEW (in-progress draw)
+══════════════════════════════════════════════════════════════════════ */
+function drawGhost() {
+  layers.ghost.destroyChildren();
+  if (!state.inProgress) {
+    layers.ghost.draw();
+    return;
+  }
+  const ip = state.inProgress;
+  if (ip.kind === "rectangle" && ip.points.length === 2) {
+    const a = worldToScreen(ip.points[0][0], ip.points[0][1]);
+    const b = worldToScreen(ip.points[1][0], ip.points[1][1]);
+    layers.ghost.add(new Konva.Rect({
+      x: Math.min(a.x, b.x), y: Math.min(a.y, b.y),
+      width: Math.abs(b.x - a.x), height: Math.abs(b.y - a.y),
+      stroke: "#0072CE", strokeWidth: 2, dash: [6, 4],
+      fill: "rgba(0,114,206,0.10)"
+    }));
+    /* Live dimensions */
+    const w = Math.abs(ip.points[1][0] - ip.points[0][0]);
+    const h = Math.abs(ip.points[1][1] - ip.points[0][1]);
+    addGhostLabel(`${w.toFixed(1)}' × ${h.toFixed(1)}' (${(w * h).toFixed(0)} sf)`,
+      (a.x + b.x) / 2, (a.y + b.y) / 2);
+  } else if (ip.kind === "polygon" && ip.points.length > 0) {
+    const flat = [];
+    ip.points.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      flat.push(p.x, p.y);
+    });
+    if (ip.cursor) {
+      const c = worldToScreen(ip.cursor[0], ip.cursor[1]);
+      flat.push(c.x, c.y);
+    }
+    layers.ghost.add(new Konva.Line({
+      points: flat,
+      stroke: "#0072CE", strokeWidth: 2, dash: [6, 4],
+      closed: ip.points.length > 2,
+      fill: ip.points.length > 2 ? "rgba(0,114,206,0.10)" : null
+    }));
+  } else if (ip.kind === "line" && ip.points.length > 0) {
+    const flat = [];
+    ip.points.forEach(([x, y]) => {
+      const p = worldToScreen(x, y);
+      flat.push(p.x, p.y);
+    });
+    if (ip.cursor) {
+      const c = worldToScreen(ip.cursor[0], ip.cursor[1]);
+      flat.push(c.x, c.y);
+    }
+    layers.ghost.add(new Konva.Line({
+      points: flat, stroke: "#0072CE", strokeWidth: 2, dash: [6, 4]
+    }));
+    /* Show segment dimension */
+    if (ip.points.length > 0 && ip.cursor) {
+      const last = ip.points[ip.points.length - 1];
+      const dx = ip.cursor[0] - last[0];
+      const dy = ip.cursor[1] - last[1];
+      const len = Math.sqrt(dx*dx + dy*dy);
+      const mp  = worldToScreen((last[0] + ip.cursor[0]) / 2, (last[1] + ip.cursor[1]) / 2);
+      addGhostLabel(`${len.toFixed(1)} ft`, mp.x, mp.y - 12);
+    }
+  }
+  layers.ghost.draw();
+}
+
+function addGhostLabel(text, sx, sy) {
+  const t = new Konva.Text({
+    x: sx, y: sy,
+    text, fontSize: 12, fontStyle: "bold",
+    fontFamily: "Open Sans, sans-serif",
+    fill: "#003B71",
+    listening: false
+  });
+  t.offsetX(t.width() / 2);
+  t.offsetY(t.height() / 2);
+  /* White halo via shadow */
+  t.shadowColor("#fff");
+  t.shadowBlur(4);
+  t.shadowOpacity(1);
+  layers.ghost.add(t);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   GEOMETRY HELPERS (all in feet world coords)
+══════════════════════════════════════════════════════════════════════ */
+function polygonArea(pts) {
+  let a = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[(i + 1) % pts.length];
+    a += x1 * y2 - x2 * y1;
+  }
+  return Math.abs(a / 2);
+}
+function polygonCentroid(pts) {
+  if (pts.length === 0) return null;
+  let cx = 0, cy = 0, a = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[(i + 1) % pts.length];
+    const cross = x1 * y2 - x2 * y1;
+    cx += (x1 + x2) * cross;
+    cy += (y1 + y2) * cross;
+    a += cross;
+  }
+  if (Math.abs(a) < 1e-9) {
+    const sx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+    const sy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    return { x: sx, y: sy };
+  }
+  a *= 0.5;
+  return { x: cx / (6 * a), y: cy / (6 * a) };
+}
+function polylineLength(pts) {
+  let len = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i][0] - pts[i-1][0];
+    const dy = pts[i][1] - pts[i-1][1];
+    len += Math.sqrt(dx*dx + dy*dy);
+  }
+  return len;
+}
+function polylineMidpoint(pts) {
+  if (pts.length < 2) return null;
+  const total = polylineLength(pts);
+  let target = total / 2;
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i][0] - pts[i-1][0];
+    const dy = pts[i][1] - pts[i-1][1];
+    const seg = Math.sqrt(dx*dx + dy*dy);
+    if (target <= seg) {
+      const t = target / seg;
+      return { x: pts[i-1][0] + dx * t, y: pts[i-1][1] + dy * t };
+    }
+    target -= seg;
+  }
+  const last = pts[pts.length - 1];
+  return { x: last[0], y: last[1] };
+}
+
+/* Intersect two infinite lines, each given as a point + direction vector.
+   Returns null if the lines are parallel within tolerance. */
+function intersectLines(p1x, p1y, d1x, d1y, p2x, p2y, d2x, d2y) {
+  const denom = d1x * d2y - d1y * d2x;
+  if (Math.abs(denom) < 1e-9) return null;
+  const t = ((p2x - p1x) * d2y - (p2y - p1y) * d2x) / denom;
+  return [p1x + t * d1x, p1y + t * d1y];
+}
+
+/* Cheap polygon self-intersection test — O(n²) edge pair check.
+   Adjacent edges share a vertex and are skipped. */
+function polygonIsSimple(pts) {
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const [a1x, a1y] = pts[i];
+    const [a2x, a2y] = pts[(i + 1) % n];
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue;   // wrap-around adjacent
+      const [b1x, b1y] = pts[j];
+      const [b2x, b2y] = pts[(j + 1) % n];
+      if (segmentsIntersect(a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y)) return false;
+    }
+  }
+  return true;
+}
+function segmentsIntersect(p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y) {
+  const s1x = p1x - p0x, s1y = p1y - p0y;
+  const s2x = p3x - p2x, s2y = p3y - p2y;
+  const denom = -s2x * s1y + s1x * s2y;
+  if (Math.abs(denom) < 1e-9) return false;
+  const s = (-s1y * (p0x - p2x) + s1x * (p0y - p2y)) / denom;
+  const t = ( s2x * (p0y - p2y) - s2y * (p0x - p2x)) / denom;
+  return s > 1e-6 && s < 1 - 1e-6 && t > 1e-6 && t < 1 - 1e-6;
+}
+
+/* Per-edge polygon offset, implemented as the intersection of half-planes
+   defined by the parcel's inward-offset edges (Sutherland-Hodgman clipping).
+   This produces a clean, non-self-intersecting buildable envelope regardless
+   of corner angles, short edges, or asymmetric setback distances. Returns
+   null when the buildable area collapses to nothing.
+
+   `perEdgeDist[i]` is the inward setback for edge `ring[i] -> ring[i+1]`.
+   When an entry is 0 or negative, that edge contributes no clip plane. */
+function offsetPolygonPerEdge(ring, perEdgeDist) {
+  const n = ring.length;
+  if (n < 3 || perEdgeDist.length !== n) return null;
+  const c = polygonCentroid(ring);
+  if (!c) return null;
+
+  let poly = ring.slice();
+  for (let i = 0; i < n; i++) {
+    const d = perEdgeDist[i] || 0;
+    if (d <= 0) continue;
+    const [x1, y1] = ring[i];
+    const [x2, y2] = ring[(i + 1) % n];
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len < 1e-6) continue;     // degenerate edge — skip
+    /* Inward normal points toward the parcel centroid. */
+    let nx = -dy / len, ny = dx / len;
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    if (nx * (c.x - mx) + ny * (c.y - my) < 0) { nx = -nx; ny = -ny; }
+    /* Clip plane passes through (x1 + nx*d, y1 + ny*d); inward normal (nx, ny). */
+    const lineX = x1 + nx * d;
+    const lineY = y1 + ny * d;
+    poly = clipPolyToHalfPlane(poly, lineX, lineY, nx, ny);
+    if (poly.length < 3) return null;
+  }
+  if (polygonArea(poly) < 1) return null;
+  return poly;
+}
+
+/* Sutherland-Hodgman: clip a polygon to the half-plane
+   {(x, y) : (x - lineX)*nx + (y - lineY)*ny >= 0}.
+   The clip plane passes through (lineX, lineY) with inward normal (nx, ny). */
+function clipPolyToHalfPlane(poly, lineX, lineY, nx, ny) {
+  if (poly.length === 0) return [];
+  function side(p) { return (p[0] - lineX) * nx + (p[1] - lineY) * ny; }
+  function intersectSegLine(a, b) {
+    /* Find s in [0,1] where ((a + s*(b-a)) - line) · (nx, ny) = 0  */
+    const ax = a[0], ay = a[1];
+    const bx = b[0], by = b[1];
+    const sa = (ax - lineX) * nx + (ay - lineY) * ny;
+    const sb = (bx - lineX) * nx + (by - lineY) * ny;
+    const denom = sa - sb;
+    if (Math.abs(denom) < 1e-12) return a.slice();
+    const s = sa / denom;
+    return [ax + s * (bx - ax), ay + s * (by - ay)];
+  }
+  const out = [];
+  let prev = poly[poly.length - 1];
+  let prevIn = side(prev) >= 0;
+  for (const cur of poly) {
+    const curIn = side(cur) >= 0;
+    if (curIn) {
+      if (!prevIn) out.push(intersectSegLine(prev, cur));
+      out.push(cur);
+    } else if (prevIn) {
+      out.push(intersectSegLine(prev, cur));
+    }
+    prev = cur;
+    prevIn = curIn;
+  }
+  return out;
+}
+
+/* Heuristic edge classification.
+   Returns an array of "front" | "side" | "rear" entries, length n.
+   Default rule: longest edge is "front"; the most-anti-parallel edge is
+   "rear" (only if its midpoint is not adjacent to the front); rest are "side". */
+function classifyEdges(ring) {
+  const n = ring.length;
+  const dirs = [];
+  let longest = -1, longestIdx = 0;
+  for (let i = 0; i < n; i++) {
+    const [x1, y1] = ring[i];
+    const [x2, y2] = ring[(i + 1) % n];
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    dirs.push({ dx, dy, len, ux: len ? dx / len : 0, uy: len ? dy / len : 0,
+                mx: (x1 + x2) / 2, my: (y1 + y2) / 2 });
+    if (len > longest) { longest = len; longestIdx = i; }
+  }
+  const kinds = new Array(n).fill("side");
+  kinds[longestIdx] = "front";
+  /* Find the rear: edge with most anti-parallel direction relative to front,
+     and which is not directly adjacent to the front edge. */
+  const f = dirs[longestIdx];
+  let rearIdx = -1, bestDot = -0.866;   // require within 30° of opposite
+  let bestDist = -1;
+  for (let i = 0; i < n; i++) {
+    if (i === longestIdx) continue;
+    if (i === (longestIdx + 1) % n || i === (longestIdx - 1 + n) % n) continue;
+    const e = dirs[i];
+    const dot = f.ux * e.ux + f.uy * e.uy;   // < 0 means anti-parallel
+    if (dot < bestDot) {
+      const d = Math.hypot(e.mx - f.mx, e.my - f.my);
+      if (d > bestDist) { bestDist = d; bestDot = dot; rearIdx = i; }
+    }
+  }
+  if (rearIdx >= 0) kinds[rearIdx] = "rear";
+  return kinds;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   SNAP
+══════════════════════════════════════════════════════════════════════ */
+function snap(worldX, worldY) {
+  let x = worldX, y = worldY;
+  if (state.snapEdge && state.parcelFeet) {
+    /* Snap to parcel vertex within 4 px */
+    const thresholdFt = pxToFt(8);
+    let bestD = thresholdFt, bestPt = null;
+    state.parcelFeet.forEach(([px, py]) => {
+      const d = Math.hypot(px - x, py - y);
+      if (d < bestD) { bestD = d; bestPt = [px, py]; }
+    });
+    if (bestPt) return { x: bestPt[0], y: bestPt[1], snapped: "vertex" };
+  }
+  if (state.snapGrid) {
+    x = Math.round(x);
+    y = Math.round(y);
+    return { x, y, snapped: "grid" };
+  }
+  return { x, y, snapped: null };
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   TOOLS — pointer state machine
+══════════════════════════════════════════════════════════════════════ */
+function setTool(name) {
+  state.tool = name;
+  document.querySelectorAll(".tool-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.tool === name);
+  });
+  state.inProgress = null;
+  setStatus(toolHint(name));
+  drawGhost();
+}
+function toolHint(name) {
+  switch (name) {
+    case "select":    return "Select / move tool. Click a feature to select.";
+    case "rectangle": return "Rectangle tool. Click and drag to draw a structure.";
+    case "polygon":   return "Polygon tool. Click to add vertices, double-click or Enter to finish.";
+    case "line":      return "Path tool. Click to start, click each vertex, double-click or Enter to finish.";
+    case "point":     return "Point tool. Click to place a labeled marker.";
+    case "dimension": return "Dimension tool. Click two points to add a dimension line. (coming soon)";
+    case "edgeType":  return "Edge type tool. Click a parcel edge to cycle Front → Rear → Side.";
+  }
+  return "";
+}
+document.querySelectorAll(".tool-btn").forEach(b => {
+  b.addEventListener("click", () => setTool(b.dataset.tool));
+});
+
+/* Pointer handlers */
+stage.on("mousedown touchstart", (e) => {
+  const ptr = stage.getPointerPosition();
+  if (!ptr) return;
+  const w = screenToWorld(ptr.x, ptr.y);
+  const sn = snap(w.x, w.y);
+  if (state.tool === "rectangle") {
+    state.inProgress = { kind: "rectangle", points: [[sn.x, sn.y]] };
+  } else if (state.tool === "polygon") {
+    if (!state.inProgress) {
+      state.inProgress = { kind: "polygon", points: [[sn.x, sn.y]], cursor: [sn.x, sn.y] };
+    } else {
+      state.inProgress.points.push([sn.x, sn.y]);
+    }
+  } else if (state.tool === "line") {
+    if (!state.inProgress) {
+      state.inProgress = { kind: "line", points: [[sn.x, sn.y]], cursor: [sn.x, sn.y] };
+    } else {
+      state.inProgress.points.push([sn.x, sn.y]);
+    }
+  } else if (state.tool === "point") {
+    const label = prompt("Label (e.g. Tree, Septic, Well, Utility):", "Point");
+    if (label) {
+      addFeature({ kind: "point", points: [[sn.x, sn.y]], label });
+    }
+  } else if (state.tool === "select") {
+    /* Hit-test features */
+    selectAt(ptr.x, ptr.y);
+  } else if (state.tool === "edgeType") {
+    /* Cycle the edge under the cursor: front → rear → side → front. */
+    const idx = parcelEdgeUnderCursor(ptr.x, ptr.y);
+    if (idx >= 0) {
+      const cur = state.parcelEdgeKinds[idx] || "side";
+      const next = cur === "front" ? "rear" : cur === "rear" ? "side" : "front";
+      state.parcelEdgeKinds[idx] = next;
+      drawAll();
+      setStatus(`Edge ${idx + 1} marked as ${next}.`);
+    }
+  }
+  drawGhost();
+});
+
+stage.on("mousemove touchmove", () => {
+  const ptr = stage.getPointerPosition();
+  if (!ptr) return;
+  const w = screenToWorld(ptr.x, ptr.y);
+  const sn = snap(w.x, w.y);
+  /* Status: live coords */
+  setStatus(`x: ${sn.x.toFixed(1)}'  y: ${sn.y.toFixed(1)}' ${sn.snapped ? "[" + sn.snapped + "]" : ""} — ${toolHint(state.tool)}`);
+  /* edgeType tool: hover-highlight the edge under the cursor. */
+  if (state.tool === "edgeType") {
+    const idx = parcelEdgeUnderCursor(ptr.x, ptr.y);
+    if (idx !== state.hoverEdgeIdx) {
+      state.hoverEdgeIdx = idx;
+      drawParcel();
+    }
+  } else if (state.hoverEdgeIdx !== -1) {
+    state.hoverEdgeIdx = -1;
+    drawParcel();
+  }
+  if (!state.inProgress) return;
+  if (state.inProgress.kind === "rectangle") {
+    if (state.inProgress.points.length === 1) {
+      state.inProgress.points[1] = [sn.x, sn.y];
+      drawGhost();
+    }
+  } else if (state.inProgress.kind === "polygon" || state.inProgress.kind === "line") {
+    state.inProgress.cursor = [sn.x, sn.y];
+    drawGhost();
+  }
+});
+
+stage.on("mouseup touchend", () => {
+  if (state.tool === "rectangle" && state.inProgress && state.inProgress.points.length === 2) {
+    const [a, b] = state.inProgress.points;
+    if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 0.5) {
+      addFeature({
+        kind: "structure",
+        points: [
+          [a[0], a[1]],
+          [b[0], a[1]],
+          [b[0], b[1]],
+          [a[0], b[1]]
+        ],
+        label: ""
+      });
+    }
+    state.inProgress = null;
+    drawGhost();
+  }
+});
+
+stage.on("dblclick", () => {
+  finishCurrent();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Enter")     { finishCurrent(); }
+  if (e.key === "Escape")    { state.inProgress = null; drawGhost(); }
+  if (e.key === "Delete" || e.key === "Backspace") {
+    if (state.selectedId != null) {
+      removeFeature(state.selectedId);
+    }
+  }
+  if (e.key === "1") setTool("select");
+  if (e.key === "2") setTool("rectangle");
+  if (e.key === "3") setTool("polygon");
+  if (e.key === "4") setTool("line");
+  if (e.key === "5") setTool("point");
+});
+
+function finishCurrent() {
+  if (!state.inProgress) return;
+  if (state.inProgress.kind === "polygon" && state.inProgress.points.length >= 3) {
+    addFeature({
+      kind: "structure",
+      points: state.inProgress.points,
+      label: ""
+    });
+  } else if (state.inProgress.kind === "line" && state.inProgress.points.length >= 2) {
+    addFeature({
+      kind: "path",
+      points: state.inProgress.points,
+      label: ""
+    });
+  }
+  state.inProgress = null;
+  drawGhost();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   FEATURE STORE
+══════════════════════════════════════════════════════════════════════ */
+function addFeature(f) {
+  f.id = state.nextId++;
+  if (!f.label) {
+    f.label = (f.kind === "structure" ? "Structure " :
+               f.kind === "path"      ? "Path "      :
+               f.kind === "point"     ? "Point "     :
+               "Feature ") + f.id;
+  }
+  state.features.push(f);
+  state.selectedId = f.id;
+  drawAll();
+  refreshFeatureList();
+}
+function removeFeature(id) {
+  state.features = state.features.filter(f => f.id !== id);
+  if (state.selectedId === id) state.selectedId = null;
+  drawAll();
+  refreshFeatureList();
+}
+function selectAt(sx, sy) {
+  /* Quick hit-test: iterate features, check if point inside polygon / near line */
+  const w = screenToWorld(sx, sy);
+  let hitId = null;
+  /* Newest-on-top selection */
+  for (let i = state.features.length - 1; i >= 0; i--) {
+    const f = state.features[i];
+    if (f.kind === "structure" || f.kind === "setback") {
+      if (pointInPolygon(w, f.points)) { hitId = f.id; break; }
+    } else if (f.kind === "path") {
+      if (pointNearPolyline(w, f.points, pxToFt(6))) { hitId = f.id; break; }
+    } else if (f.kind === "point") {
+      const d = Math.hypot(f.points[0][0] - w.x, f.points[0][1] - w.y);
+      if (d < pxToFt(8)) { hitId = f.id; break; }
+    }
+  }
+  state.selectedId = hitId;
+  drawAll();
+  refreshFeatureList();
+}
+function pointInPolygon(p, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i][0], yi = poly[i][1];
+    const xj = poly[j][0], yj = poly[j][1];
+    const intersect = ((yi > p.y) !== (yj > p.y)) &&
+      (p.x < (xj - xi) * (p.y - yi) / ((yj - yi) || 1e-9) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+function pointNearPolyline(p, pts, threshold) {
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const d = pointSegmentDistance(p, a, b);
+    if (d < threshold) return true;
+  }
+  return false;
+}
+function pointSegmentDistance(p, a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1];
+  const len2 = dx*dx + dy*dy;
+  if (len2 < 1e-9) return Math.hypot(p.x - a[0], p.y - a[1]);
+  const t = Math.max(0, Math.min(1, ((p.x - a[0]) * dx + (p.y - a[1]) * dy) / len2));
+  const cx = a[0] + t * dx, cy = a[1] + t * dy;
+  return Math.hypot(p.x - cx, p.y - cy);
+}
+
+/* Hit-test parcel edges from screen coords. Returns the edge index whose
+   segment is within ~10 px of the cursor, or -1 if none. */
+function parcelEdgeUnderCursor(sx, sy) {
+  if (!state.parcelFeet || state.parcelFeet.length < 2) return -1;
+  const w = screenToWorld(sx, sy);
+  const thresholdFt = pxToFt(10);
+  const ring = state.parcelFeet;
+  let best = thresholdFt, idx = -1;
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i];
+    const b = ring[(i + 1) % ring.length];
+    const d = pointSegmentDistance(w, a, b);
+    if (d < best) { best = d; idx = i; }
+  }
+  return idx;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   FEATURE LIST UI
+══════════════════════════════════════════════════════════════════════ */
+function refreshFeatureList() {
+  const ul    = document.getElementById("feature-list");
+  const empty = document.getElementById("feature-empty");
+  const drawn = state.features;
+  ul.querySelectorAll("li:not(#feature-empty)").forEach(li => li.remove());
+  if (!drawn.length) {
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+  drawn.forEach(f => {
+    const li = document.createElement("li");
+    if (state.selectedId === f.id) li.className = "selected";
+    let meta = "";
+    if (f.kind === "structure" || f.kind === "setback") {
+      meta = polygonArea(f.points).toLocaleString() + " sf";
+    } else if (f.kind === "path") {
+      meta = polylineLength(f.points).toFixed(0) + " ft";
+    }
+    li.innerHTML = `
+      <span class="fl-pill kind-${f.kind}">${f.kind}</span>
+      <span class="fl-label" data-fid="${f.id}" data-act="rename">${escHtml(f.label)}</span>
+      <span class="fl-meta">${meta}</span>
+      <button class="fl-del" data-fid="${f.id}" aria-label="Delete">×</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+document.getElementById("feature-list").addEventListener("click", (e) => {
+  const del = e.target.closest(".fl-del");
+  if (del) {
+    removeFeature(parseInt(del.dataset.fid, 10));
+    return;
+  }
+  const lbl = e.target.closest(".fl-label");
+  if (lbl) {
+    const id = parseInt(lbl.dataset.fid, 10);
+    const f = state.features.find(x => x.id === id);
+    if (!f) return;
+    const v = prompt("Label:", f.label);
+    if (v != null && v.trim()) {
+      f.label = v.trim();
+      drawAll();
+      refreshFeatureList();
+    }
+  }
+});
+
+document.getElementById("clear-all-btn").addEventListener("click", () => {
+  if (state.features.length === 0) return;
+  if (!confirm("Clear all drawn features and setbacks?")) return;
+  state.features = [];
+  state.selectedId = null;
+  drawAll();
+  refreshFeatureList();
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   SETBACKS
+══════════════════════════════════════════════════════════════════════ */
+document.getElementById("generate-setbacks-btn").addEventListener("click", () => {
+  if (!state.parcelFeet) return;
+  const front = parseFloat(document.getElementById("sb-front").value) || 0;
+  const side  = parseFloat(document.getElementById("sb-side").value)  || 0;
+  const rear  = parseFloat(document.getElementById("sb-rear").value)  || 0;
+  state.setback = { front, side, rear };
+
+  /* Build per-edge distances from the current edge classifications. */
+  const distByKind = { front, side, rear };
+  const perEdge = state.parcelEdgeKinds.map(k => distByKind[k] || 0);
+  if (perEdge.every(d => d <= 0)) {
+    setStatus("Enter at least one setback distance greater than 0.");
+    return;
+  }
+
+  /* Remove any existing setback feature(s). */
+  state.features = state.features.filter(f => f.kind !== "setback");
+  const env = offsetPolygonPerEdge(state.parcelFeet, perEdge);
+  if (!env) {
+    setStatus("Parcel too small for these setback distances.");
+    return;
+  }
+  addFeature({
+    kind: "setback",
+    points: env,
+    label: `Buildable area (F${front}' / S${side}' / R${rear}')`
+  });
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   LAYER VISIBILITY + SNAP TOGGLES
+══════════════════════════════════════════════════════════════════════ */
+document.querySelectorAll("[data-layer-key]").forEach(cb => {
+  cb.addEventListener("change", () => {
+    const key = cb.dataset.layerKey;
+    state.layerVis[key] = cb.checked;
+    /* Lazy-load aerial on first toggle */
+    if (key === "aerial" && cb.checked && !state.aerial.img && !state.aerial.loading) {
+      setStatus("Loading Nearmap aerial…");
+      loadAerial();
+    }
+    drawAll();
+  });
+});
+document.getElementById("snap-grid").addEventListener("change", e => {
+  state.snapGrid = e.target.checked;
+});
+document.getElementById("snap-edge").addEventListener("change", e => {
+  state.snapEdge = e.target.checked;
+});
+document.getElementById("show-grid").addEventListener("change", e => {
+  state.showGrid = e.target.checked;
+  drawAll();
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   TITLE-BLOCK FORM SYNC
+══════════════════════════════════════════════════════════════════════ */
+document.querySelectorAll("[data-tb-field]").forEach(el => {
+  el.addEventListener("input", () => {
+    state.tb[el.dataset.tbField] = el.value;
+    if (el.dataset.tbField === "projectName") updateHeaderMeta();
+  });
+});
+document.getElementById("tb-format").addEventListener("change", e => {
+  state.tb.format = e.target.value;
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   DAE / COLLADA EXPORT — starter file for SketchUp, Civil 3D, Revit, etc.
+
+   The DAE includes every relevant geometry organized into named nodes
+   that map to SketchUp Tags / Layers on import:
+     · Parcel              — closed line, real-world feet
+     · Surrounding Parcels — light-gray closed lines
+     · Existing Buildings  — filled faces (from TRPA Impervious_Surface_2019)
+     · Setback Envelope    — closed line at 0' elevation
+     · Proposed Structures — user-drawn polygons (filled faces)
+     · Paths / Driveways   — user-drawn polylines
+     · Points              — small markers at user-drawn point locations
+
+   Coordinates are projected to North American architectural convention:
+     X = east, Y = north (we un-flip the screen-Y), Z = 0 (ground plane).
+   The DAE declares feet as the unit so SketchUp imports at real-world scale.
+══════════════════════════════════════════════════════════════════════ */
+/* Export dropdown — toggles the menu and routes the picked format to the
+   right exporter. The old 3-button bar is gone; everything lives here. */
+const _exportToggle = document.getElementById("header-export");
+const _exportMenu   = document.getElementById("export-menu");
+_exportToggle.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (_exportToggle.disabled) return;
+  const open = !_exportMenu.hasAttribute("hidden");
+  if (open) {
+    _exportMenu.setAttribute("hidden", "");
+    _exportToggle.setAttribute("aria-expanded", "false");
+  } else {
+    _exportMenu.removeAttribute("hidden");
+    _exportToggle.setAttribute("aria-expanded", "true");
+  }
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".export-menu-wrap")) {
+    _exportMenu.setAttribute("hidden", "");
+    _exportToggle.setAttribute("aria-expanded", "false");
+  }
+});
+_exportMenu.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-fmt]");
+  if (!btn) return;
+  const fmt = btn.dataset.fmt;
+  _exportMenu.setAttribute("hidden", "");
+  _exportToggle.setAttribute("aria-expanded", "false");
+  switch (fmt) {
+    case "pdf":     return exportPdf();
+    case "svg":     return exportSvg();
+    case "dxf":     return exportDxf();
+    case "dae":     return exportDae();
+    case "kml":     return exportKml();
+    case "png":     return exportPng();
+    case "geojson": return exportGeoJson();
+  }
+});
+
+function exportDae() {
+  if (!state.parcelFeet) return;
+  const xml = buildDaeXml();
+  triggerDownload(new Blob([xml], { type: "model/vnd.collada+xml" }), safeFilename("dae"));
+  setStatus("Downloaded .dae — open it in SketchUp via File → Import.");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   DXF EXPORT — AutoCAD / Civil 3D / Revit
+   ASCII DXF, hand-written. Each logical layer becomes an AutoCAD Layer
+   with a distinct ACI color. Geometry is real-world State Plane Zone 2
+   feet so the file imports at scale.
+══════════════════════════════════════════════════════════════════════ */
+function exportDxf() {
+  if (!state.parcelFeet) return;
+  const dxf = buildDxf();
+  triggerDownload(new Blob([dxf], { type: "application/dxf" }), safeFilename("dxf"));
+  setStatus("Downloaded .dxf — open in AutoCAD / Civil 3D. Coordinates are real SPCS feet.");
+}
+
+/* DXF group-code helper: each entry is (code, value) on consecutive lines. */
+function _dxfPair(code, value, out) {
+  /* DXF spec wants the code right-aligned in 3 columns, then a newline,
+     then the value. We use simple newline separation. */
+  out.push(String(code).padStart(3, " "));
+  out.push(String(value));
+}
+
+function buildDxf() {
+  const out = [];
+  const w = (c, v) => _dxfPair(c, v, out);
+
+  /* ── HEADER ─────────────────────────────── */
+  w(0, "SECTION");
+  w(2, "HEADER");
+  w(9, "$ACADVER");      w(1, "AC1015");          // AutoCAD 2000+
+  w(9, "$INSUNITS");     w(70, 2);                // 2 = decimal feet
+  w(9, "$EXTMIN");       w(10, 0); w(20, 0); w(30, 0);
+  w(9, "$EXTMAX");
+    const minSpcs = feetToSpcs([0, state.parcelBbox.maxY]);
+    const maxSpcs = feetToSpcs([state.parcelBbox.maxX, 0]);
+    w(10, minSpcs[0]); w(20, minSpcs[1]); w(30, 0);
+  w(0, "ENDSEC");
+
+  /* ── TABLES (layer table) ───────────────── */
+  const layerDefs = [
+    { name: "PARCEL",     color: 1, lt: "CONTINUOUS" },   // red
+    { name: "NEIGHBORS",  color: 8, lt: "CONTINUOUS" },   // dark gray
+    { name: "BUILDINGS",  color: 9, lt: "CONTINUOUS" },   // light gray
+    { name: "SETBACK",    color: 1, lt: "DASHED"     },   // red dashed
+    { name: "STRUCTURES", color: 5, lt: "CONTINUOUS" },   // blue
+    { name: "PATHS",      color: 30, lt: "CONTINUOUS" },  // orange
+    { name: "POINTS",     color: 30, lt: "CONTINUOUS" }   // orange
+  ];
+
+  w(0, "SECTION"); w(2, "TABLES");
+  /* Linetypes — define DASHED so SETBACK shows dashed. */
+  w(0, "TABLE"); w(2, "LTYPE"); w(70, 2);
+  w(0, "LTYPE"); w(2, "CONTINUOUS"); w(70, 0);
+  w(3, "Solid line"); w(72, 65); w(73, 0); w(40, 0);
+  w(0, "LTYPE"); w(2, "DASHED");     w(70, 0);
+  w(3, "Dashed");     w(72, 65); w(73, 2); w(40, 0.75);
+  w(49, 0.5); w(74, 0); w(49, -0.25); w(74, 0);
+  w(0, "ENDTAB");
+  /* Layers */
+  w(0, "TABLE"); w(2, "LAYER"); w(70, layerDefs.length);
+  layerDefs.forEach(L => {
+    w(0, "LAYER"); w(2, L.name); w(70, 0); w(62, L.color); w(6, L.lt);
+  });
+  w(0, "ENDTAB");
+  w(0, "ENDSEC");
+
+  /* ── ENTITIES ───────────────────────────── */
+  w(0, "SECTION"); w(2, "ENTITIES");
+
+  function lwpolyline(layer, points, closed) {
+    /* points = [[x,y],...] in SPCS feet */
+    w(0, "LWPOLYLINE"); w(8, layer);
+    w(90, points.length); w(70, closed ? 1 : 0);
+    points.forEach(([x, y]) => { w(10, x); w(20, y); });
+  }
+  function point(layer, x, y) {
+    w(0, "POINT"); w(8, layer);
+    w(10, x); w(20, y); w(30, 0);
+  }
+
+  /* Parcel boundary (closed) */
+  lwpolyline("PARCEL", state.parcelFeet.map(feetToSpcs), true);
+
+  /* Surrounding parcels */
+  state.neighborRings.forEach(ring => {
+    lwpolyline("NEIGHBORS", ring.map(feetToSpcs), true);
+  });
+
+  /* Existing buildings */
+  state.buildingRings.forEach(ring => {
+    lwpolyline("BUILDINGS", ring.map(feetToSpcs), true);
+  });
+
+  /* Setback envelope */
+  state.features.filter(f => f.kind === "setback").forEach(f => {
+    lwpolyline("SETBACK", f.points.map(feetToSpcs), true);
+  });
+
+  /* User-drawn structures */
+  state.features.filter(f => f.kind === "structure").forEach(f => {
+    lwpolyline("STRUCTURES", f.points.map(feetToSpcs), true);
+  });
+
+  /* User-drawn paths */
+  state.features.filter(f => f.kind === "path").forEach(f => {
+    lwpolyline("PATHS", f.points.map(feetToSpcs), false);
+  });
+
+  /* User-drawn points */
+  state.features.filter(f => f.kind === "point").forEach(f => {
+    const [px, py] = feetToSpcs(f.points[0]);
+    point("POINTS", px, py);
+    /* Add a TEXT entity for the label. */
+    w(0, "TEXT"); w(8, "POINTS");
+    w(10, px + 1.5); w(20, py); w(30, 0);
+    w(40, 1.5);   // text height in feet
+    w(1, f.label || "Point");
+  });
+
+  w(0, "ENDSEC");
+  w(0, "EOF");
+  return out.join("\n");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   KML EXPORT — Google Earth
+   Folders per layer, polygon / linestring / point Placemarks. Coordinates
+   are WGS84 lon/lat (KML's native projection). Colors are aabbggrr.
+══════════════════════════════════════════════════════════════════════ */
+function exportKml() {
+  if (!state.parcelFeet) return;
+  const kml = buildKml();
+  triggerDownload(new Blob([kml], { type: "application/vnd.google-earth.kml+xml" }), safeFilename("kml"));
+  setStatus("Downloaded .kml — open in Google Earth.");
+}
+
+/* RGB(A) percentages → KML aabbggrr hex. */
+function kmlColor([r, g, b], a) {
+  const A = Math.round((a == null ? 1 : a) * 255).toString(16).padStart(2, "0");
+  const R = Math.round(r * 255).toString(16).padStart(2, "0");
+  const G = Math.round(g * 255).toString(16).padStart(2, "0");
+  const B = Math.round(b * 255).toString(16).padStart(2, "0");
+  return `${A}${B}${G}${R}`;
+}
+
+function buildKml() {
+  const out = [];
+  out.push(`<?xml version="1.0" encoding="UTF-8"?>`);
+  out.push(`<kml xmlns="http://www.opengis.net/kml/2.2">`);
+  out.push(`<Document>`);
+  out.push(`<name>${escapeXml(state.tb.projectName || "Site Plan")} — APN ${escapeXml(state.apn)}</name>`);
+  const desc = [
+    state.tb.siteAddress, state.tb.zoning, state.tb.jurisdiction
+  ].filter(Boolean).join(" · ");
+  if (desc) out.push(`<description>${escapeXml(desc)}</description>`);
+
+  /* Styles — one per layer kind. */
+  const styles = [
+    { id: "parcel-style",    line: kmlColor([0.00,0.23,0.44], 1.0), lw: 3, poly: kmlColor([0.91,0.47,0.13], 0.18) },
+    { id: "neighbor-style",  line: kmlColor([0.50,0.50,0.50], 1.0), lw: 1, poly: kmlColor([0,0,0], 0) },
+    { id: "building-style",  line: kmlColor([0.20,0.20,0.20], 1.0), lw: 1, poly: kmlColor([0.47,0.47,0.47], 0.55) },
+    { id: "setback-style",   line: kmlColor([0.61,0.24,0.15], 1.0), lw: 2, poly: kmlColor([0.61,0.24,0.15], 0.10) },
+    { id: "structure-style", line: kmlColor([0.00,0.23,0.44], 1.0), lw: 2, poly: kmlColor([0.00,0.45,0.81], 0.30) },
+    { id: "path-style",      line: kmlColor([0.71,0.49,0.00], 1.0), lw: 3, poly: kmlColor([0,0,0], 0) },
+    { id: "point-style",     line: kmlColor([0.91,0.47,0.13], 1.0), lw: 1, poly: kmlColor([0.91,0.47,0.13], 1.0) }
+  ];
+  styles.forEach(s => {
+    out.push(`<Style id="${s.id}">`);
+    out.push(`<LineStyle><color>${s.line}</color><width>${s.lw}</width></LineStyle>`);
+    out.push(`<PolyStyle><color>${s.poly}</color></PolyStyle>`);
+    out.push(`<IconStyle><scale>0.9</scale></IconStyle>`);
+    out.push(`</Style>`);
+  });
+
+  function coordsTag(ring) {
+    /* KML expects lon,lat,alt — closed rings include the first point at the end. */
+    const pts = ring.map(feetToLonLat);
+    if (pts.length && (pts[0][0] !== pts[pts.length-1][0] || pts[0][1] !== pts[pts.length-1][1])) {
+      pts.push(pts[0]);   // close the ring per KML spec
+    }
+    return `<coordinates>${pts.map(([lon, lat]) => `${lon.toFixed(7)},${lat.toFixed(7)},0`).join(" ")}</coordinates>`;
+  }
+
+  function polygonPlacemark(name, styleUrl, ring) {
+    out.push(`<Placemark>`);
+    out.push(`<name>${escapeXml(name)}</name>`);
+    out.push(`<styleUrl>#${styleUrl}</styleUrl>`);
+    out.push(`<Polygon><outerBoundaryIs><LinearRing>${coordsTag(ring)}</LinearRing></outerBoundaryIs></Polygon>`);
+    out.push(`</Placemark>`);
+  }
+  function lineStringPlacemark(name, styleUrl, ring) {
+    out.push(`<Placemark>`);
+    out.push(`<name>${escapeXml(name)}</name>`);
+    out.push(`<styleUrl>#${styleUrl}</styleUrl>`);
+    /* For a LineString, don't auto-close. */
+    const pts = ring.map(feetToLonLat);
+    out.push(`<LineString><coordinates>${pts.map(([lon, lat]) => `${lon.toFixed(7)},${lat.toFixed(7)},0`).join(" ")}</coordinates></LineString>`);
+    out.push(`</Placemark>`);
+  }
+  function pointPlacemark(name, styleUrl, ftPoint) {
+    out.push(`<Placemark>`);
+    out.push(`<name>${escapeXml(name)}</name>`);
+    out.push(`<styleUrl>#${styleUrl}</styleUrl>`);
+    const [lon, lat] = feetToLonLat(ftPoint);
+    out.push(`<Point><coordinates>${lon.toFixed(7)},${lat.toFixed(7)},0</coordinates></Point>`);
+    out.push(`</Placemark>`);
+  }
+
+  /* Parcel folder */
+  out.push(`<Folder><name>Parcel</name>`);
+  polygonPlacemark(`APN ${state.apn || "?"}`, "parcel-style", state.parcelFeet);
+  out.push(`</Folder>`);
+
+  /* Surrounding parcels */
+  if (state.neighborRings.length) {
+    out.push(`<Folder><name>Surrounding Parcels</name>`);
+    state.neighborRings.forEach((ring, i) => {
+      polygonPlacemark(`Neighbor ${i + 1}`, "neighbor-style", ring);
+    });
+    out.push(`</Folder>`);
+  }
+
+  /* Existing buildings */
+  if (state.buildingRings.length) {
+    out.push(`<Folder><name>Existing Buildings</name>`);
+    state.buildingRings.forEach((ring, i) => {
+      polygonPlacemark(`Building ${i + 1}`, "building-style", ring);
+    });
+    out.push(`</Folder>`);
+  }
+
+  /* Setback envelope */
+  state.features.filter(f => f.kind === "setback").forEach(f => {
+    polygonPlacemark(f.label || "Setback", "setback-style", f.points);
+  });
+
+  /* Drawn structures */
+  const structures = state.features.filter(f => f.kind === "structure");
+  if (structures.length) {
+    out.push(`<Folder><name>Proposed Structures</name>`);
+    structures.forEach((f, i) => polygonPlacemark(f.label || `Structure ${i+1}`, "structure-style", f.points));
+    out.push(`</Folder>`);
+  }
+  /* Drawn paths */
+  const paths = state.features.filter(f => f.kind === "path");
+  if (paths.length) {
+    out.push(`<Folder><name>Paths</name>`);
+    paths.forEach((f, i) => lineStringPlacemark(f.label || `Path ${i+1}`, "path-style", f.points));
+    out.push(`</Folder>`);
+  }
+  /* Drawn points */
+  const points = state.features.filter(f => f.kind === "point");
+  if (points.length) {
+    out.push(`<Folder><name>Points</name>`);
+    points.forEach((f, i) => pointPlacemark(f.label || `Point ${i+1}`, "point-style", f.points[0]));
+    out.push(`</Folder>`);
+  }
+
+  out.push(`</Document></kml>`);
+  return out.join("\n");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   PNG EXPORT — raster snapshot of the architectural sheet
+   Rasterizes the SVG via <img> + <canvas>, at ~200 DPI for print quality.
+══════════════════════════════════════════════════════════════════════ */
+async function exportPng() {
+  if (!state.parcelFeet) return;
+  const svg = buildSvg();
+  const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(svgBlob);
+  const img = new Image();
+  try {
+    await new Promise((res, rej) => {
+      img.onload  = res;
+      img.onerror = () => rej(new Error("SVG → image rasterization failed"));
+      img.src = url;
+    });
+  } catch (err) {
+    URL.revokeObjectURL(url);
+    setStatus(err.message);
+    return;
+  }
+
+  const fmtKey = state.tb.format || "archd";
+  const dims   = PAGE_FORMATS[fmtKey] || PAGE_FORMATS.archd;
+  const dpiScale = 200 / 72;
+  const canvas = document.createElement("canvas");
+  canvas.width  = Math.round(dims[0] * dpiScale);
+  canvas.height = Math.round(dims[1] * dpiScale);
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  URL.revokeObjectURL(url);
+
+  await new Promise(res => {
+    canvas.toBlob(blob => {
+      if (!blob) { setStatus("PNG export failed."); res(); return; }
+      triggerDownload(blob, safeFilename("png"));
+      setStatus(`Downloaded .png (${canvas.width}×${canvas.height}, ${Math.round(blob.size/1024)} KB).`);
+      res();
+    }, "image/png");
+  });
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   GEOJSON EXPORT — FeatureCollection of everything on the site plan
+   Polygon exterior rings reversed to CCW per RFC 7946.
+══════════════════════════════════════════════════════════════════════ */
+function exportGeoJson() {
+  if (!state.parcelFeet) return;
+  const fc = buildGeoJson();
+  triggerDownload(
+    new Blob([JSON.stringify(fc, null, 2)], { type: "application/geo+json" }),
+    safeFilename("geojson")
+  );
+  setStatus("Downloaded .geojson — drop into geojson.io / QGIS / a script.");
+}
+
+function _ccwLonLatRing(ring) {
+  /* RFC 7946: exterior ring CCW. ArcGIS rings come CW; ours pass through
+     a Y-flip so winding can go either way — normalize using shoelace. */
+  let signed = 0;
+  for (let i = 0; i < ring.length; i++) {
+    const [x1, y1] = ring[i];
+    const [x2, y2] = ring[(i + 1) % ring.length];
+    signed += (x2 - x1) * (y2 + y1);
+  }
+  /* In Y-up math (lon/lat), positive signed-trapezoid = CW. Reverse to CCW. */
+  return (signed > 0 ? ring.slice().reverse() : ring.slice())
+    .map(([lon, lat]) => [+lon.toFixed(7), +lat.toFixed(7)]);
+}
+
+function buildGeoJson() {
+  const features = [];
+
+  function pushPolygon(props, ringInLocalFeet) {
+    const lonLat = ringInLocalFeet.map(feetToLonLat);
+    features.push({
+      type: "Feature",
+      properties: props,
+      geometry: { type: "Polygon", coordinates: [_ccwLonLatRing(lonLat)] }
+    });
+  }
+  function pushLineString(props, ringInLocalFeet) {
+    const lonLat = ringInLocalFeet.map(feetToLonLat).map(([lo, la]) => [+lo.toFixed(7), +la.toFixed(7)]);
+    features.push({
+      type: "Feature",
+      properties: props,
+      geometry: { type: "LineString", coordinates: lonLat }
+    });
+  }
+  function pushPoint(props, pointInLocalFeet) {
+    const [lon, lat] = feetToLonLat(pointInLocalFeet);
+    features.push({
+      type: "Feature",
+      properties: props,
+      geometry: { type: "Point", coordinates: [+lon.toFixed(7), +lat.toFixed(7)] }
+    });
+  }
+
+  /* Parcel */
+  pushPolygon({
+    kind: "parcel",
+    APN: state.apn,
+    address: state.tb.siteAddress || null,
+    zoning:  state.tb.zoning || null,
+    jurisdiction: state.tb.jurisdiction || null,
+    acres:   state.tb.acres || null,
+    source: "TRPA Parcels FeatureServer/0"
+  }, state.parcelFeet);
+
+  /* Surrounding parcels */
+  state.neighborRings.forEach((ring, i) => {
+    pushPolygon({ kind: "neighbor", index: i + 1, source: "TRPA Parcels FeatureServer/0" }, ring);
+  });
+
+  /* Existing buildings */
+  state.buildingRings.forEach((ring, i) => {
+    pushPolygon({ kind: "existing_building", index: i + 1,
+                  source: "TRPA Impervious_Surface_2019" }, ring);
+  });
+
+  /* Setback envelope */
+  state.features.filter(f => f.kind === "setback").forEach(f => {
+    pushPolygon({
+      kind: "setback",
+      label: f.label || "Setback",
+      front_ft: state.setback.front,
+      side_ft:  state.setback.side,
+      rear_ft:  state.setback.rear
+    }, f.points);
+  });
+
+  /* Drawn structures */
+  state.features.filter(f => f.kind === "structure").forEach(f => {
+    pushPolygon({
+      kind: "structure",
+      label: f.label,
+      area_sqft: Math.round(polygonArea(f.points))
+    }, f.points);
+  });
+
+  /* Drawn paths */
+  state.features.filter(f => f.kind === "path").forEach(f => {
+    pushLineString({
+      kind: "path",
+      label: f.label,
+      length_ft: Math.round(polylineLength(f.points))
+    }, f.points);
+  });
+
+  /* Drawn points */
+  state.features.filter(f => f.kind === "point").forEach(f => {
+    pushPoint({ kind: "point", label: f.label }, f.points[0]);
+  });
+
+  return {
+    type: "FeatureCollection",
+    name: `Site Plan — APN ${state.apn || "(unknown)"}`,
+    crs: { type: "name", properties: { name: "urn:ogc:def:crs:EPSG::4326" } },
+    features
+  };
+}
+
+/* Convert our local-feet (X, screen-Y) to DAE world coords.
+   Screen-Y is south-positive; SketchUp expects north-positive. */
+function feetToDae([x, y]) {
+  return [x, -y, 0];   // X east, Y north, Z up (ground = 0)
+}
+
+/* Local feet (X east, screen-Y south-positive) → SPCS feet (X east, Y north). */
+function feetToSpcs([x, y]) {
+  return [x + state.origin.spcsX, state.origin.spcsY_top - y];
+}
+/* Local feet → WGS84 [lon, lat] via SPCS as the bridge. */
+function feetToLonLat(p) {
+  const spcs = feetToSpcs(p);
+  return proj4("EPSG:2226", "EPSG:4326", spcs);
+}
+
+/* Shared file download helper — every export uses this. */
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function safeFilename(ext) {
+  const apn = (state.apn || "site").replace(/[^A-Za-z0-9-]/g, "_");
+  const date = new Date().toISOString().slice(0, 10);
+  return `SitePlan_${apn}_${date}.${ext}`;
+}
+
+/* DAE writer state — auto-incrementing geometry IDs and a single shared
+   set of materials for color-coding the layers in SketchUp. */
+const DAE_MATERIALS = [
+  { id: "mat-parcel",     name: "Parcel",              rgba: [0.00, 0.23, 0.44, 1.0] },
+  { id: "mat-neighbor",   name: "Neighbor Parcels",    rgba: [0.60, 0.60, 0.60, 1.0] },
+  { id: "mat-building",   name: "Existing Buildings",  rgba: [0.39, 0.39, 0.39, 1.0] },
+  { id: "mat-setback",    name: "Setback Envelope",    rgba: [0.61, 0.24, 0.15, 1.0] },
+  { id: "mat-structure",  name: "Proposed Structures", rgba: [0.00, 0.45, 0.81, 1.0] },
+  { id: "mat-path",       name: "Paths / Driveways",   rgba: [0.71, 0.49, 0.00, 1.0] },
+  { id: "mat-point",      name: "Points",              rgba: [0.91, 0.47, 0.13, 1.0] }
+];
+
+function buildDaeXml() {
+  const geos  = [];   // { id, name, type: "lines"|"polygon"|"point", points: [[x,y,z],...] }
+  const nodes = [];   // { name, geoId, materialId, parentName? }
+
+  /* Parcel boundary — closed line. */
+  if (state.parcelFeet && state.parcelFeet.length) {
+    const ring = state.parcelFeet.map(feetToDae);
+    geos.push({ id: "geo-parcel", name: "Parcel-Geometry", type: "lines",
+                points: ring, closed: true });
+    nodes.push({ name: "Parcel", geoId: "geo-parcel", materialId: "mat-parcel" });
+  }
+
+  /* Surrounding parcels — group of closed lines under "Surrounding Parcels". */
+  if (state.neighborRings.length) {
+    state.neighborRings.forEach((ring, i) => {
+      const id = `geo-neighbor-${i}`;
+      geos.push({ id, name: `Neighbor-${i}-Geometry`, type: "lines",
+                  points: ring.map(feetToDae), closed: true });
+      nodes.push({
+        name: `Neighbor ${i + 1}`, geoId: id,
+        materialId: "mat-neighbor", parentName: "Surrounding Parcels"
+      });
+    });
+  }
+
+  /* Existing buildings — filled faces under "Existing Buildings". */
+  if (state.buildingRings.length) {
+    state.buildingRings.forEach((ring, i) => {
+      const id = `geo-building-${i}`;
+      geos.push({ id, name: `Building-${i}-Geometry`, type: "polygon",
+                  points: ring.map(feetToDae) });
+      nodes.push({
+        name: `Existing Building ${i + 1}`, geoId: id,
+        materialId: "mat-building", parentName: "Existing Buildings"
+      });
+    });
+  }
+
+  /* Setback envelope. */
+  const setback = state.features.find(f => f.kind === "setback");
+  if (setback) {
+    geos.push({ id: "geo-setback", name: "Setback-Geometry", type: "lines",
+                points: setback.points.map(feetToDae), closed: true });
+    nodes.push({ name: "Setback Envelope", geoId: "geo-setback", materialId: "mat-setback" });
+  }
+
+  /* User-drawn structures, paths, points. */
+  const structures = state.features.filter(f => f.kind === "structure");
+  structures.forEach((f, i) => {
+    const id = `geo-structure-${i}`;
+    geos.push({ id, name: `Structure-${i}-Geometry`, type: "polygon",
+                points: f.points.map(feetToDae) });
+    nodes.push({
+      name: f.label || `Proposed Structure ${i + 1}`,
+      geoId: id, materialId: "mat-structure", parentName: "Proposed Structures"
+    });
+  });
+
+  const paths = state.features.filter(f => f.kind === "path");
+  paths.forEach((f, i) => {
+    const id = `geo-path-${i}`;
+    geos.push({ id, name: `Path-${i}-Geometry`, type: "lines",
+                points: f.points.map(feetToDae), closed: false });
+    nodes.push({
+      name: f.label || `Path ${i + 1}`,
+      geoId: id, materialId: "mat-path", parentName: "Paths"
+    });
+  });
+
+  const points = state.features.filter(f => f.kind === "point");
+  points.forEach((f, i) => {
+    const id = `geo-point-${i}`;
+    /* Render a tiny crosshair so the point is visible in SketchUp. */
+    const [px, py, pz] = feetToDae(f.points[0]);
+    const s = 1.5;   // 1.5 ft crosshair
+    geos.push({
+      id, name: `Point-${i}-Geometry`, type: "lines",
+      points: [
+        [px - s, py, pz], [px + s, py, pz],
+        [px, py - s, pz], [px, py + s, pz]
+      ],
+      closed: false, lineSegments: true   // each pair of consecutive points is a separate segment
+    });
+    nodes.push({
+      name: f.label || `Point ${i + 1}`,
+      geoId: id, materialId: "mat-point", parentName: "Points"
+    });
+  });
+
+  return assembleDae(geos, nodes);
+}
+
+/* DAE/COLLADA assembly. We hand-write the XML rather than pulling in a
+   library — the format is verbose but well-specified and stable. */
+function assembleDae(geos, nodes) {
+  const now = new Date().toISOString();
+  const apn = state.apn || "unknown";
+  const project = state.tb.projectName || "Site Plan";
+  const author  = state.tb.ownerName   || "TRPA Site Planner";
+
+  const geosXml = geos.map(g => {
+    const flat = [];
+    g.points.forEach(([x, y, z]) => { flat.push(x.toFixed(4), y.toFixed(4), z.toFixed(4)); });
+    const posCount = g.points.length;
+
+    if (g.type === "lines") {
+      /* Index pairs: (0,1) (1,2) (2,3) ... and optionally (n-1, 0) for closed. */
+      const pairs = [];
+      const limit = g.lineSegments ? posCount : (g.closed ? posCount : posCount - 1);
+      if (g.lineSegments) {
+        /* Each consecutive pair is one segment, no shared vertices */
+        for (let i = 0; i < posCount; i += 2) pairs.push(i, i + 1);
+      } else {
+        for (let i = 0; i < posCount - 1; i++) pairs.push(i, i + 1);
+        if (g.closed) pairs.push(posCount - 1, 0);
+      }
+      const lineCount = pairs.length / 2;
+      return `
+  <geometry id="${g.id}" name="${g.name}">
+    <mesh>
+      <source id="${g.id}-positions">
+        <float_array id="${g.id}-positions-array" count="${posCount * 3}">${flat.join(" ")}</float_array>
+        <technique_common>
+          <accessor source="#${g.id}-positions-array" count="${posCount}" stride="3">
+            <param name="X" type="float"/>
+            <param name="Y" type="float"/>
+            <param name="Z" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <vertices id="${g.id}-vertices">
+        <input semantic="POSITION" source="#${g.id}-positions"/>
+      </vertices>
+      <lines count="${lineCount}">
+        <input semantic="VERTEX" source="#${g.id}-vertices" offset="0"/>
+        <p>${pairs.join(" ")}</p>
+      </lines>
+    </mesh>
+  </geometry>`;
+    }
+
+    if (g.type === "polygon") {
+      /* Single polygon, `posCount` vertices. */
+      const indices = [];
+      for (let i = 0; i < posCount; i++) indices.push(i);
+      return `
+  <geometry id="${g.id}" name="${g.name}">
+    <mesh>
+      <source id="${g.id}-positions">
+        <float_array id="${g.id}-positions-array" count="${posCount * 3}">${flat.join(" ")}</float_array>
+        <technique_common>
+          <accessor source="#${g.id}-positions-array" count="${posCount}" stride="3">
+            <param name="X" type="float"/>
+            <param name="Y" type="float"/>
+            <param name="Z" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <vertices id="${g.id}-vertices">
+        <input semantic="POSITION" source="#${g.id}-positions"/>
+      </vertices>
+      <polylist count="1">
+        <input semantic="VERTEX" source="#${g.id}-vertices" offset="0"/>
+        <vcount>${posCount}</vcount>
+        <p>${indices.join(" ")}</p>
+      </polylist>
+    </mesh>
+  </geometry>`;
+    }
+    return "";
+  }).join("");
+
+  /* Materials + effects (one per logical category). */
+  const effectsXml = DAE_MATERIALS.map(m => `
+  <effect id="${m.id}-effect">
+    <profile_COMMON>
+      <technique sid="common">
+        <lambert>
+          <diffuse><color>${m.rgba.join(" ")}</color></diffuse>
+        </lambert>
+      </technique>
+    </profile_COMMON>
+  </effect>`).join("");
+
+  const materialsXml = DAE_MATERIALS.map(m => `
+  <material id="${m.id}" name="${m.name}">
+    <instance_effect url="#${m.id}-effect"/>
+  </material>`).join("");
+
+  /* Group nodes by parentName so neighbors / buildings / etc. become
+     a single SketchUp Component on import. */
+  const groupedByParent = {};
+  const standalone = [];
+  nodes.forEach(n => {
+    if (n.parentName) {
+      (groupedByParent[n.parentName] = groupedByParent[n.parentName] || []).push(n);
+    } else {
+      standalone.push(n);
+    }
+  });
+
+  function renderInstance(n) {
+    return `
+        <node id="node-${n.geoId}" name="${escapeXml(n.name)}">
+          <instance_geometry url="#${n.geoId}">
+            <bind_material>
+              <technique_common>
+                <instance_material symbol="default" target="#${n.materialId}"/>
+              </technique_common>
+            </bind_material>
+          </instance_geometry>
+        </node>`;
+  }
+
+  const sceneNodes = [];
+  /* Standalone nodes (parcel, setback) at top level */
+  standalone.forEach(n => sceneNodes.push(renderInstance(n)));
+  /* Grouped nodes wrapped in a parent <node>. */
+  Object.entries(groupedByParent).forEach(([parentName, kids]) => {
+    sceneNodes.push(`
+      <node id="group-${parentName.replace(/\s+/g, "-").toLowerCase()}" name="${escapeXml(parentName)}">
+${kids.map(renderInstance).join("")}
+      </node>`);
+  });
+
+  return `<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>${escapeXml(author)}</author>
+      <authoring_tool>TRPA Site Planner</authoring_tool>
+      <comments>APN ${escapeXml(apn)} — ${escapeXml(project)}</comments>
+    </contributor>
+    <created>${now}</created>
+    <modified>${now}</modified>
+    <unit name="foot" meter="0.3048"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_effects>${effectsXml}
+  </library_effects>
+  <library_materials>${materialsXml}
+  </library_materials>
+  <library_geometries>${geosXml}
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="site-plan-scene" name="Site Plan">${sceneNodes.join("")}
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#site-plan-scene"/>
+  </scene>
+</COLLADA>`;
+}
+
+function escapeXml(s) {
+  return String(s || "")
+    .replace(/&/g,  "&amp;")
+    .replace(/</g,  "&lt;")
+    .replace(/>/g,  "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   SVG EXPORT — for Illustrator / Photoshop markup
+   Vector output at the same architectural sheet size as the PDF, with
+   each layer wrapped in a named <g> so AI shows them as editable
+   sub-layers. Hand-rolled SVG (no library) to keep the file dependency-free.
+══════════════════════════════════════════════════════════════════════ */
+/* (SVG export wired via the Export ▾ dropdown, see exportRouter above) */
+
+function exportSvg() {
+  if (!state.parcelFeet) return;
+  const svg = buildSvg();
+  triggerDownload(new Blob([svg], { type: "image/svg+xml" }), safeFilename("svg"));
+  setStatus("Downloaded .svg — open in Illustrator / Photoshop for markup.");
+}
+
+function buildSvg() {
+  const fmtKey = state.tb.format || "archd";
+  const dims   = PAGE_FORMATS[fmtKey] || PAGE_FORMATS.archd;
+  const pageW = dims[0], pageH = dims[1];
+
+  /* Layout — same math as exportPdf */
+  const outerInset = 18, innerInset = 28;
+  const titleBlockW = Math.min(280, Math.max(180, pageW * 0.20));
+  const scaleStripH = 64;
+  const plotX = innerInset + 6;
+  const plotY = innerInset + 6;
+  const plotW = pageW - innerInset - titleBlockW - 12;
+  const plotH = pageH - 2 * innerInset - scaleStripH - 12;
+  const bbox = state.parcelBbox;
+  const labelMarginPt = 22;
+  const effScale = Math.min(
+    (plotW - 2 * labelMarginPt) / bbox.maxX,
+    (plotH - 2 * labelMarginPt) / bbox.maxY
+  );
+  const effFtPerInch = 72 / effScale;
+  const offsetX = plotX + (plotW - bbox.maxX * effScale) / 2;
+  const offsetY = plotY + (plotH - bbox.maxY * effScale) / 2;
+  const ftToPt = ([x, y]) => [offsetX + x * effScale, offsetY + y * effScale];
+
+  const out = [];
+  out.push(`<?xml version="1.0" encoding="UTF-8"?>`);
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" version="1.1" `
+        + `viewBox="0 0 ${pageW} ${pageH}" width="${pageW}pt" height="${pageH}pt" `
+        + `font-family="Helvetica, Arial, sans-serif">`);
+
+  /* Sheet frame */
+  out.push(`<g id="Sheet-Frame" stroke="black" fill="none">`);
+  out.push(`<rect x="${outerInset}" y="${outerInset}" `
+        + `width="${pageW - 2*outerInset}" height="${pageH - 2*outerInset}" stroke-width="2.5"/>`);
+  out.push(`<rect x="${innerInset}" y="${innerInset}" `
+        + `width="${pageW - 2*innerInset}" height="${pageH - 2*innerInset}" stroke-width="0.6"/>`);
+  out.push(`<rect x="${plotX}" y="${plotY}" width="${plotW}" height="${plotH}" stroke-width="1.6"/>`);
+  out.push(`</g>`);
+
+  /* Aerial */
+  if (state.layerVis.aerial && state.aerial.dataUrl && state.aerial.localBbox) {
+    const lb  = state.aerial.localBbox;
+    const tl  = ftToPt([lb.minX, lb.minY]);
+    const br  = ftToPt([lb.maxX, lb.maxY]);
+    out.push(`<g id="Aerial" clip-path="url(#plotClip)">`);
+    out.push(`<defs><clipPath id="plotClip"><rect x="${plotX}" y="${plotY}" width="${plotW}" height="${plotH}"/></clipPath></defs>`);
+    out.push(`<image href="${state.aerial.dataUrl}" x="${tl[0]}" y="${tl[1]}" `
+          + `width="${br[0]-tl[0]}" height="${br[1]-tl[1]}" preserveAspectRatio="none"/>`);
+    out.push(`</g>`);
+  }
+
+  /* Surrounding parcels */
+  if (state.layerVis.neighbors && state.neighborRings.length) {
+    out.push(`<g id="Surrounding-Parcels" stroke="rgb(150,150,150)" stroke-width="0.4" fill="none">`);
+    state.neighborRings.forEach(ring => {
+      out.push(`<polygon points="${ring.map(ftToPt).map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ")}"/>`);
+    });
+    out.push(`</g>`);
+  }
+
+  /* Existing buildings */
+  if (state.layerVis.buildings && state.buildingRings.length) {
+    out.push(`<g id="Existing-Buildings" stroke="rgb(50,50,50)" stroke-width="0.5" fill="rgb(120,120,120)">`);
+    state.buildingRings.forEach(ring => {
+      out.push(`<polygon points="${ring.map(ftToPt).map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ")}"/>`);
+    });
+    out.push(`</g>`);
+  }
+
+  /* Parcel — heavy black outline */
+  if (state.layerVis.parcel && state.parcelFeet.length) {
+    const pts = state.parcelFeet.map(ftToPt).map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ");
+    const fillAttr = state.layerVis.aerial ? "none" : "rgb(252,248,240)";
+    out.push(`<g id="Parcel" stroke="black" stroke-width="2.5" fill="${fillAttr}">`);
+    out.push(`<polygon points="${pts}"/>`);
+    out.push(`</g>`);
+  }
+
+  /* Edge dimension labels */
+  if (state.layerVis.parcelDims && state.parcelFeet.length) {
+    const ring = state.parcelFeet;
+    const c = polygonCentroid(ring);
+    out.push(`<g id="Parcel-Dimensions" font-size="8" font-weight="bold" fill="black" text-anchor="middle">`);
+    for (let i = 0; i < ring.length; i++) {
+      const [x1, y1] = ring[i];
+      const [x2, y2] = ring[(i + 1) % ring.length];
+      const lenFt = Math.hypot(x2-x1, y2-y1);
+      if (lenFt < 3) continue;
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const ox = mx - (c ? c.x : mx);
+      const oy = my - (c ? c.y : my);
+      const ol = Math.hypot(ox, oy) || 1;
+      const offsetFt = 10 / effScale;
+      const lx = mx + (ox / ol) * offsetFt;
+      const ly = my + (oy / ol) * offsetFt;
+      const [tx, ty] = ftToPt([lx, ly]);
+      out.push(`<text x="${tx.toFixed(1)}" y="${(ty+3).toFixed(1)}">${lenFt.toFixed(1)}'</text>`);
+    }
+    out.push(`</g>`);
+  }
+
+  /* Setbacks */
+  if (state.layerVis.setbacks) {
+    const sbs = state.features.filter(f => f.kind === "setback");
+    if (sbs.length) {
+      out.push(`<g id="Setback-Envelope" stroke="rgb(156,62,39)" stroke-width="0.8" fill="none" stroke-dasharray="4 3">`);
+      sbs.forEach(f => {
+        const pts = f.points.map(ftToPt).map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ");
+        out.push(`<polygon points="${pts}"/>`);
+      });
+      out.push(`</g>`);
+    }
+  }
+
+  /* Proposed structures */
+  if (state.layerVis.structures) {
+    const structs = state.features.filter(f => f.kind === "structure");
+    if (structs.length) {
+      out.push(`<g id="Proposed-Structures" stroke="black" stroke-width="1" fill="rgb(220,232,245)">`);
+      structs.forEach(f => {
+        const pts = f.points.map(ftToPt).map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ");
+        out.push(`<polygon points="${pts}"/>`);
+        const c = polygonCentroid(f.points);
+        if (c) {
+          const [tx, ty] = ftToPt([c.x, c.y]);
+          out.push(`<text x="${tx}" y="${ty}" font-size="8" font-weight="bold" fill="black" text-anchor="middle">${escapeXml(f.label)}</text>`);
+          out.push(`<text x="${tx}" y="${ty+10}" font-size="7" fill="rgb(60,60,60)" text-anchor="middle">${polygonArea(f.points).toLocaleString()} sf</text>`);
+        }
+      });
+      out.push(`</g>`);
+    }
+  }
+
+  /* Paths */
+  if (state.layerVis.paths) {
+    const paths = state.features.filter(f => f.kind === "path");
+    if (paths.length) {
+      out.push(`<g id="Paths" stroke="rgb(180,126,0)" stroke-width="2" fill="none">`);
+      paths.forEach(f => {
+        const pts = f.points.map(ftToPt).map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ");
+        out.push(`<polyline points="${pts}"/>`);
+      });
+      out.push(`</g>`);
+    }
+  }
+
+  /* Points */
+  if (state.layerVis.points) {
+    const points = state.features.filter(f => f.kind === "point");
+    if (points.length) {
+      out.push(`<g id="Points" stroke="white" stroke-width="1.5" fill="rgb(232,119,34)">`);
+      points.forEach(f => {
+        const [px, py] = ftToPt(f.points[0]);
+        out.push(`<circle cx="${px.toFixed(2)}" cy="${py.toFixed(2)}" r="3"/>`);
+        out.push(`<text x="${(px+5).toFixed(2)}" y="${(py+2).toFixed(2)}" font-size="7" font-weight="bold" fill="black" stroke="none">${escapeXml(f.label)}</text>`);
+      });
+      out.push(`</g>`);
+    }
+  }
+
+  /* Title block + scale strip — render as bitmap-equivalent paths.
+     We just emit clear, hand-built SVG so all of this is editable in AI. */
+  out.push(svgTitleBlock(pageW - innerInset - titleBlockW - 6, innerInset + 6,
+    titleBlockW, pageH - 2*innerInset - 12, effFtPerInch));
+  out.push(svgScaleStrip(plotX, plotY + plotH + 6, plotW, scaleStripH, effFtPerInch));
+
+  out.push(`</svg>`);
+  return out.join("\n");
+}
+
+function svgTitleBlock(x, y, w, h, ftPerInch) {
+  const inset = 10;
+  const date = new Date().toLocaleDateString();
+  const lines = [];
+  lines.push(`<g id="Title-Block">`);
+  lines.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" stroke="black" stroke-width="1.3" fill="white"/>`);
+  /* Banner */
+  lines.push(`<rect x="${x}" y="${y}" width="${w}" height="56" fill="rgb(0,59,113)"/>`);
+  lines.push(`<text x="${x+12}" y="${y+18}" font-size="13" font-weight="bold" fill="white">TAHOE REGIONAL</text>`);
+  lines.push(`<text x="${x+12}" y="${y+33}" font-size="13" font-weight="bold" fill="white">PLANNING AGENCY</text>`);
+  lines.push(`<text x="${x+12}" y="${y+47}" font-size="9" fill="white">Site Plan</text>`);
+
+  let cy = y + 56;
+  function divider() {
+    lines.push(`<line x1="${x}" y1="${cy}" x2="${x+w}" y2="${cy}" stroke="black" stroke-width="0.8"/>`);
+  }
+  function field(label, value) {
+    lines.push(`<text x="${x+inset}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">${escapeXml(label.toUpperCase())}</text>`);
+    lines.push(`<text x="${x+inset}" y="${cy+22}" font-size="9.5" font-weight="bold" fill="black">${escapeXml(String(value || "—"))}</text>`);
+    cy += 28;
+  }
+  divider();
+  field("Project", state.tb.projectName);
+  field("Project type", state.tb.projectType);
+  field("Permit / app #", state.tb.permitNumber);
+  divider();
+  field("APN", state.apn);
+  field("Address", state.tb.siteAddress);
+  field("Owner", state.tb.ownerName);
+  divider();
+  field("Zoning", state.tb.zoning);
+  field("Jurisdiction", state.tb.jurisdiction);
+  field("Acres", state.tb.acres);
+  divider();
+  lines.push(`<text x="${x+inset}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">SETBACKS (FT)</text>`);
+  lines.push(`<text x="${x+inset}" y="${cy+24}" font-size="10" font-weight="bold" fill="black">F  ${state.setback.front||0}'</text>`);
+  lines.push(`<text x="${x+inset+60}" y="${cy+24}" font-size="10" font-weight="bold" fill="black">S  ${state.setback.side||0}'</text>`);
+  lines.push(`<text x="${x+inset+120}" y="${cy+24}" font-size="10" font-weight="bold" fill="black">R  ${state.setback.rear||0}'</text>`);
+  cy += 36;
+  divider();
+  lines.push(`<text x="${x+inset}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">NOTES</text>`);
+  if (state.tb.notes) {
+    const notes = state.tb.notes.split(/\n/);
+    let nY = cy + 24;
+    notes.forEach(line => {
+      if (nY < y + h - 110) {
+        lines.push(`<text x="${x+inset}" y="${nY}" font-family="Courier, monospace" font-size="8" fill="black">${escapeXml(line)}</text>`);
+        nY += 10;
+      }
+    });
+  } else {
+    lines.push(`<text x="${x+inset}" y="${cy+22}" font-size="7" font-style="italic" fill="rgb(160,160,160)">(no project notes)</text>`);
+  }
+  /* Sheet info */
+  cy = y + h - 100;
+  divider();
+  lines.push(`<text x="${x+inset}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">DATE</text>`);
+  lines.push(`<text x="${x+inset+80}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">SCALE</text>`);
+  lines.push(`<text x="${x+inset}" y="${cy+22}" font-size="9" fill="black">${escapeXml(date)}</text>`);
+  lines.push(`<text x="${x+inset+80}" y="${cy+22}" font-size="9" fill="black">1" = ${formatScaleFt(ftPerInch)}'</text>`);
+  cy += 32;
+  lines.push(`<text x="${x+inset}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">DRAWN BY</text>`);
+  lines.push(`<text x="${x+inset+80}" y="${cy+10}" font-size="6.5" font-weight="bold" fill="rgb(110,110,110)">SHEET</text>`);
+  lines.push(`<text x="${x+inset}" y="${cy+22}" font-size="9" fill="black">${escapeXml(state.tb.ownerName || "TRPA Site Planner")}</text>`);
+  lines.push(`<text x="${x+inset+80}" y="${cy+24}" font-size="13" font-weight="bold" fill="black">A1.1</text>`);
+  lines.push(`</g>`);
+  return lines.join("\n");
+}
+
+function svgScaleStrip(x, y, w, h, ftPerInch) {
+  const out = [];
+  out.push(`<g id="Scale-Strip">`);
+  out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="white" stroke="black" stroke-width="1"/>`);
+  /* Scale bar */
+  const targetIn = 2.0;
+  const targetFt = targetIn * ftPerInch;
+  const ROUND = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000];
+  let totalFt = ROUND[0];
+  for (const r of ROUND) {
+    if (Math.abs(r - targetFt) < Math.abs(totalFt - targetFt)) totalFt = r;
+  }
+  const barLenPt = (totalFt / ftPerInch) * 72;
+  const stepFt   = totalFt / 4;
+  const stepPt   = barLenPt / 4;
+  const barX = x + 18, barY = y + h / 2 + 2, barH = 8;
+  for (let i = 0; i < 4; i++) {
+    const sx = barX + i * stepPt;
+    const fill = i % 2 === 0 ? "black" : "white";
+    out.push(`<rect x="${sx}" y="${barY}" width="${stepPt}" height="${barH}" fill="${fill}" stroke="black" stroke-width="0.6"/>`);
+  }
+  for (let i = 0; i <= 4; i++) {
+    const sx = barX + i * stepPt;
+    out.push(`<text x="${sx}" y="${barY + barH + 9}" font-size="7" fill="black" text-anchor="middle">${(i*stepFt).toFixed(0)}</text>`);
+  }
+  out.push(`<text x="${barX + barLenPt + 6}" y="${barY + barH}" font-size="7" font-weight="bold" fill="black">FEET</text>`);
+  /* Center label */
+  out.push(`<text x="${x + w/2}" y="${y + h/2 - 2}" font-size="13" font-weight="bold" fill="black" text-anchor="middle">SCALE: 1" = ${formatScaleFt(ftPerInch)}'</text>`);
+  out.push(`<text x="${x + w/2}" y="${y + h/2 + 12}" font-size="7" fill="rgb(80,80,80)" text-anchor="middle">(auto-fit to sheet)</text>`);
+  /* North arrow */
+  const cx = x + w - 56, cy = y + h / 2, r = 22;
+  out.push(`<g id="North-Arrow" stroke="black" fill="none">`);
+  out.push(`<circle cx="${cx}" cy="${cy}" r="${r}" stroke-width="1.2"/>`);
+  out.push(`<line x1="${cx-r}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke-width="0.4"/>`);
+  out.push(`<line x1="${cx}" y1="${cy-r}" x2="${cx}" y2="${cy+r}" stroke-width="0.4"/>`);
+  out.push(`<polygon points="${cx},${cy-r+3} ${cx-5},${cy+4} ${cx+5},${cy+4}" fill="black" stroke="none"/>`);
+  out.push(`<rect x="${cx-5}" y="${cy-r-9}" width="10" height="12" fill="white" stroke="none"/>`);
+  out.push(`<text x="${cx}" y="${cy-r+1}" font-size="11" font-weight="bold" fill="black" text-anchor="middle" stroke="none">N</text>`);
+  out.push(`</g>`);
+  out.push(`</g>`);
+  return out.join("\n");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   PDF EXPORT — at scale, with title block
+   We render the drawing into the PDF in a coordinate system where
+   1 inch = (state.tb.scale) feet. So 1 foot = 72 / state.tb.scale points.
+══════════════════════════════════════════════════════════════════════ */
+/* (PDF export wired via the Export ▾ dropdown, see exportRouter above) */
+
+/* Page format → [width, height] in points (always landscape).
+   ARCH D = 24×36, ARCH C = 18×24, plus standard letter / tabloid. */
+const PAGE_FORMATS = {
+  archd:   [36 * 72, 24 * 72],
+  archc:   [24 * 72, 18 * 72],
+  tabloid: [17 * 72, 11 * 72],
+  letter:  [11 * 72, 8.5 * 72]
+};
+
+function exportPdf() {
+  if (!state.parcelFeet) return;
+  const { jsPDF } = window.jspdf;
+  const fmtKey = state.tb.format || "archd";
+  const dims   = PAGE_FORMATS[fmtKey] || PAGE_FORMATS.archd;
+  const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: dims });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+
+  /* Sheet frame: thick outer border + thinner inner border (architectural). */
+  const outerInset = 18;       // 0.25"
+  const innerInset = 28;       // ~0.4"
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(2.5);
+  doc.rect(outerInset, outerInset, pageW - 2 * outerInset, pageH - 2 * outerInset);
+  doc.setLineWidth(0.6);
+  doc.rect(innerInset, innerInset, pageW - 2 * innerInset, pageH - 2 * innerInset);
+
+  /* Layout: title block on the right (full sheet height), plot area on the left
+     with a bottom strip for the scale bar + north arrow. Sized proportional to
+     sheet so the look stays architectural across formats. */
+  const titleBlockW = Math.min(280, Math.max(180, pageW * 0.20));
+  const scaleStripH = 64;   // bottom strip for graphic scale + north arrow
+  const plotX = innerInset + 6;
+  const plotY = innerInset + 6;
+  const plotW = pageW - innerInset - titleBlockW - 12;
+  const plotH = pageH - 2 * innerInset - scaleStripH - 12;
+
+  /* Always fit the parcel to the plot area; reserve a margin for edge labels. */
+  const bbox = state.parcelBbox;
+  const labelMarginPt = 22;
+  const effScale = Math.min(
+    (plotW - 2 * labelMarginPt) / bbox.maxX,
+    (plotH - 2 * labelMarginPt) / bbox.maxY
+  );
+  const effFtPerInch = 72 / effScale;
+
+  /* Center the parcel inside the plot box. */
+  const offsetX = plotX + (plotW - bbox.maxX * effScale) / 2;
+  const offsetY = plotY + (plotH - bbox.maxY * effScale) / 2;
+  const ftToPt = ([x, y]) => [offsetX + x * effScale, offsetY + y * effScale];
+
+  /* Plot panel frame. */
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(1.6);
+  doc.rect(plotX, plotY, plotW, plotH);
+
+  /* ── Aerial (bottom layer) ── */
+  if (state.layerVis.aerial && state.aerial.dataUrl && state.aerial.localBbox) {
+    const lb  = state.aerial.localBbox;
+    const tl  = ftToPt([lb.minX, lb.minY]);
+    const br  = ftToPt([lb.maxX, lb.maxY]);
+    /* jsPDF doesn't clip by default — clip to plot box manually via save/clip. */
+    doc.saveGraphicsState();
+    doc.rect(plotX, plotY, plotW, plotH);
+    if (typeof doc.clip === "function") doc.clip();
+    if (typeof doc.discardPath === "function") doc.discardPath();
+    try {
+      doc.addImage(state.aerial.dataUrl, "JPEG", tl[0], tl[1], br[0] - tl[0], br[1] - tl[1]);
+    } catch (e) {
+      console.warn("[planner] embed aerial in PDF failed:", e);
+    }
+    doc.restoreGraphicsState();
+  }
+
+  /* ── Surrounding parcels ── */
+  if (state.layerVis.neighbors && state.neighborRings.length) {
+    doc.setDrawColor(150, 150, 150);
+    doc.setLineWidth(0.4);
+    state.neighborRings.forEach(ring => {
+      const pts = ring.map(ftToPt);
+      drawPolyOnPdf(doc, pts, false);
+    });
+  }
+
+  /* ── Existing building footprints ── */
+  if (state.layerVis.buildings && state.buildingRings.length) {
+    doc.setDrawColor(50, 50, 50);
+    doc.setLineWidth(0.5);
+    doc.setFillColor(120, 120, 120);
+    state.buildingRings.forEach(ring => {
+      const pts = ring.map(ftToPt);
+      drawPolyOnPdf(doc, pts, true);
+    });
+  }
+
+  /* ── Parcel ── thick black boundary (architectural standard) */
+  if (state.layerVis.parcel && state.parcelFeet.length) {
+    const ring = state.parcelFeet.map(ftToPt);
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(2.5);
+    doc.setFillColor(252, 248, 240);
+    /* Don't fill if aerial is showing — it would obscure the photo. */
+    drawPolyOnPdf(doc, ring, !state.layerVis.aerial);
+  }
+
+  /* ── Parcel edge dimension labels ── */
+  if (state.layerVis.parcelDims && state.parcelFeet.length) {
+    const ring = state.parcelFeet;
+    const c = polygonCentroid(ring);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(0, 59, 113);
+    for (let i = 0; i < ring.length; i++) {
+      const [x1, y1] = ring[i];
+      const [x2, y2] = ring[(i + 1) % ring.length];
+      const dx = x2 - x1, dy = y2 - y1;
+      const lenFt = Math.hypot(dx, dy);
+      if (lenFt < 3) continue;
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const ox = mx - (c ? c.x : mx);
+      const oy = my - (c ? c.y : my);
+      const ol = Math.hypot(ox, oy) || 1;
+      /* Offset 8 pt outward in PDF space — convert via effScale */
+      const offsetFt = 10 / effScale;
+      const lx = mx + (ox / ol) * offsetFt;
+      const ly = my + (oy / ol) * offsetFt;
+      const [tx, ty] = ftToPt([lx, ly]);
+      doc.text(lenFt.toFixed(1) + "'", tx, ty, { align: "center", baseline: "middle" });
+    }
+  }
+
+  /* ── Setbacks ── */
+  if (state.layerVis.setbacks) {
+    state.features.filter(f => f.kind === "setback").forEach(f => {
+      const ring = f.points.map(ftToPt);
+      doc.setDrawColor(156, 62, 39);
+      doc.setLineWidth(0.8);
+      doc.setLineDashPattern([4, 3], 0);
+      drawPolyOnPdf(doc, ring, false);
+      doc.setLineDashPattern([], 0);
+    });
+  }
+
+  /* ── Structures ── */
+  if (state.layerVis.structures) {
+    state.features.filter(f => f.kind === "structure").forEach(f => {
+      const ring = f.points.map(ftToPt);
+      doc.setDrawColor(0, 59, 113);
+      doc.setLineWidth(1);
+      doc.setFillColor(220, 232, 245);
+      drawPolyOnPdf(doc, ring, true);
+      const c = polygonCentroid(f.points);
+      if (c) {
+        const [tx, ty] = ftToPt([c.x, c.y]);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.setTextColor(0, 59, 113);
+        const lines = [f.label, polygonArea(f.points).toLocaleString() + " sf"];
+        doc.text(lines, tx, ty, { align: "center", baseline: "middle" });
+      }
+    });
+  }
+
+  /* ── Paths ── */
+  if (state.layerVis.paths) {
+    state.features.filter(f => f.kind === "path").forEach(f => {
+      const ring = f.points.map(ftToPt);
+      doc.setDrawColor(180, 126, 0);
+      doc.setLineWidth(2);
+      drawPolyOnPdf(doc, ring, false, false /*not closed*/);
+      const len = polylineLength(f.points);
+      const mid = polylineMidpoint(f.points);
+      if (mid) {
+        const [tx, ty] = ftToPt([mid.x, mid.y]);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7);
+        doc.setTextColor(180, 126, 0);
+        doc.text(`${f.label} — ${len.toFixed(0)} ft`, tx, ty - 6, { align: "center" });
+      }
+    });
+  }
+
+  /* ── Points ── */
+  if (state.layerVis.points) {
+    state.features.filter(f => f.kind === "point").forEach(f => {
+      const [px, py] = ftToPt(f.points[0]);
+      doc.setFillColor(232, 119, 34);
+      doc.setDrawColor(255, 255, 255);
+      doc.circle(px, py, 3, "FD");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(0, 59, 113);
+      doc.text(f.label, px + 5, py + 2);
+    });
+  }
+
+  /* ── Bottom scale strip: graphic scale bar + north arrow + scale label ── */
+  const stripX = plotX;
+  const stripY = plotY + plotH + 6;
+  const stripW = plotW;
+  const stripH = scaleStripH;
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(1.0);
+  doc.rect(stripX, stripY, stripW, stripH);
+  drawArchScaleBar(doc, stripX + 18, stripY + stripH / 2 + 2, effFtPerInch);
+  drawArchNorthArrow(doc, stripX + stripW - 56, stripY + stripH / 2);
+  /* Scale label centered between the bar and the arrow. */
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`SCALE: 1" = ${formatScaleFt(effFtPerInch)}'`,
+    stripX + stripW / 2, stripY + stripH / 2 - 2, { align: "center" });
+  doc.setFontSize(7);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(80, 80, 80);
+  doc.text("(auto-fit to sheet)", stripX + stripW / 2, stripY + stripH / 2 + 12,
+    { align: "center" });
+
+  /* ── Title block (right-side, full sheet height) ── */
+  const tbX = pageW - innerInset - titleBlockW - 6;
+  const tbY = innerInset + 6;
+  const tbH = pageH - 2 * innerInset - 12;
+  drawArchTitleBlock(doc, tbX, tbY, titleBlockW, tbH, effFtPerInch);
+
+  /* Save via jsPDF's built-in (which already wires a download). */
+  doc.save(safeFilename("pdf"));
+  setStatus("Downloaded .pdf.");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   ARCHITECTURAL TITLE BLOCK
+   Right-side, full-height column with:
+     · Agency banner
+     · Project info (name, type, permit)
+     · Site info (APN, owner, address, zoning, jurisdiction, acres)
+     · Setback summary
+     · Project notes (monospace)
+     · Sheet info (date, drawn-by, sheet number)
+══════════════════════════════════════════════════════════════════════ */
+function drawArchTitleBlock(doc, x, y, w, h, effFtPerInch) {
+  /* Outer frame */
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(1.3);
+  doc.rect(x, y, w, h);
+
+  /* Agency banner — full-width, dark fill */
+  const bannerH = 56;
+  doc.setFillColor(0, 59, 113);
+  doc.rect(x, y, w, bannerH, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("TAHOE REGIONAL", x + 12, y + 18);
+  doc.text("PLANNING AGENCY", x + 12, y + 33);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text("Site Plan", x + 12, y + 47);
+
+  let cy = y + bannerH;
+  const inset = 10;
+
+  /* Section divider line */
+  function divider() {
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.8);
+    doc.line(x, cy, x + w, cy);
+  }
+  /* Field row: small uppercase label, big-ish value below it. */
+  function field(label, value, valueSize) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(6.5);
+    doc.setTextColor(110, 110, 110);
+    doc.text(label.toUpperCase(), x + inset, cy + 10);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(valueSize || 9.5);
+    doc.setTextColor(0, 0, 0);
+    const text = String(value || "—");
+    /* Wrap if too long */
+    const wrapped = doc.splitTextToSize(text, w - 2 * inset);
+    doc.text(wrapped, x + inset, cy + 22);
+    cy += 22 + (wrapped.length - 1) * (valueSize ? valueSize + 1 : 11) + 6;
+  }
+
+  /* Project section */
+  divider();
+  cy += 0;
+  field("Project", state.tb.projectName);
+  field("Project type", state.tb.projectType);
+  field("Permit / app #", state.tb.permitNumber);
+
+  /* Site section */
+  divider();
+  field("APN", state.apn, 11);
+  field("Address", state.tb.siteAddress);
+  field("Owner", state.tb.ownerName);
+
+  /* Parcel attributes */
+  divider();
+  field("Zoning", state.tb.zoning);
+  field("Jurisdiction", state.tb.jurisdiction);
+  field("Acres", state.tb.acres);
+
+  /* Setbacks */
+  divider();
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.setTextColor(110, 110, 110);
+  doc.text("SETBACKS (FT)", x + inset, cy + 10);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+  doc.text(
+    `F  ${state.setback.front || 0}'`,
+    x + inset, cy + 24);
+  doc.text(
+    `S  ${state.setback.side  || 0}'`,
+    x + inset + 60, cy + 24);
+  doc.text(
+    `R  ${state.setback.rear  || 0}'`,
+    x + inset + 120, cy + 24);
+  cy += 36;
+
+  /* Notes — monospace block, fills the remaining space until sheet info. */
+  divider();
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.setTextColor(110, 110, 110);
+  doc.text("NOTES", x + inset, cy + 10);
+  cy += 16;
+  /* Reserve ~110pt for the sheet-info block at the bottom. */
+  const notesBottom = y + h - 110;
+  if (state.tb.notes) {
+    doc.setFont("courier", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
+    const wrapped = doc.splitTextToSize(state.tb.notes, w - 2 * inset);
+    let nY = cy;
+    for (const line of wrapped) {
+      if (nY + 10 > notesBottom) break;
+      doc.text(line, x + inset, nY);
+      nY += 10;
+    }
+  } else {
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(7);
+    doc.setTextColor(160, 160, 160);
+    doc.text("(no project notes)", x + inset, cy + 6);
+  }
+
+  /* Sheet info — bottom of the title block */
+  cy = y + h - 100;
+  divider();
+  cy += 0;
+  const date = new Date().toLocaleDateString();
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.setTextColor(110, 110, 110);
+  doc.text("DATE", x + inset, cy + 10);
+  doc.text("SCALE", x + inset + 80, cy + 10);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(0, 0, 0);
+  doc.text(date, x + inset, cy + 22);
+  doc.text(`1" = ${formatScaleFt(effFtPerInch)}'`, x + inset + 80, cy + 22);
+
+  cy += 32;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.setTextColor(110, 110, 110);
+  doc.text("DRAWN BY", x + inset, cy + 10);
+  doc.text("SHEET", x + inset + 80, cy + 10);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(0, 0, 0);
+  doc.text(state.tb.ownerName || "TRPA Site Planner", x + inset, cy + 22);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("A1.1", x + inset + 80, cy + 24);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   GRAPHIC SCALE BAR — alternating black/white bars, ticks for 0/X/2X feet
+══════════════════════════════════════════════════════════════════════ */
+function drawArchScaleBar(doc, x, y, ftPerInch) {
+  /* Pick a "round" total length so the bar reads cleanly. We aim for a
+     bar about 2 inches long at the chosen scale, snapping to a friendly
+     number of feet. */
+  const targetIn = 2.0;
+  const targetFt = targetIn * ftPerInch;
+  const ROUND = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000];
+  let totalFt = ROUND[0];
+  for (const r of ROUND) {
+    if (Math.abs(r - targetFt) < Math.abs(totalFt - targetFt)) totalFt = r;
+  }
+  const barLenPt = (totalFt / ftPerInch) * 72;   // points
+  const stepFt   = totalFt / 4;
+  const stepPt   = barLenPt / 4;
+  const barH     = 8;
+
+  /* Alternating black / white quarters */
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.6);
+  for (let i = 0; i < 4; i++) {
+    const sx = x + i * stepPt;
+    if (i % 2 === 0) {
+      doc.setFillColor(0, 0, 0);
+      doc.rect(sx, y, stepPt, barH, "F");
+    }
+    doc.rect(sx, y, stepPt, barH);
+  }
+
+  /* Tick labels under the bar (0 / step / 2*step / ... / total) */
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(0, 0, 0);
+  for (let i = 0; i <= 4; i++) {
+    const sx = x + i * stepPt;
+    const v = i * stepFt;
+    doc.text(String(v.toFixed(0)), sx, y + barH + 9, { align: "center" });
+  }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.text("FEET", x + barLenPt + 6, y + barH);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   NORTH ARROW — circle + crosshair, classic architectural style
+══════════════════════════════════════════════════════════════════════ */
+function drawArchNorthArrow(doc, cx, cy) {
+  const r = 22;
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(1.2);
+  /* Outer circle */
+  doc.circle(cx, cy, r);
+  /* Crosshair */
+  doc.setLineWidth(0.4);
+  doc.line(cx - r, cy, cx + r, cy);
+  doc.line(cx, cy - r, cx, cy + r);
+  /* Filled north arrow (long thin triangle) */
+  doc.setFillColor(0, 0, 0);
+  doc.triangle(cx, cy - r + 3, cx - 5, cy + 4, cx + 5, cy + 4, "F");
+  /* "N" label */
+  doc.setFillColor(255, 255, 255);
+  doc.rect(cx - 5, cy - r - 9, 10, 12, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.text("N", cx, cy - r - 1, { align: "center", baseline: "middle" });
+}
+
+function drawPolyOnPdf(doc, ring, fill, closed) {
+  const c = closed === false ? false : true;
+  const lines = [];
+  for (let i = 1; i < ring.length; i++) {
+    lines.push([ring[i][0] - ring[i-1][0], ring[i][1] - ring[i-1][1]]);
+  }
+  if (c) lines.push([ring[0][0] - ring[ring.length-1][0], ring[0][1] - ring[ring.length-1][1]]);
+  doc.lines(lines, ring[0][0], ring[0][1], [1, 1], fill ? "FD" : "S", c);
+}
+
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   STATUS / RENDER LOOP
+══════════════════════════════════════════════════════════════════════ */
+function setStatus(msg) {
+  document.getElementById("status-bar").textContent = msg;
+}
+function drawAll() {
+  drawAerial();
+  drawGrid();
+  drawNeighbors();
+  drawBuildings();
+  drawParcel();
+  drawFeatures();
+  drawGhost();
+  refreshFeatureList();
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════════════════════ */
+function escHtml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/* Format an effective ft-per-inch to a clean display string. We pick the
+   nearest "standard" architectural scale (10/20/30/40/50/60/80/100) when
+   we're within ~5% — otherwise show the raw rounded value. */
+function formatScaleFt(ftPerInch) {
+  const STD = [5, 10, 20, 30, 40, 50, 60, 80, 100, 200];
+  for (const s of STD) {
+    if (Math.abs(ftPerInch - s) / s < 0.05) return String(s);
+  }
+  return ftPerInch >= 20 ? Math.round(ftPerInch).toString()
+                         : ftPerInch.toFixed(1).replace(/\.0$/, "");
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════════════════════════════ */
+/* Expose for parent-frame integration + debugging */
+window.sitePlanner = { state, addFeature, removeFeature, drawAll, exportPdf };
+
+resizeStage();
+loadParcel(state.apn);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:maps.trpa.org)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(awk 'NR<2083 || NR>2444' \"C:/Users/mbindl/Documents/GitHub/Planning/.claude/worktrees/quizzical-rhodes-c15fbb/Permitting/html/site-plan.html\")"
+    ]
+  }
+}
