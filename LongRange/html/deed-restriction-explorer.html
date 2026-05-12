@@ -5,15 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deed Restriction Explorer — TRPA</title>
 
-  <!-- Calcite Design System (pinned to match sibling LongRange tools) -->
+  <!-- Calcite Design System (pinned to match ArcGIS 4.31 + sibling LongRange tools) -->
   <script type="module" src="https://js.arcgis.com/calcite-components/2.13.0/calcite.esm.js"></script>
   <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.13.0/calcite.css" />
 
-  <!-- AG Grid Community (UMD). Safe here — this page does NOT load the ArcGIS SDK
-       so the AMD loader cannot hijack AG Grid's UMD bundle. -->
+  <!-- Capture native Map/Set before the ArcGIS AMD loader shadows them.
+       Our own code uses `new NativeMap()` to avoid picking up the shadow classes. -->
+  <script>
+    window.NativeMap = window.Map;
+    window.NativeSet = window.Set;
+  </script>
+
+  <!-- AG Grid Community (UMD). MUST load before ArcGIS so it registers
+       `window.agGrid` before the Dojo/AMD loader hijacks `window.define`. -->
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/ag-grid-community.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-grid.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/styles/ag-theme-quartz.css" />
+
+  <!-- ArcGIS Maps SDK 4.31 (loads AFTER AG Grid) -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
 
   <!-- Open Sans (TRPA web font) -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -128,13 +139,44 @@
     }
     #row-count strong { color: var(--trpa-navy); }
 
-    /* ── Grid area ── */
-    #grid-wrapper {
+    /* ── Split: map left, grid right ── */
+    #content-split {
       flex: 1;
       min-height: 0;
+      display: flex;
+      flex-direction: row;
       padding: 0.75rem 1rem 1rem;
+      gap: 0.75rem;
+    }
+    #map-container {
+      flex: 0 0 45%;
+      min-width: 320px;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      background: #f5f7fa;
+    }
+    #map-view {
+      position: absolute;
+      inset: 0;
+    }
+    #map-legend-wrap .esri-legend {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    #grid-wrapper {
+      flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    /* Stack on narrow screens */
+    @media (max-width: 900px) {
+      #content-split { flex-direction: column; }
+      #map-container { flex: 0 0 45%; min-height: 200px; }
+      #grid-wrapper  { min-height: 200px; }
     }
     #grid {
       flex: 1;
@@ -143,6 +185,8 @@
       overflow: hidden;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
+    /* Row-click affordance */
+    .ag-theme-quartz .ag-row { cursor: pointer; }
     /* AG Grid quartz theme tweaks to align with TRPA */
     .ag-theme-quartz {
       --ag-font-family: 'Open Sans', system-ui, sans-serif;
@@ -246,9 +290,14 @@
     </div>
   </div>
 
-  <!-- ══ GRID ══ -->
-  <div id="grid-wrapper" hidden>
-    <div id="grid" class="ag-theme-quartz"></div>
+  <!-- ══ MAP + GRID SPLIT ══ -->
+  <div id="content-split" hidden>
+    <div id="map-container">
+      <div id="map-view"></div>
+    </div>
+    <div id="grid-wrapper">
+      <div id="grid" class="ag-theme-quartz"></div>
+    </div>
   </div>
 
 </div>
@@ -264,21 +313,47 @@
 (() => {
   "use strict";
 
-  const DR_URL = "https://laketahoeinfo.org/WebServices/GetDeedRestrictedParcels/JSON/e17aeb86-85e3-4260-83fd-a2b32501c476";
+  // Deed-restricted parcels live on maps.trpa.org (CORS-enabled). The LTinfo
+  // JSON endpoint does not send CORS headers and cannot be called from a browser.
+  const DR_URL = "https://maps.trpa.org/server/rest/services/Deed_Restriction/MapServer/10/query";
+  const DR_FIELDS = [
+    "APN", "RecordingNumber", "RecordingDate", "Description",
+    "DeedRestrictionStatus", "DeedRestrictionType", "ProjectAreaFileNumber",
+    "APO_ADDRESS", "JURISDICTION"
+  ];
+  const DR_PAGE_SIZE = 2000;    // matches service MaxRecordCount
+
   const PARCELS_URL = "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0/query";
   const PARCEL_FIELDS = [
-    "APN", "APO_ADDRESS", "PSTL_TOWN", "PSTL_STATE",
+    "APN", "PSTL_TOWN", "PSTL_STATE",
     "MAIL_ADD1", "MAIL_CITY", "MAIL_STATE", "MAIL_ZIP5", "COUNTY"
   ];
   const CHUNK_SIZE = 100;       // APNs per Parcels query
   const CONCURRENCY = 6;        // parallel chunk requests
 
+  // Map layer (same service as DR_URL but the layer endpoint, not /query)
+  const DR_LAYER_URL = "https://maps.trpa.org/server/rest/services/Deed_Restriction/MapServer/10";
+  const BASE_WHERE   = "DeedRestrictionType <> '' AND DeedRestrictionType IS NOT NULL";
+  const MAP_FILTER_LIMIT = 1500; // above this, don't push APN IN(...) to the layer
+
+  // Categorical colors for UniqueValueRenderer
+  const TYPE_COLORS = {
+    "Transfer":              [0, 114, 206],    // trpa-blue
+    "Retired":               [120, 120, 120],  // gray
+    "Other":                 [123, 106, 138],  // trpa-purple
+    "Project Area":          [232, 119, 34],   // trpa-orange
+    "No Secondary Residence":[180, 126, 0],    // trpa-earth
+    "Shorezone":             [74, 132, 206],   // blue-ice
+  };
+  const DEFAULT_TYPE_COLOR = [60, 60, 60];
+
   const els = {
     loadingOverlay: document.getElementById("loading-overlay"),
     loadingSub:     document.getElementById("loading-sub"),
     filterBar:      document.getElementById("filter-bar"),
-    gridWrapper:    document.getElementById("grid-wrapper"),
+    contentSplit:   document.getElementById("content-split"),
     gridDiv:        document.getElementById("grid"),
+    mapViewDiv:     document.getElementById("map-view"),
     filterType:     document.getElementById("filter-type"),
     filterStatus:   document.getElementById("filter-status"),
     filterCounty:   document.getElementById("filter-county"),
@@ -291,15 +366,39 @@
   };
 
   let gridApi = null;
-  const activeFilters = { type: new Set(), status: new Set(), county: new Set() };
+  let mapView = null, drLayer = null, drLayerView = null, highlightHandle = null;
+  const activeFilters = { type: new NativeSet(), status: new NativeSet(), county: new NativeSet() };
 
   // ── Fetch helpers ─────────────────────────────────────────────
   async function fetchDeedRestrictions() {
-    const resp = await fetch(DR_URL);
-    if (!resp.ok) throw new Error(`LTinfo ${resp.status}`);
-    const rows = await resp.json();
-    if (!Array.isArray(rows)) throw new Error("LTinfo returned non-array");
-    return rows;
+    const all = [];
+    let offset = 0;
+    while (true) {
+      const body = new URLSearchParams({
+        where: "DeedRestrictionType <> '' AND DeedRestrictionType IS NOT NULL",
+        outFields: DR_FIELDS.join(","),
+        returnGeometry: "false",
+        orderByFields: "OBJECTID",
+        resultOffset: String(offset),
+        resultRecordCount: String(DR_PAGE_SIZE),
+        f: "json"
+      });
+      const resp = await fetch(DR_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString()
+      });
+      if (!resp.ok) throw new Error(`Deed_Restriction ${resp.status}`);
+      const json = await resp.json();
+      if (json.error) throw new Error(`Deed_Restriction: ${json.error.message}`);
+      const feats = json.features || [];
+      for (const f of feats) all.push(f.attributes);
+      els.loadingSub.textContent =
+        `Loaded ${all.length.toLocaleString()} deed restrictions…`;
+      if (!json.exceededTransferLimit || feats.length < DR_PAGE_SIZE) break;
+      offset += DR_PAGE_SIZE;
+    }
+    return all;
   }
 
   async function fetchParcelsChunk(apns) {
@@ -326,7 +425,7 @@
     for (let i = 0; i < apns.length; i += CHUNK_SIZE) {
       chunks.push(apns.slice(i, i + CHUNK_SIZE));
     }
-    const parcelByApn = new Map();
+    const parcelByApn = new NativeMap();
     let failed = 0;
     let done = 0;
 
@@ -365,9 +464,9 @@
         DeedRestrictionStatus: d.DeedRestrictionStatus ?? "",
         DeedRestrictionType:   d.DeedRestrictionType ?? "",
         ProjectAreaFileNumber: d.ProjectAreaFileNumber ?? "",
-        NumberOfHousingUnits:  d.NumberOfHousingUnits ?? "",
+        APO_ADDRESS:           d.APO_ADDRESS ?? "",
+        JURISDICTION:          d.JURISDICTION ?? "",
         COUNTY:                p.COUNTY ?? "",
-        APO_ADDRESS:           p.APO_ADDRESS ?? "",
         PSTL_TOWN:             p.PSTL_TOWN ?? "",
         PSTL_STATE:            p.PSTL_STATE ?? "",
         MAIL_ADD1:             p.MAIL_ADD1 ?? "",
@@ -386,8 +485,8 @@
     { field: "DeedRestrictionType",   headerName: "Type",               width: 170 },
     { field: "DeedRestrictionStatus", headerName: "Status",             width: 110 },
     { field: "ProjectAreaFileNumber", headerName: "Project File #",     width: 140 },
-    { field: "NumberOfHousingUnits",  headerName: "Housing Units",      width: 110, type: "numericColumn" },
     { field: "Description",           headerName: "Description",        flex: 2, minWidth: 260, tooltipField: "Description" },
+    { field: "JURISDICTION",          headerName: "Jurisdiction",       width: 110 },
     { field: "COUNTY",                headerName: "County",             width: 90 },
     { field: "APO_ADDRESS",           headerName: "Property Address",   width: 200 },
     { field: "PSTL_TOWN",             headerName: "Postal Town",        width: 140 },
@@ -429,9 +528,10 @@
         if (activeFilters.county.size && !activeFilters.county.has(d.COUNTY))              return false;
         return true;
       },
-      onFilterChanged: updateRowCount,
+      onFilterChanged: () => { updateRowCount(); syncMapToFilters(); },
       onSortChanged:   updateRowCount,
-      onGridReady: updateRowCount,
+      onGridReady:     () => { updateRowCount(); syncMapToFilters(); },
+      onRowClicked:    (ev) => { if (ev.data?.APN) focusOnApn(ev.data.APN); },
     };
     gridApi = agGrid.createGrid(els.gridDiv, gridOptions);
   }
@@ -442,6 +542,140 @@
     const all = gridApi.getModel().getRootNode().allLeafChildren?.length ?? 0;
     els.rowCount.innerHTML = `<strong>${total.toLocaleString()}</strong> of ${all.toLocaleString()} records`;
     els.exportBtn.disabled = total === 0;
+  }
+
+  // ── Map ───────────────────────────────────────────────────────
+  function initMap() {
+    return new Promise((resolve, reject) => {
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend",
+        "esri/widgets/Home",
+        "esri/widgets/Expand",
+      ], (Map, MapView, FeatureLayer, Legend, Home, Expand) => {
+        try {
+          const uniqueValueInfos = Object.entries(TYPE_COLORS).map(([val, rgb]) => ({
+            value: val,
+            symbol: polygonSymbol(rgb),
+            label: val,
+          }));
+
+          drLayer = new FeatureLayer({
+            url: DR_LAYER_URL,
+            title: "Deed Restrictions",
+            definitionExpression: BASE_WHERE,
+            outFields: ["APN", "DeedRestrictionType", "DeedRestrictionStatus", "Description", "RecordingDate", "RecordingNumber"],
+            renderer: {
+              type: "unique-value",
+              field: "DeedRestrictionType",
+              defaultSymbol: polygonSymbol(DEFAULT_TYPE_COLOR),
+              defaultLabel: "Other",
+              uniqueValueInfos,
+            },
+            popupTemplate: {
+              title: "APN {APN}",
+              content: [{
+                type: "fields",
+                fieldInfos: [
+                  { fieldName: "DeedRestrictionType",   label: "Type" },
+                  { fieldName: "DeedRestrictionStatus", label: "Status" },
+                  { fieldName: "RecordingNumber",       label: "Recording #" },
+                  { fieldName: "RecordingDate",         label: "Recording Date" },
+                  { fieldName: "Description",           label: "Description" },
+                ]
+              }]
+            }
+          });
+
+          const map = new Map({ basemap: "gray-vector", layers: [drLayer] });
+          mapView = new MapView({
+            container: els.mapViewDiv,
+            map,
+            center: [-120.04, 39.09],
+            zoom: 10,
+            popup: {
+              dockEnabled: true,
+              dockOptions: {
+                buttonEnabled: false,  // hide the undock button
+                breakpoint: false,     // always dock, never float
+                position: "bottom-right",
+              },
+            },
+          });
+
+          mapView.ui.add(new Home({ view: mapView }), "top-left");
+          const legend = new Legend({ view: mapView });
+          mapView.ui.add(new Expand({
+            view: mapView,
+            content: legend,
+            expanded: false,
+            expandTooltip: "Legend",
+          }), "top-right");
+
+          mapView.whenLayerView(drLayer).then(lv => { drLayerView = lv; resolve(); });
+        } catch (err) {
+          reject(err);
+        }
+      }, reject);
+    });
+  }
+
+  function polygonSymbol(rgb) {
+    return {
+      type: "simple-fill",
+      color: [...rgb, 0.35],
+      outline: { color: [...rgb, 1], width: 1 },
+    };
+  }
+
+  function syncMapToFilters() {
+    if (!drLayer || !gridApi) return;
+    const totalCount = gridApi.getModel().getRootNode().allLeafChildren?.length ?? 0;
+    const displayed  = gridApi.getDisplayedRowCount();
+
+    if (displayed === totalCount) {
+      drLayer.definitionExpression = BASE_WHERE;
+      return;
+    }
+    if (displayed === 0) {
+      drLayer.definitionExpression = "1=0";
+      return;
+    }
+    if (displayed > MAP_FILTER_LIMIT) {
+      // too many APNs to push as IN(...); leave map unfiltered so it stays fast
+      drLayer.definitionExpression = BASE_WHERE;
+      return;
+    }
+    const apns = [];
+    gridApi.forEachNodeAfterFilterAndSort(n => {
+      if (n.data?.APN) apns.push(n.data.APN);
+    });
+    const quoted = apns.map(a => `'${a.replace(/'/g, "''")}'`).join(",");
+    drLayer.definitionExpression = `${BASE_WHERE} AND APN IN (${quoted})`;
+  }
+
+  async function focusOnApn(apn) {
+    if (!drLayer || !mapView) return;
+    try {
+      const result = await drLayer.queryFeatures({
+        where: `APN='${apn.replace(/'/g, "''")}'`,
+        returnGeometry: true,
+        outFields: ["*"],
+        outSpatialReference: mapView.spatialReference,
+      });
+      const feature = result.features[0];
+      if (!feature) return;
+      await mapView.goTo({ target: feature.geometry, zoom: Math.max(mapView.zoom, 17) }, { duration: 400 });
+
+      if (highlightHandle) { highlightHandle.remove(); highlightHandle = null; }
+      if (drLayerView) highlightHandle = drLayerView.highlight(feature);
+
+      mapView.openPopup({ features: [feature], location: feature.geometry.centroid || feature.geometry.extent?.center });
+    } catch (err) {
+      console.warn("focusOnApn failed:", err);
+    }
   }
 
   // ── Filter wiring ─────────────────────────────────────────────
@@ -510,7 +744,7 @@
   // ── Main ──────────────────────────────────────────────────────
   async function start() {
     try {
-      els.loadingSub.textContent = "Fetching records from Lake Tahoe Info";
+      els.loadingSub.textContent = "Fetching deed restrictions from maps.trpa.org…";
       const deedRows = await fetchDeedRestrictions();
 
       const uniqApns = [...new Set(deedRows.map(d => d.APN).filter(Boolean))];
@@ -529,7 +763,14 @@
 
       els.loadingOverlay.hidden = true;
       els.filterBar.hidden = false;
-      els.gridWrapper.hidden = false;
+      els.contentSplit.hidden = false;
+
+      try {
+        await initMap();
+        syncMapToFilters();
+      } catch (err) {
+        console.warn("Map init failed:", err);
+      }
 
       if (failedApnCount > 0) {
         els.errorMsg.textContent =

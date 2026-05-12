@@ -10,7 +10,6 @@
       --trpa-blue:   #0072CE;
       --trpa-navy:   #003B71;
       --trpa-forest: #4A6118;
-      --trpa-earth:  #B47E00;
       --trpa-white:  #FFFFFF;
     }
 
@@ -120,7 +119,6 @@
 
     .card-parcel   { --card-color: var(--trpa-blue); }
     .card-explorer { --card-color: var(--trpa-forest); }
-    .card-deed     { --card-color: var(--trpa-earth); }
 
     .card-icon {
       width: 44px;
@@ -138,7 +136,6 @@
     /* Fallback for browsers without color-mix */
     .card-parcel   .card-icon { background: #e5f2fc; }
     .card-explorer .card-icon { background: #edf3e3; }
-    .card-deed     .card-icon { background: #f6ecd6; }
 
     .card-title {
       font-size: 1.05rem;
@@ -231,16 +228,6 @@
         <div class="card-desc">Pick a use category, then a specific use type, to see every zoning district in the Tahoe Basin where that use is permitted or conditionally approved — with density limits and plan details.</div>
         <div class="card-cta">
           Explore permitted zones
-          <span class="card-arrow">→</span>
-        </div>
-      </a>
-
-      <a href="deed-restriction-explorer.html" class="card card-deed">
-        <div class="card-icon">📜</div>
-        <div class="card-title">Deed Restriction Explorer</div>
-        <div class="card-desc">Browse every parcel with a recorded deed restriction in the Basin. Filter by restriction type, status, and county, then export a mailing list CSV of the filtered parcels.</div>
-        <div class="card-cta">
-          Explore deed restrictions
           <span class="card-arrow">→</span>
         </div>
       </a>
