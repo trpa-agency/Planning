@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCCB EIS Cumulative Projects — Tahoe Living</title>
+
+  <!-- Calcite Design System v5.0 -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/5.0"></script>
+  <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+
+  <!-- ArcGIS Maps SDK for JavaScript 4.31 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
+
+  <!-- Montserrat (Tahoe Living typography) -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Tahoe Living brand tokens (tahoe-living-brand) ── */
+    :root {
+      /* Primary */
+      --tl-sage:          #5B7B6B;
+      --tl-forest:        #2D5A3D;
+      --tl-cream:         #F7F3ED;
+      --tl-warm-white:    #FFFFFF;
+
+      /* Accents */
+      --tl-terracotta:    #C4704B;
+      --tl-terracotta-dk: #A85D3D;
+      --tl-gold:          #D4A843;
+      --tl-sky:           #6BA3BE;
+      --tl-pine:          #3D6B4E;
+      --tl-warm-brown:    #8B6F5E;
+
+      /* Neutrals (warm-tinted — no pure grays) */
+      --tl-text-primary:   #2C2C2C;
+      --tl-text-secondary: #5A5A5A;
+      --tl-text-muted:     #8A8A8A;
+      --tl-border:         #E0DDD7;
+      --tl-bg-section:     #EDE9E1;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body, #app {
+      height: 100%;
+      font-family: 'Montserrat', system-ui, sans-serif;
+      color: var(--tl-text-primary);
+      background: var(--tl-cream);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── Header (Tahoe Living lead, forest-green) ─────────────────────────── */
+    #app-header {
+      background: var(--tl-warm-white);
+      color: var(--tl-text-primary);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--tl-border);
+      flex-shrink: 0;
+      position: relative;
+    }
+    #app-header .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    #app-header .brand-mark svg {
+      width: 32px;
+      height: 32px;
+      fill: none;
+      stroke: var(--tl-forest);
+      stroke-width: 1.8;
+    }
+    #app-header .brand-mark .wordmark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    #app-header .brand-mark .wordmark .name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--tl-forest);
+      letter-spacing: -0.01em;
+    }
+    #app-header .brand-mark .wordmark .tagline {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--tl-text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    #app-header .page-title {
+      margin-left: 1.5rem;
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--tl-border);
+    }
+    #app-header .page-title .overline {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tl-sage);
+    }
+    #app-header .page-title h1 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--tl-text-primary);
+      line-height: 1.25;
+      margin: 0;
+    }
+    #app-header .subtitle {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--tl-text-secondary);
+      white-space: nowrap;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────────── */
+    #app {
+      display: flex;
+      flex-direction: column;
+    }
+    #map-and-side {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      background: var(--tl-cream);
+    }
+    #viewDiv {
+      flex: 1;
+      min-width: 0;
+      margin: 0.85rem 0 0.85rem 0.85rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(44, 44, 44, 0.06);
+      border: 1px solid var(--tl-border);
+      background: var(--tl-warm-white);
+    }
+    #side-panel {
+      width: 340px;
+      margin: 0.85rem;
+      padding: 1.25rem 1.3rem 1.4rem;
+      background: var(--tl-warm-white);
+      border: 1px solid var(--tl-border);
+      border-radius: 12px;
+      overflow: auto;
+      box-shadow: 0 2px 8px rgba(44, 44, 44, 0.06);
+    }
+    #side-panel section { margin-bottom: 1.5rem; }
+    #side-panel section:last-child { margin-bottom: 0; }
+
+    /* Overline pattern (Tahoe Living signature) */
+    .overline {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tl-sage);
+      margin-bottom: 0.4rem;
+    }
+    #side-panel h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--tl-text-primary);
+      line-height: 1.35;
+      margin-bottom: 0.85rem;
+    }
+    #side-panel p {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--tl-text-primary);
+    }
+    #side-panel p.caption {
+      font-size: 0.78rem;
+      color: var(--tl-text-secondary);
+      margin-top: 0.55rem;
+    }
+
+    /* ── Legend swatches (curated wording) ────────────────────────────────── */
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0.5rem 0;
+      font-size: 0.85rem;
+      color: var(--tl-text-primary);
+      line-height: 1.4;
+    }
+    .legend-swatch {
+      width: 24px;
+      height: 16px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(0, 0, 0, 0.15);
+    }
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+    }
+
+    /* ── Popup branding ───────────────────────────────────────────────────── */
+    .esri-popup__main-container,
+    .esri-popup__header-title {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      color: var(--tl-text-primary);
+    }
+    .esri-popup__header-title { font-weight: 600; }
+
+    /* ── Footer (TRPA co-branding lives here per TL guidelines) ───────────── */
+    #app-footer {
+      flex-shrink: 0;
+      padding: 1.1rem 1.75rem;
+      background: var(--tl-forest);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.8rem;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #app-footer .footer-trpa {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.95);
+    }
+    #app-footer .footer-trpa .trpa-mark {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.55rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 4px;
+    }
+    #app-footer a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      padding-bottom: 1px;
+    }
+    #app-footer a:hover {
+      color: var(--tl-gold);
+      border-bottom-color: var(--tl-gold);
+    }
+
+    /* ── Loading overlay ──────────────────────────────────────────────────── */
+    #loader-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(247, 243, 237, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 200ms ease-out;
+    }
+    #loader-overlay.hidden { opacity: 0; }
+
+    /* ── Embedded LayerList — let it inherit cream rhythm ─────────────────── */
+    #layerListDiv .esri-widget {
+      background: transparent;
+      font-family: 'Montserrat', system-ui, sans-serif;
+    }
+
+    /* ── About link block ─────────────────────────────────────────────────── */
+    #side-panel .about-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 0.5rem;
+    }
+    #side-panel .about-list li {
+      font-size: 0.82rem;
+      color: var(--tl-text-secondary);
+      padding: 0.25rem 0;
+    }
+    #side-panel .about-list li b {
+      color: var(--tl-text-primary);
+      font-weight: 600;
+    }
+
+    /* ── Reduced motion ───────────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: 0.01ms !important; }
+    }
+
+    /* ── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      #app-header .page-title {
+        margin-left: 0.75rem;
+        padding-left: 0.75rem;
+      }
+      #app-header .subtitle { display: none; }
+      #map-and-side { flex-direction: column; }
+      #side-panel { width: auto; margin: 0.5rem; }
+      #viewDiv { margin: 0.5rem; min-height: 50vh; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── HEADER (Tahoe Living lead) ── -->
+  <header id="app-header">
+    <div class="brand-mark">
+      <!-- Lake Tahoe outline mark (line-drawing style per TL logo pattern) -->
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 8 C 9 10, 6 17, 9 23 C 8 29, 12 34, 18 36 C 24 40, 32 39, 37 34 C 42 30, 42 23, 39 17 C 38 12, 32 8, 26 9 C 22 7, 17 7, 14 8 Z"
+              stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      <div class="wordmark">
+        <span class="name">Tahoe Living</span>
+        <span class="tagline">Cultivating Community</span>
+      </div>
+    </div>
+
+    <div class="page-title">
+      <div class="overline">Visual Analysis</div>
+      <h1>CCCB EIS Cumulative Projects</h1>
+    </div>
+
+    <div class="subtitle">Scenic viewpoints · Town centers · Highlighted parcels</div>
+  </header>
+
+  <!-- ── MAP + SIDE PANEL ── -->
+  <div id="map-and-side">
+
+    <div id="viewDiv">
+      <div id="loader-overlay">
+        <calcite-loader label="Loading map" type="indeterminate"></calcite-loader>
+      </div>
+    </div>
+
+    <aside id="side-panel">
+
+      <section>
+        <div class="overline">What this shows</div>
+        <h2>A map of the parcels and viewpoints in the CCCB EIS visual analysis</h2>
+        <p>
+          Each highlighted parcel is part of the cumulative project list considered in the EIS. The five focal scenic viewpoints are where the visual impact is evaluated from.
+        </p>
+      </section>
+
+      <section>
+        <div class="overline">Legend</div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--tl-pine); border-color: #1f3d2e;"></div>
+          <span>Focal scenic viewpoints (EIS — 36.1, 32.3, 20.2, 22.3, 35.1)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--tl-warm-brown); border-color: #5e4a3e;"></div>
+          <span>Other scenic viewpoints</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background: rgba(196, 112, 75, 0.55); border-color: var(--tl-terracotta);"></div>
+          <span>Highlighted parcels (cumulative projects)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background: rgba(107, 163, 190, 0.18); border-color: var(--tl-sky);"></div>
+          <span>Town center boundaries</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background: rgba(180, 180, 180, 0.12); border-color: #888;"></div>
+          <span>All parcels (context)</span>
+        </div>
+      </section>
+
+      <section>
+        <div class="overline">Layers</div>
+        <div id="layerListDiv"></div>
+      </section>
+
+      <section>
+        <div class="overline">About the data</div>
+        <ul class="about-list">
+          <li><b>Parcels:</b> TRPA Parcels FeatureServer (live)</li>
+          <li><b>Town Centers:</b> TRPA Boundaries FeatureServer</li>
+          <li><b>Scenic Viewpoints:</b> LTInfo Monitoring service</li>
+        </ul>
+        <p class="caption">
+          Data refreshes each time you load the page. For methodology, sources, and known caveats, see <code>LongRange/docs/CCCB_EIS_WEBMAP_METHODS.md</code>.
+        </p>
+      </section>
+
+    </aside>
+
+  </div>
+
+  <!-- ── FOOTER (TRPA co-brand lives here per TL guidelines) ── -->
+  <footer id="app-footer">
+    <div class="footer-trpa">
+      <span class="trpa-mark">TRPA</span>
+      <span>A project of the Tahoe Regional Planning Agency</span>
+    </div>
+    <div>
+      Data: <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a>
+      &nbsp;·&nbsp;
+      Initiative: <a href="https://www.tahoeliving.org" target="_blank" rel="noopener">tahoeliving.org</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/FeatureLayer",
+  "esri/layers/MapImageLayer",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "esri/widgets/ScaleBar",
+  "esri/widgets/Home",
+  "esri/widgets/Expand"
+], function (Map, MapView, FeatureLayer, MapImageLayer, Legend, LayerList, ScaleBar, Home, Expand) {
+
+  // ── Highlighted APNs (cumulative projects from CCCB EIS) ───────────────────
+  const HIGHLIGHTED_APNS = [
+    '034-331-023', '034-331-015', '034-270-059', '034-270-063',
+    '1318-27-001-010', '1318-27-001-009',
+    '027-750-015', '027-072-033',
+    '090-142-001', '090-142-002',
+    '090-133-015', '090-133-011', '090-133-019', '090-133-009',
+    '090-133-008', '090-133-007', '090-133-006', '090-133-005', '090-133-003',
+    '090-133-016', '090-133-021',
+    '090-370-006', '090-370-005',
+    '090-221-012', '090-221-027', '090-221-026', '090-221-018', '090-221-021', '090-221-020',
+    '132-240-07', '132-240-19', '132-201-02',
+    '023-081-011', '023-231-003'
+  ];
+
+  const EIS_VP_IDS = ["36.1-roadway", "32.3-roadway", "20.2-roadway", "22.3-roadway", "35.1-roadway"];
+
+  // ── Tahoe Living brand colors used in renderers ────────────────────────────
+  // RGB tuples match the :root CSS variables so the legend swatches and
+  // map symbology read as the same color.
+  const TL = {
+    sage:       [91, 123, 107],
+    forest:     [45, 90, 61],
+    terracotta: [196, 112, 75],
+    gold:       [212, 168, 67],
+    sky:        [107, 163, 190],
+    pine:       [61, 107, 78],
+    warmBrown:  [139, 111, 94]
+  };
+
+  // ── Base map ──────────────────────────────────────────────────────────────
+  const map = new Map({ basemap: "topo-vector" });
+
+  // ── All parcels (subtle context layer) ────────────────────────────────────
+  const parcelBaseLayer = new MapImageLayer({
+    url: "https://maps.trpa.org/server/rest/services/Parcels/MapServer",
+    sublayers: [{ id: 0, opacity: 0.4 }],
+    title: "Parcels (all)",
+    opacity: 0.85,
+    listMode: "show"
+  });
+
+  // ── Town Centers ──────────────────────────────────────────────────────────
+  // Sky-blue (water reference) — softer and warmer than TRPA institutional blue.
+  const townCenterLayer = new FeatureLayer({
+    url: "https://maps.trpa.org/server/rest/services/Boundaries/FeatureServer/1",
+    title: "Town Centers",
+    outFields: ["Name", "Jurisdiction", "District_Number", "Land_Use", "Acres"],
+    labelsVisible: false,
+    renderer: {
+      type: "simple",
+      symbol: {
+        type: "simple-fill",
+        color: [...TL.sky, 0.18],
+        outline: { color: [...TL.sky, 0.95], width: 2.4 }
+      }
+    },
+    popupTemplate: {
+      title: "Town Center — {Name}",
+      content: [{
+        type: "fields",
+        fieldInfos: [
+          { fieldName: "Jurisdiction",    label: "Jurisdiction" },
+          { fieldName: "District_Number", label: "District number" },
+          { fieldName: "Land_Use",        label: "Land use" },
+          { fieldName: "Acres",           label: "Acres", format: { digitSeparator: true, places: 1 } }
+        ]
+      }]
+    }
+  });
+
+  // ── Scenic Viewpoints ─────────────────────────────────────────────────────
+  // Pine for EIS focal points (a confident environmental color); warm brown
+  // for the rest (still warm-toned but recedes against the topo basemap).
+  const eisIdList = EIS_VP_IDS.map(id => `'${id}'`).join(', ');
+  const vpLayer = new FeatureLayer({
+    url: "https://maps.trpa.org/server/rest/services/LTInfo_Monitoring/MapServer/24",
+    title: "Scenic Viewpoints",
+    outFields: ["*"],
+    renderer: {
+      type: "unique-value",
+      valueExpression: `
+        var vid = $feature.id;
+        if (IsEmpty(vid)) { vid = $feature.ID; }
+        var eis = [${eisIdList}];
+        if (IndexOf(eis, vid) > -1) { return 'EIS focal'; }
+        return 'Other';
+      `,
+      valueExpressionTitle: "Scenic viewpoint",
+      defaultSymbol: null,
+      uniqueValueInfos: [
+        {
+          value: "EIS focal",
+          label: "EIS focal scenic viewpoint",
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: [...TL.pine, 0.95],
+            size: 13,
+            outline: { color: [31, 61, 46, 1], width: 2.4 }
+          }
+        },
+        {
+          value: "Other",
+          label: "Other scenic viewpoint",
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: [...TL.warmBrown, 0.72],
+            size: 7,
+            outline: { color: [94, 74, 62, 1], width: 1.4 }
+          }
+        }
+      ]
+    },
+    popupTemplate: {
+      title: "Scenic Viewpoint {id}",
+      content: [{
+        type: "fields",
+        fieldInfos: [
+          { fieldName: "road_name", label: "Road" },
+          { fieldName: "location",  label: "Location" }
+        ]
+      }]
+    }
+  });
+
+  // ── Highlighted APN parcels (cumulative projects) ─────────────────────────
+  // Terracotta — Tahoe Living's primary CTA / highlight color.
+  const apnList = HIGHLIGHTED_APNS.map(a => `'${a.replace(/'/g, "''")}'`).join(', ');
+  const highlightedParcelLayer = new FeatureLayer({
+    url: "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
+    title: "Highlighted Parcels (cumulative projects)",
+    definitionExpression: `APN IN (${apnList})`,
+    outFields: ["APN", "APO_ADDRESS", "PSTL_TOWN", "JURISDICTION", "EXISTING_LANDUSE", "OWNERSHIP_TYPE"],
+    renderer: {
+      type: "simple",
+      symbol: {
+        type: "simple-fill",
+        color: [...TL.terracotta, 0.55],
+        outline: { color: [...TL.terracotta, 1], width: 2 }
+      }
+    },
+    popupTemplate: {
+      title: "APN {APN}",
+      content: [{
+        type: "fields",
+        fieldInfos: [
+          { fieldName: "APO_ADDRESS",      label: "Address" },
+          { fieldName: "PSTL_TOWN",        label: "Town" },
+          { fieldName: "JURISDICTION",     label: "Jurisdiction" },
+          { fieldName: "EXISTING_LANDUSE", label: "Land use" },
+          { fieldName: "OWNERSHIP_TYPE",   label: "Ownership" }
+        ]
+      }]
+    }
+  });
+
+  // Draw order: parcels base → town centers → highlighted parcels → viewpoints
+  map.addMany([parcelBaseLayer, townCenterLayer, highlightedParcelLayer, vpLayer]);
+
+  // ── View (CCCB project area — south shore) ────────────────────────────────
+  const view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [-119.98, 38.96],
+    zoom: 12,
+    constraints: { snapToZoom: false }
+  });
+
+  // ── Widgets ───────────────────────────────────────────────────────────────
+  view.ui.add(new Home({ view }), "top-left");
+  view.ui.add(new ScaleBar({ view, unit: "dual" }), "bottom-left");
+
+  // Layer list inside the side panel
+  new LayerList({ view, container: "layerListDiv" });
+
+  // SDK Legend tucked into a top-right Expand
+  view.when(() => {
+    const legendExpand = new Expand({
+      view,
+      content: new Legend({ view }),
+      expandIcon: "legend",
+      expandTooltip: "Legend"
+    });
+    view.ui.add(legendExpand, "top-right");
+
+    Promise.all([
+      townCenterLayer.when(),
+      vpLayer.when(),
+      highlightedParcelLayer.when()
+    ]).finally(() => {
+      const overlay = document.getElementById("loader-overlay");
+      if (!overlay) return;
+      overlay.classList.add("hidden");
+      setTimeout(() => overlay.remove(), 250);
+    });
+  });
+
+});
+</script>
+
+</body>
+</html>
