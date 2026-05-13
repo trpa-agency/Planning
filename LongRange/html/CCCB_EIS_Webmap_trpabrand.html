@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCCB EIS Cumulative Projects — TRPA</title>
+
+  <!-- Calcite Design System v5.0 -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/5.0"></script>
+  <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/5.0/calcite.css" />
+
+  <!-- ArcGIS Maps SDK for JavaScript 4.31 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
+
+  <!-- Open Sans (TRPA web typography) -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TRPA brand tokens (trpa-brand) ── */
+    :root {
+      --trpa-blue:    #0072CE;
+      --trpa-navy:    #003B71;
+      --trpa-earth:   #B47E00;
+      --trpa-forest:  #4A6118;
+      --trpa-brick:   #9C3E27;
+      --trpa-olive:   #B5A64C;
+      --trpa-orange:  #E87722;
+      --trpa-purple:  #7B6A8A;
+      --trpa-ice:     #B4CBE8;
+
+      --trpa-gray-dark:   #333333;
+      --trpa-gray-medium: #666666;
+      --trpa-gray-light:  #F5F5F5;
+      --trpa-gray-border: #DDDDDD;
+      --trpa-white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body, #app {
+      height: 100%;
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+      font-size: 15px;
+    }
+
+    /* ── Header bar ── */
+    #app-header {
+      background: var(--trpa-navy);
+      color: var(--trpa-white);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+    }
+    #app-header .agency {
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+    #app-header h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0;
+    }
+    #app-header .subtitle {
+      margin-left: auto;
+      font-size: 0.78rem;
+      opacity: 0.75;
+      white-space: nowrap;
+    }
+
+    /* ── Layout: map left, side panel right, footer below ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+    }
+    #map-and-side {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+    #viewDiv {
+      flex: 1;
+      min-width: 0;
+    }
+    #side-panel {
+      width: 340px;
+      background: var(--trpa-white);
+      border-left: 1px solid var(--trpa-gray-border);
+      overflow: auto;
+      padding: 1rem 1.1rem 1.2rem;
+    }
+    #side-panel section {
+      margin-bottom: 1.4rem;
+    }
+    #side-panel section h2 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--trpa-navy);
+      margin-bottom: 0.55rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--trpa-gray-border);
+    }
+    #side-panel p {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--trpa-gray-dark);
+    }
+
+    /* ── Static legend swatches (curated wording vs auto Legend widget) ── */
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0.45rem 0;
+      font-size: 0.82rem;
+      color: var(--trpa-navy);
+      line-height: 1.35;
+    }
+    .legend-swatch {
+      width: 22px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(0, 0, 0, 0.2);
+    }
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(0, 0, 0, 0.25);
+    }
+
+    /* ── Popup branding ── */
+    .esri-popup__main-container,
+    .esri-popup__header-title {
+      font-family: 'Open Sans', system-ui, sans-serif;
+      color: var(--trpa-navy);
+    }
+    .esri-popup__header-title { font-weight: 700; }
+
+    /* ── Footer note ── */
+    #app-footer {
+      flex-shrink: 0;
+      padding: 0.45rem 1rem;
+      background: var(--trpa-gray-light);
+      border-top: 1px solid var(--trpa-gray-border);
+      font-size: 0.72rem;
+      color: var(--trpa-gray-medium);
+      display: flex;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #app-footer a {
+      color: var(--trpa-blue);
+      text-decoration: none;
+    }
+    #app-footer a:hover { text-decoration: underline; }
+
+    /* ── Loading overlay ── */
+    #loader-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 200ms ease-out;
+    }
+    #loader-overlay.hidden { opacity: 0; }
+
+    /* ── Layer list embed (suppress Calcite block scrollbars inside panel) ── */
+    #layerListDiv .esri-widget { background: transparent; }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── HEADER ── -->
+  <header id="app-header">
+    <div>
+      <div class="agency">Tahoe Regional Planning Agency</div>
+      <h1>CCCB EIS Cumulative Projects — Visual Analysis</h1>
+    </div>
+    <div class="subtitle">Scenic viewpoints · Town centers · Highlighted parcels</div>
+  </header>
+
+  <!-- ── MAP + SIDE PANEL ── -->
+  <div id="map-and-side">
+    <div id="viewDiv">
+      <div id="loader-overlay">
+        <calcite-loader label="Loading map" type="indeterminate"></calcite-loader>
+      </div>
+    </div>
+
+    <aside id="side-panel">
+      <section>
+        <h2>Legend</h2>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--trpa-brick); border-color: #5d2517;"></div>
+          <span>Scenic viewpoints — EIS focal (36.1, 32.3, 20.2, 22.3, 35.1)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--trpa-purple); border-color: #4a3f55;"></div>
+          <span>Other scenic viewpoints</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background: rgba(232, 119, 34, 0.55); border-color: var(--trpa-orange);"></div>
+          <span>Highlighted parcels (Visual tab, by APN)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background: rgba(0, 114, 206, 0.15); border-color: var(--trpa-blue);"></div>
+          <span>Town center boundaries</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background: rgba(180, 180, 180, 0.12); border-color: #888;"></div>
+          <span>Parcels (all)</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Layers</h2>
+        <div id="layerListDiv"></div>
+      </section>
+
+      <section>
+        <h2>About</h2>
+        <p>
+          Visualizes the cumulative project parcels and scenic viewpoints referenced in the CCCB EIS visual analysis. Spatial data is pulled live from TRPA ArcGIS REST services.
+        </p>
+        <p style="margin-top: 0.6rem; font-size: 0.74rem; color: var(--trpa-gray-medium);">
+          Methods, sources, and caveats: see <code>LongRange/docs/CCCB_EIS_WEBMAP_METHODS.md</code>.
+        </p>
+      </section>
+    </aside>
+  </div>
+
+  <!-- ── FOOTER NOTICE ── -->
+  <footer id="app-footer">
+    <div>
+      Data source: TRPA · <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a>
+    </div>
+    <div>Cumulative projects per CCCB EIS · Visual Analysis</div>
+  </footer>
+
+</div>
+
+<script>
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/FeatureLayer",
+  "esri/layers/MapImageLayer",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "esri/widgets/ScaleBar",
+  "esri/widgets/Home",
+  "esri/widgets/Expand"
+], function (Map, MapView, FeatureLayer, MapImageLayer, Legend, LayerList, ScaleBar, Home, Expand) {
+
+  // ── Highlighted APNs from CCCB EIS Visual Analysis tab ─────────────────────
+  const HIGHLIGHTED_APNS = [
+    '034-331-023', '034-331-015', '034-270-059', '034-270-063',
+    '1318-27-001-010', '1318-27-001-009',
+    '027-750-015', '027-072-033',
+    '090-142-001', '090-142-002',
+    '090-133-015', '090-133-011', '090-133-019', '090-133-009',
+    '090-133-008', '090-133-007', '090-133-006', '090-133-005', '090-133-003',
+    '090-133-016', '090-133-021',
+    '090-370-006', '090-370-005',
+    '090-221-012', '090-221-027', '090-221-026', '090-221-018', '090-221-021', '090-221-020',
+    '132-240-07', '132-240-19', '132-201-02',
+    '023-081-011', '023-231-003'
+  ];
+
+  // EIS focal scenic viewpoint IDs (per Visual Analysis tab)
+  const EIS_VP_IDS = ["36.1-roadway", "32.3-roadway", "20.2-roadway", "22.3-roadway", "35.1-roadway"];
+
+  // ── TRPA brand color helpers ──────────────────────────────────────────────
+  // RGB arrays match :root CSS custom properties so legend and renderers align.
+  const TRPA = {
+    blue:   [0, 114, 206],
+    navy:   [0, 59, 113],
+    earth:  [180, 126, 0],
+    brick:  [156, 62, 39],
+    orange: [232, 119, 34],
+    purple: [123, 106, 138]
+  };
+
+  // ── Base map ──────────────────────────────────────────────────────────────
+  const map = new Map({ basemap: "topo-vector" });
+
+  // ── All parcels (subtle context layer) ────────────────────────────────────
+  const parcelBaseLayer = new MapImageLayer({
+    url: "https://maps.trpa.org/server/rest/services/Parcels/MapServer",
+    sublayers: [{ id: 0, opacity: 0.4 }],
+    title: "Parcels (all)",
+    opacity: 0.85,
+    listMode: "show"
+  });
+
+  // ── Town Centers ──────────────────────────────────────────────────────────
+  const townCenterLayer = new FeatureLayer({
+    url: "https://maps.trpa.org/server/rest/services/Boundaries/FeatureServer/1",
+    title: "Town Centers",
+    outFields: ["Name", "Jurisdiction", "District_Number", "Land_Use", "Acres"],
+    labelsVisible: false,
+    renderer: {
+      type: "simple",
+      symbol: {
+        type: "simple-fill",
+        color: [...TRPA.blue, 0.15],
+        outline: { color: [...TRPA.blue, 0.9], width: 2.2 }
+      }
+    },
+    popupTemplate: {
+      title: "Town Center — {Name}",
+      content: [{
+        type: "fields",
+        fieldInfos: [
+          { fieldName: "Jurisdiction",    label: "Jurisdiction" },
+          { fieldName: "District_Number", label: "District number" },
+          { fieldName: "Land_Use",        label: "Land use" },
+          { fieldName: "Acres",           label: "Acres", format: { digitSeparator: true, places: 1 } }
+        ]
+      }]
+    }
+  });
+
+  // ── Scenic Viewpoints ─────────────────────────────────────────────────────
+  // The source service uses lowercase `id`; an Arcade expression maps each
+  // feature into an EIS / Other bucket so the legend collapses to two entries
+  // instead of one per viewpoint.
+  const eisIdList = EIS_VP_IDS.map(id => `'${id}'`).join(', ');
+  const vpLayer = new FeatureLayer({
+    url: "https://maps.trpa.org/server/rest/services/LTInfo_Monitoring/MapServer/24",
+    title: "Scenic Viewpoints",
+    outFields: ["*"],
+    renderer: {
+      type: "unique-value",
+      valueExpression: `
+        var vid = $feature.id;
+        if (IsEmpty(vid)) { vid = $feature.ID; }
+        var eis = [${eisIdList}];
+        if (IndexOf(eis, vid) > -1) { return 'EIS focal'; }
+        return 'Other';
+      `,
+      valueExpressionTitle: "Scenic viewpoint",
+      defaultSymbol: null,
+      uniqueValueInfos: [
+        {
+          value: "EIS focal",
+          label: "EIS focal scenic viewpoint",
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: [...TRPA.brick, 0.92],
+            size: 12,
+            outline: { color: [93, 37, 23, 1], width: 2.2 }
+          }
+        },
+        {
+          value: "Other",
+          label: "Other scenic viewpoint",
+          symbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: [...TRPA.purple, 0.7],
+            size: 7,
+            outline: { color: [74, 63, 85, 1], width: 1.4 }
+          }
+        }
+      ]
+    },
+    popupTemplate: {
+      title: "Scenic Viewpoint {id}",
+      content: [{
+        type: "fields",
+        fieldInfos: [
+          { fieldName: "road_name", label: "Road" },
+          { fieldName: "location",  label: "Location" }
+        ]
+      }]
+    }
+  });
+
+  // ── Highlighted APN parcels ───────────────────────────────────────────────
+  // Server-side filter via definitionExpression — single query, no client-side
+  // paging needed at this list size.
+  const apnList = HIGHLIGHTED_APNS.map(a => `'${a.replace(/'/g, "''")}'`).join(', ');
+  const highlightedParcelLayer = new FeatureLayer({
+    url: "https://maps.trpa.org/server/rest/services/Parcels/FeatureServer/0",
+    title: "Highlighted Parcels (Visual tab)",
+    definitionExpression: `APN IN (${apnList})`,
+    outFields: ["APN", "APO_ADDRESS", "PSTL_TOWN", "JURISDICTION", "EXISTING_LANDUSE", "OWNERSHIP_TYPE"],
+    renderer: {
+      type: "simple",
+      symbol: {
+        type: "simple-fill",
+        color: [...TRPA.orange, 0.55],
+        outline: { color: [...TRPA.orange, 1], width: 2 }
+      }
+    },
+    popupTemplate: {
+      title: "APN {APN}",
+      content: [{
+        type: "fields",
+        fieldInfos: [
+          { fieldName: "APO_ADDRESS",      label: "Address" },
+          { fieldName: "PSTL_TOWN",        label: "Town" },
+          { fieldName: "JURISDICTION",     label: "Jurisdiction" },
+          { fieldName: "EXISTING_LANDUSE", label: "Land use" },
+          { fieldName: "OWNERSHIP_TYPE",   label: "Ownership" }
+        ]
+      }]
+    }
+  });
+
+  // Draw order: parcels base → town centers → highlighted parcels → viewpoints
+  map.addMany([parcelBaseLayer, townCenterLayer, highlightedParcelLayer, vpLayer]);
+
+  // ── View (CCCB project area — south shore) ────────────────────────────────
+  const view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [-119.98, 38.96],
+    zoom: 12,
+    constraints: { snapToZoom: false }
+  });
+
+  // ── Widgets ───────────────────────────────────────────────────────────────
+  view.ui.add(new Home({ view }), "top-left");
+  view.ui.add(new ScaleBar({ view, unit: "dual" }), "bottom-left");
+
+  // Layer list inside the side panel
+  new LayerList({ view, container: "layerListDiv" });
+
+  // Legend widget tucked into a top-right Expand for users who prefer the
+  // SDK's auto-generated legend over the curated static one in the side panel.
+  view.when(() => {
+    const legendExpand = new Expand({
+      view,
+      content: new Legend({ view }),
+      expandIcon: "legend",
+      expandTooltip: "Legend"
+    });
+    view.ui.add(legendExpand, "top-right");
+
+    // Hide loader once the view is ready and at least one feature layer has loaded
+    Promise.all([
+      townCenterLayer.when(),
+      vpLayer.when(),
+      highlightedParcelLayer.when()
+    ]).finally(() => {
+      const overlay = document.getElementById("loader-overlay");
+      overlay.classList.add("hidden");
+      setTimeout(() => overlay.remove(), 250);
+    });
+  });
+
+});
+</script>
+
+</body>
+</html>

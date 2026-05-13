@@ -208,3 +208,7 @@ __marimo__/
 
 # Claude Code agent worktrees
 **/.claude/worktrees/
+
+# Claude skill eval/iteration artifacts (not part of any skill)
+.claude/skills/*-workspace/
+skill-iteration-*-review.html

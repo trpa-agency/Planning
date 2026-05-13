@@ -3,26 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zoning Explorer — TRPA</title>
+  <title>Planning Tools - TRPA</title>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --trpa-blue:   #0072CE;
-      --trpa-navy:   #003B71;
-      --trpa-forest: #4A6118;
-      --trpa-white:  #FFFFFF;
+      --trpa-blue:    #0072CE;
+      --trpa-navy:    #003B71;
+      --trpa-forest:  #4A6118;
+      --trpa-purple:  #7B6A8A;
+      --trpa-white:   #FFFFFF;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body {
-      height: 100%;
+      min-height: 100%;
       font-family: 'Open Sans', system-ui, sans-serif;
       color: var(--trpa-navy);
       background: linear-gradient(160deg, #eef2f7 0%, #e4e9f2 100%);
     }
-
-    /* ── Header ── */
     #app-header {
       background: var(--trpa-navy);
       color: var(--trpa-white);
@@ -33,7 +30,6 @@
       height: 52px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-
     .header-titles { display: flex; flex-direction: column; gap: 1px; }
     .header-titles .agency {
       font-size: 0.6rem;
@@ -42,53 +38,39 @@
       text-transform: uppercase;
       opacity: 0.7;
     }
-    .header-titles h1 {
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    /* ── Content ── */
-    #content {
-      min-height: calc(100vh - 52px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2.5rem 1.5rem;
-    }
-
-    .intro {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
+    .header-titles h1 { font-size: 1rem; font-weight: 700; line-height: 1; }
+    #content { max-width: 1180px; margin: 0 auto; padding: 2.5rem 1.5rem 3rem; }
+    .intro { text-align: center; margin-bottom: 2.25rem; }
     .intro h2 {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: var(--trpa-navy);
       margin-bottom: 0.4rem;
     }
-
     .intro p {
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       color: #5a6577;
-      font-weight: 400;
+      max-width: 580px;
+      margin: 0 auto;
     }
-
-    /* ── Cards ── */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--trpa-blue);
+      margin: 1.8rem 0 0.85rem 0.25rem;
+    }
+    .section-label:first-of-type { margin-top: 0; }
     .cards {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.1rem;
     }
-
     .card {
       display: flex;
       flex-direction: column;
-      width: 320px;
-      padding: 2rem 1.75rem 1.75rem;
+      padding: 1.5rem 1.4rem 1.3rem;
       background: #fff;
       border-radius: 14px;
       border: 1px solid rgba(0,0,0,0.07);
@@ -98,99 +80,85 @@
       color: inherit;
       cursor: pointer;
       transition: transform 150ms ease-out, box-shadow 150ms ease-out;
-      -webkit-tap-highlight-color: transparent;
+      min-height: 200px;
     }
-
     .card:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 28px rgba(0,0,0,0.11);
     }
-
     .card:active {
       transform: translateY(-1px) scale(0.99);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
       transition-duration: 80ms;
     }
-
-    .card:focus-visible {
-      outline: 2px solid var(--card-color);
-      outline-offset: 3px;
-    }
-
-    .card-parcel   { --card-color: var(--trpa-blue); }
-    .card-explorer { --card-color: var(--trpa-forest); }
-
+    .card:focus-visible { outline: 2px solid var(--card-color); outline-offset: 3px; }
+    .card-parcel       { --card-color: var(--trpa-blue); }
+    .card-district     { --card-color: var(--trpa-forest); }
+    .card-deed         { --card-color: var(--trpa-purple); }
+    .card-cccb-trpa    { --card-color: var(--trpa-navy); }
+    .card-cccb-tl      { --card-color: #5B7B6B; }
     .card-icon {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 11px;
-      background: color-mix(in srgb, var(--card-color) 11%, #fff);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
-      margin-bottom: 1.1rem;
-      flex-shrink: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--card-color);
+      margin-bottom: 0.95rem;
     }
-
-    /* Fallback for browsers without color-mix */
-    .card-parcel   .card-icon { background: #e5f2fc; }
-    .card-explorer .card-icon { background: #edf3e3; }
-
+    .card-parcel    .card-icon { background: #e5f2fc; }
+    .card-district  .card-icon { background: #edf3e3; }
+    .card-deed      .card-icon { background: #efe9f0; }
+    .card-cccb-trpa .card-icon { background: #dfe7ef; }
+    .card-cccb-tl   .card-icon { background: #e6ece8; }
+    .card-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--card-color);
+      margin-bottom: 0.3rem;
+    }
     .card-title {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 700;
       color: var(--trpa-navy);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.45rem;
       line-height: 1.3;
     }
-
     .card-desc {
       font-size: 0.82rem;
       color: #5a6577;
-      line-height: 1.65;
+      line-height: 1.6;
       flex: 1;
     }
-
     .card-cta {
       display: flex;
       align-items: center;
       gap: 0.35rem;
-      margin-top: 1.35rem;
-      font-size: 0.8rem;
+      margin-top: 1.1rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--card-color);
     }
-
-    .card-arrow {
-      display: inline-block;
-      transition: transform 150ms ease-out;
-    }
-
+    .card-arrow { display: inline-block; transition: transform 150ms ease-out; }
     .card:hover .card-arrow { transform: translateX(4px); }
-
-    /* ── Footer ── */
     .source-note {
-      margin-top: 3rem;
+      margin-top: 2.5rem;
       font-size: 0.75rem;
       color: #94a3b8;
       text-align: center;
       line-height: 1.6;
     }
-
     .source-note a { color: var(--trpa-blue); text-decoration: none; }
     .source-note a:hover { text-decoration: underline; }
-
-    /* ── Reduced motion ── */
     @media (prefers-reduced-motion: reduce) {
-      .card, .card-arrow { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      .card, .card-arrow { transition-duration: 0.01ms !important; }
     }
-
-    /* ── Responsive ── */
-    @media (max-width: 700px) {
-      .cards { flex-direction: column; align-items: center; }
-      .card  { width: 100%; max-width: 400px; }
-      .intro h2 { font-size: 1.25rem; }
+    @media (max-width: 560px) {
+      .intro h2 { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -199,44 +167,63 @@
   <div id="app-header">
     <div class="header-titles">
       <span class="agency">Tahoe Regional Planning Agency</span>
-      <h1>Zoning Explorer</h1>
+      <h1>Planning Tools</h1>
     </div>
   </div>
 
   <div id="content">
 
     <div class="intro">
-      <h2>What are you looking for today?</h2>
-      <p>Explore zoning and land use rules for any parcel in the Lake Tahoe Basin</p>
+      <h2>Tools and viewers for planning in the Tahoe Basin</h2>
+      <p>Public web apps for exploring zoning, deed restrictions, and project-specific spatial analyses across the Lake Tahoe region.</p>
     </div>
 
+    <div class="section-label">Zoning &amp; Land Use</div>
     <div class="cards">
-
       <a href="parcel-lookup.html" class="card card-parcel">
-        <div class="card-icon">🏡</div>
+        <div class="card-icon">P</div>
+        <div class="card-eyebrow">Parcel-level lookup</div>
         <div class="card-title">What can I do on my parcel?</div>
-        <div class="card-desc">Enter a street address or parcel number (APN) to see the zoning district, tolerance district, special designations, and the full list of permitted uses for any parcel in the Basin.</div>
-        <div class="card-cta">
-          Look up my parcel
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-desc">Enter an address or APN to see the zoning district, tolerance district, special designations, and the full list of permitted uses for any parcel in the basin.</div>
+        <div class="card-cta">Look up my parcel <span class="card-arrow">&rarr;</span></div>
       </a>
-
-      <a href="district-explorer.html" class="card card-explorer">
-        <div class="card-icon">🏗️</div>
+      <a href="district-explorer.html" class="card card-district">
+        <div class="card-icon">D</div>
+        <div class="card-eyebrow">Use-driven search</div>
         <div class="card-title">Where can I build X?</div>
-        <div class="card-desc">Pick a use category, then a specific use type, to see every zoning district in the Tahoe Basin where that use is permitted or conditionally approved — with density limits and plan details.</div>
-        <div class="card-cta">
-          Explore permitted zones
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-desc">Pick a use category, then a specific use type, to see every zoning district in the basin where that use is permitted or conditionally approved, with density limits and plan details.</div>
+        <div class="card-cta">Explore permitted zones <span class="card-arrow">&rarr;</span></div>
       </a>
+      <a href="deed-restriction-explorer.html" class="card card-deed">
+        <div class="card-icon">R</div>
+        <div class="card-eyebrow">Housing &amp; conservation</div>
+        <div class="card-title">Deed Restriction Explorer</div>
+        <div class="card-desc">Map and grid for browsing deed-restricted parcels across the basin. Filter by restriction type, status, and county; search by APN, description, or address; export to CSV.</div>
+        <div class="card-cta">Browse deed restrictions <span class="card-arrow">&rarr;</span></div>
+      </a>
+    </div>
 
+    <div class="section-label">Project &amp; EIS Webmaps</div>
+    <div class="cards">
+      <a href="CCCB_EIS_Webmap_trpabrand.html" class="card card-cccb-trpa">
+        <div class="card-icon">M</div>
+        <div class="card-eyebrow">CCCB EIS &middot; TRPA brand</div>
+        <div class="card-title">CCCB EIS Visual Analysis</div>
+        <div class="card-desc">Cumulative project parcels and the five focal scenic viewpoints from the CCCB EIS visual analysis. Built in TRPA agency branding for use on trpa.gov and internal contexts.</div>
+        <div class="card-cta">Open agency-branded map <span class="card-arrow">&rarr;</span></div>
+      </a>
+      <a href="CCCB_EIS_Webmap_tahoelivingbrand.html" class="card card-cccb-tl">
+        <div class="card-icon">T</div>
+        <div class="card-eyebrow">CCCB EIS &middot; Tahoe Living brand</div>
+        <div class="card-title">CCCB EIS Visual Analysis</div>
+        <div class="card-desc">Same cumulative project parcels and focal viewpoints, restyled in the Tahoe Living / Cultivating Community brand for housing-related and community-engagement contexts.</div>
+        <div class="card-cta">Open Tahoe Living-branded map <span class="card-arrow">&rarr;</span></div>
+      </a>
     </div>
 
     <div class="source-note">
-      Data source: TRPA · <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a><br>
-      Zoning data may not reflect recently approved amendments. Confirm with TRPA staff for official determination.
+      Data source: TRPA &middot; <a href="https://maps.trpa.org" target="_blank" rel="noopener">maps.trpa.org</a><br>
+      Tools reflect the best available data at the time of page load. Confirm with TRPA staff for official determinations.
     </div>
 
   </div>
