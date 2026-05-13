@@ -1,0 +1,23 @@
+{
+  "skill_name": "trpa-data-services",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "deed-restriction-summary-by-jurisdiction",
+      "prompt": "I'm putting together a quick analysis of deed-restricted parcels in the Lake Tahoe Basin for a board memo. I need a count of deed-restricted parcels and total deed-restricted acres broken out by jurisdiction (El Dorado County, Placer County, City of South Lake Tahoe, Douglas County, Washoe County, Carson City). I also want a small map showing the geographic distribution. Where should I pull the deed-restriction records, where should I pull parcel geometry, and what's the join key? Please show me the actual query URLs and a short pandas/geopandas code outline I can run in a Jupyter notebook.",
+      "expected_output": "A markdown answer.md identifying: (a) GetDeedRestrictedParcels on LTInfo WebServices as the deed-restriction list (with token placeholder), (b) Parcels/FeatureServer/0 on maps.trpa.org for geometry, (c) APN as join key with string-typed handling, (d) example URLs with {TOKEN} placeholders, (e) a short geopandas/pandas code outline showing the merge and groupby."
+    },
+    {
+      "id": 1,
+      "eval_name": "nightly-accela-etl-script",
+      "prompt": "We need a Python script that runs nightly via Windows Task Scheduler and downloads the latest TRPA permit data so it's available locally for our analysts. Specifically: pull the Accela Parcel Report and the Accela Record Detail Report from LTInfo (these refresh nightly from Accela). Save each as a CSV in C:/GIS/AccelaSnapshots/YYYY-MM-DD/ so we have a dated history. The token should come from a .env file, not be hardcoded. Please give me the full script and the .env.template entry I need to add.",
+      "expected_output": "A Python script (etl_script.py) that loads LTINFO_ACCELA_TOKEN from .env via python-dotenv, fetches https://www.laketahoeinfo.org/Api/GetAccelaParcelsCsv/{TOKEN} and https://www.laketahoeinfo.org/Api/GetAccelaRecordDetailsCsv/{TOKEN}, writes them to a dated folder, with logging and basic error handling. Plus a .env.template snippet showing LTINFO_ACCELA_TOKEN= as a blank entry. The script must NOT contain a real token."
+    },
+    {
+      "id": 2,
+      "eval_name": "agol-hosted-layer-in-existing-dashboard",
+      "prompt": "My colleague just published a new layer from ArcGIS Pro to our AGOL tenant: https://services5.arcgis.com/fXXSUzHD5JjcOt1v/arcgis/rest/services/Proposed_TRPA_Goshawk_Threshold_Zone/FeatureServer/0. I want to add this layer to our existing parcel-viewer.html dashboard, which currently loads all its layers from https://maps.trpa.org/server/rest/services/. Does it matter that one source is the on-prem ArcGIS Server and the other is ArcGIS Online? Will the same FeatureLayer config work for both? Show me what code to add to the dashboard.",
+      "expected_output": "A markdown answer.md explaining: (a) Yes, AGOL hosted services use the same ArcGIS REST API as the on-prem server so the FeatureLayer config is structurally identical, (b) the URL is just different (services5.arcgis.com tenant vs maps.trpa.org), (c) auth model differs only if a token is required (AGOL token, NOT the on-prem token if any), (d) a copy-pasteable FeatureLayer config snippet that the user can drop into their existing dashboard."
+    }
+  ]
+}
