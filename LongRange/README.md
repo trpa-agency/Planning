@@ -6,17 +6,31 @@ A public-facing, multi-page web application that answers two core questions abou
 
 | App | Local URL | Description |
 |-----|-----------|-------------|
-| Landing Page | http://localhost:8766/index.html | Two-card entry point linking to both tools |
-| Parcel Lookup | http://localhost:8766/parcel-lookup.html | Enter an address or APN to see zoning district, permissible uses, and special designations for any parcel |
-| District Explorer | http://localhost:8766/district-explorer.html | Select a use category and type to see every zoning district in the Basin where that use is permitted |
+| Landing Page | http://localhost:8766/html/index.html | Card-based entry point linking to every tool |
+| Parcel Lookup | http://localhost:8766/html/parcel-lookup.html | Enter an address or APN to see zoning district, permissible uses, and special designations for any parcel |
+| District Explorer | http://localhost:8766/html/district-explorer.html | Select a use category and type to see every zoning district in the Basin where that use is permitted |
+| Deed Restriction Explorer | http://localhost:8766/html/deed-restriction-explorer.html | Map and grid of deed-restricted parcels with filters and CSV export |
+| Housing Progress Since 2012 | http://localhost:8766/html/multifamily-housing.html | Tahoe Living-branded housing dashboard: multifamily, deed-restricted, ADU, and pipeline units by jurisdiction, timeline, featured projects, map, and table. Joins the spreadsheet-derived records in `data/multifamily_parcels.js` live to `Parcels/FeatureServer/0` (address, zoning, centroid) and `VHR/MapServer/0` (VHR Yes/No). |
 
 ## Serving locally
 
+Serve from the `LongRange` folder (not `LongRange/html`) so pages can reach `../data/`:
+
 ```bash
-python -m http.server 8766 --directory LongRange/html
+python -m http.server 8766 --directory LongRange
 ```
 
-Or use the launch configuration in `.claude/launch.json` (server name: `longrange`, port 8766).
+Or use the launch configuration in `.claude/launch.json` (server name: `longrange-html`, port 8766). Pages are then at `http://localhost:8766/html/<page>.html`.
+
+## Refreshing the housing data
+
+The housing dashboard reads `data/multifamily_parcels.js`, generated from the "Aff and WF parcels" spreadsheet. To refresh after a new spreadsheet arrives (run in `arcgispro-py3`):
+
+```bash
+python LongRange/scripts/build_multifamily_data.py "C:/path/to/Aff and WF parcels.xlsx"
+```
+
+Expected columns: `APN`, `Jurisdiction`, `Units`, `Year Built`, `COUNTY_LANDUSE_DESCRIPTION`, `Affordable and Workforce`, `Timing`, `Type`, `Project Notes`. Featured project cards are configured in the `FEATURED_PROJECTS` list near the top of the page script (add a photo URL and blurb per APN). If a spreadsheet APN has been retired or renumbered, add it to `APN_REMAP` in the build script rather than editing the spreadsheet.
 
 ## Tech stack
 

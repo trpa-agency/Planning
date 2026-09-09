@@ -212,3 +212,6 @@ __marimo__/
 # Claude skill eval/iteration artifacts (not part of any skill)
 .claude/skills/*-workspace/
 skill-iteration-*-review.html
+
+# Leftover staging folder for the trpa-claude-skills marketplace repo (lives at ../trpa-claude-skills/ now)
+/trpa-claude-skills-marketplace/

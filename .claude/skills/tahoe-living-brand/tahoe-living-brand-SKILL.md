@@ -1,108 +1,126 @@
 ---
 name: tahoe-living-brand
-description: "Tahoe Living / Cultivating Community, Conserving the Basin brand guidelines. Use this skill when building any web page, dashboard, tool, or visualization for the Tahoe Living housing initiative, the Cultivating Community project, or any TRPA housing-related work. This brand has a warm, community-focused, equity-centered visual identity — distinct from the institutional TRPA blue. Trigger on any mention of: Tahoe Living, Cultivating Community, Conserving the Basin, tahoeliving.org, TRPA housing, housing assessment, growth management, workforce housing, affordable housing at Tahoe, community engagement housing, or housing equity Tahoe."
+description: "Tahoe Living / Cultivating Community, Conserving the Basin brand guidelines. Use this skill when building any web page, dashboard, tool, or visualization for the Tahoe Living housing initiative, the Cultivating Community project, or any TRPA housing-related work. Tahoe Living has its own logo and palette (lake blue, mauve, green, purple) distinct from the institutional TRPA blue. Trigger on any mention of: Tahoe Living, Cultivating Community, Conserving the Basin, tahoeliving.org, TRPA housing, housing assessment, growth management, workforce housing, affordable housing at Tahoe, community engagement housing, or housing equity Tahoe."
 ---
 
 # Tahoe Living — Cultivating Community, Conserving the Basin
 
-Brand guidelines for **Tahoe Living**, TRPA's community-facing housing and growth management initiative. The site lives at [tahoeliving.org](https://www.tahoeliving.org/) and represents a warmer, more approachable identity than the institutional TRPA brand — designed to welcome community members, renters, workers, and historically underrepresented groups into the planning conversation.
+Brand guidelines for **Tahoe Living**, TRPA's community-facing housing and growth management initiative. The site lives at [tahoeliving.org](https://www.tahoeliving.org/) and is a more approachable identity than the institutional TRPA brand — designed to welcome community members, renters, workers, and historically underrepresented groups into the planning conversation.
 
 This brand is used for housing dashboards, community engagement tools, survey results, housing needs data, growth management visualizations, and the Environmental Impact Statement materials.
+
+**Source of truth:** the palette, logo colors, and fonts below were taken from the logo master files (in `logos/`) and the live tahoeliving.org stylesheet on 2026-09-09. An earlier version of this skill described a sage/terracotta palette with Montserrat; that was wrong and has been replaced. If tahoeliving.org changes, re-sample the site before trusting this file.
 
 ---
 
 ## Brand Personality
 
-Tahoe Living's visual identity is **warm, grounded, and inclusive**. Where the TRPA agency brand says "government authority," this brand says "your neighbor who cares about your housing situation." It uses earth tones, soft greens, and natural textures to evoke mountain community, environmental stewardship, and approachability.
+Tahoe Living's visual identity is **bright, friendly, and inclusive**. Where the TRPA agency brand says "government authority," this brand says "your neighbor who cares about your housing situation." The logo panels — people, trees, and a house inside the outline of the lake — carry the whole message: community, environment, and homes belong together.
 
 Key qualities:
 - **Welcoming** — not institutional; designed for community audiences, not regulators
 - **Equity-centered** — visuals and language are inclusive of BIPOC communities, renters, and low-income households
-- **Environmental** — grounded in the land; colors come from the Tahoe landscape (pine, sage, earth, sky)
+- **Environmental** — the lake and forest are always part of the picture, never a backdrop
 - **Hopeful** — this is about solutions, not just problems
 
 ---
 
 ## Color Palette
 
-### Primary Colors
+The four hues come straight from the logo: lake **blue** (outline and wordmark), **purple** (people panel), **green** (trees panel), and **mauve** (house panel). tahoeliving.org publishes a five-step ramp for each hue; the middle step is the logo color.
 
-| Token                    | Hex       | RGB             | Usage                                          |
-|--------------------------|-----------|-----------------|------------------------------------------------|
-| `--tl-sage`              | `#5B7B6B` | 91, 123, 107    | Primary brand, nav bar, headers, links         |
-| `--tl-forest`            | `#2D5A3D` | 45, 90, 61      | Dark accent, hover states, footer background   |
-| `--tl-cream`             | `#F7F3ED` | 247, 243, 237   | Page background, warm white                    |
-| `--tl-warm-white`        | `#FFFFFF` | 255, 255, 255   | Card surfaces, content areas                   |
+### Core colors (logo values)
 
-### Accent Colors
+| Token           | Hex       | RGB           | Usage                                              |
+|-----------------|-----------|---------------|----------------------------------------------------|
+| `--tl-blue`     | `#0A7EC2` | 10, 126, 194  | Primary. Links, buttons, overlines, primary series |
+| `--tl-mauve`    | `#A766AA` | 167, 102, 170 | Accent / CTA, highlights, second series            |
+| `--tl-green`    | `#93A959` | 147, 169, 89  | Environment, ADUs, positive indicators             |
+| `--tl-purple`   | `#5F57A5` | 95, 87, 165   | People, deed-restricted / affordability            |
 
-| Token                    | Hex       | RGB             | Usage                                          |
-|--------------------------|-----------|-----------------|------------------------------------------------|
-| `--tl-terracotta`        | `#C4704B` | 196, 112, 75    | CTAs, accent buttons, highlights, warm pop     |
-| `--tl-gold`              | `#D4A843` | 212, 168, 67    | Secondary accent, badges, callout borders      |
-| `--tl-sky`               | `#6BA3BE` | 107, 163, 190   | Info states, water/lake references, links       |
-| `--tl-pine`              | `#3D6B4E` | 61, 107, 78     | Environmental indicators, positive/nature       |
+### Ramps (from tahoeliving.org)
 
-### Neutral Colors
+| Hue    | Pale      | Light     | **Base**    | Dark      | Deepest   |
+|--------|-----------|-----------|-------------|-----------|-----------|
+| Blue   | `#A0CFEB` | `#71B1D6` | **`#0A7EC2`** | `#075481` | `#032A41` |
+| Mauve  | `#E1C4E3` | `#C59FC6` | **`#A766AA`** | `#6F4471` | `#382239` |
+| Green  | `#D9E2BF` | `#B9C697` | **`#93A959`** | `#62713B` | `#31381E` |
+| Purple | `#C1BEE1` | `#9A95C3` | **`#5F57A5`** | `#3F3A6E` | `#201D37` |
 
-| Token                    | Hex       | RGB             | Usage                                          |
-|--------------------------|-----------|-----------------|------------------------------------------------|
-| `--tl-text-primary`      | `#2C2C2C` | 44, 44, 44      | Body text, headings                            |
-| `--tl-text-secondary`    | `#5A5A5A` | 90, 90, 90      | Captions, secondary info, timestamps           |
-| `--tl-text-muted`        | `#8A8A8A` | 138, 138, 138   | Placeholder text, disabled states              |
-| `--tl-border`            | `#E0DDD7` | 224, 221, 215   | Borders, dividers (warm-tinted, not pure gray) |
-| `--tl-bg-section`        | `#EDE9E1` | 237, 233, 225   | Alternating section backgrounds                |
+Use the dark step for hover states, footers, and large numbers (`--tl-blue-dark` is the workhorse). Use pale and light steps for fills behind text, sequential chart scales, and map fills.
+
+### Neutrals
+
+The site uses plain neutral grays on a white background — there is no cream tint.
+
+| Token                  | Hex       | Usage                                  |
+|------------------------|-----------|----------------------------------------|
+| `--tl-white`           | `#FFFFFF` | Page and card background               |
+| `--tl-bg-section`      | `#F3F5F7` | Alternating section background         |
+| `--tl-border`          | `#E2E2E2` | Borders, dividers, chart gridlines     |
+| `--tl-text-muted`      | `#757575` | Placeholder text, captions, disabled   |
+| `--tl-text-secondary`  | `#404040` | Secondary copy, labels                 |
+| `--tl-text-primary`    | `#202020` | Body text, headings                    |
 
 ### CSS variables
 
 ```css
 :root {
-  /* Primary */
-  --tl-sage:          #5B7B6B;
-  --tl-forest:        #2D5A3D;
-  --tl-cream:         #F7F3ED;
-  --tl-warm-white:    #FFFFFF;
-
-  /* Accents */
-  --tl-terracotta:    #C4704B;
-  --tl-gold:          #D4A843;
-  --tl-sky:           #6BA3BE;
-  --tl-pine:          #3D6B4E;
+  /* Core (logo) */
+  --tl-blue:            #0A7EC2;
+  --tl-blue-dark:       #075481;
+  --tl-blue-light:      #71B1D6;
+  --tl-blue-pale:       #A0CFEB;
+  --tl-mauve:           #A766AA;
+  --tl-mauve-dark:      #6F4471;
+  --tl-mauve-light:     #C59FC6;
+  --tl-green:           #93A959;
+  --tl-green-dark:      #62713B;
+  --tl-green-light:     #B9C697;
+  --tl-purple:          #5F57A5;
+  --tl-purple-dark:     #3F3A6E;
+  --tl-purple-light:    #9A95C3;
 
   /* Neutrals */
-  --tl-text-primary:  #2C2C2C;
-  --tl-text-secondary:#5A5A5A;
-  --tl-text-muted:    #8A8A8A;
-  --tl-border:        #E0DDD7;
-  --tl-bg-section:    #EDE9E1;
+  --tl-white:           #FFFFFF;
+  --tl-bg:              #FFFFFF;
+  --tl-bg-section:      #F3F5F7;
+  --tl-border:          #E2E2E2;
+  --tl-text-muted:      #757575;
+  --tl-text-secondary:  #404040;
+  --tl-text-primary:    #202020;
 }
 ```
 
-### Important: No pure grays
+### Contrast notes
 
-This brand avoids cold, pure grays (`#ccc`, `#999`, `#f5f5f5`). All neutrals should have a **warm undertone** — tinted toward cream/sand. The background is `--tl-cream` (`#F7F3ED`), not `#F5F5F5`. Borders are `--tl-border` (`#E0DDD7`), not `#DDDDDD`. This warmth is a core part of the brand's welcoming feel.
+- `#0A7EC2` on white passes WCAG AA for normal text (4.6:1). `#93A959` and `#71B1D6` do **not** — use them for fills, bars, and large display text only, never for body copy or small labels on white.
+- `#A766AA` on white is borderline (4.1:1). Fine for bars and headings 18px+; use `#6F4471` for small text.
+- White text on `#075481` or `#5F57A5` is safe; white on `#93A959` is not.
 
 ---
 
 ## Typography
 
-### Primary typeface: Montserrat
+tahoeliving.org pairs a geometric sans for headings and UI with a serif for reading copy.
 
-Tahoe Living uses **Montserrat** — a geometric sans-serif that is modern, clean, and more characterful than Open Sans. It conveys approachability and contemporary civic design.
+- **Poppins** — headings, navigation, labels, buttons, KPI numbers, chart and table text. This is also the closest Google Font to the rounded sans in the logo wordmark.
+- **EB Garamond** — long-form paragraphs on content pages (about text, stories, explanations). Optional on data dashboards; use it for the intro lede and featured-project blurbs if you want the site's editorial feel.
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
 ```
 
 ```css
 body {
-  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 400;
   font-size: 16px;
-  line-height: 1.7;
+  line-height: 1.6;
   color: var(--tl-text-primary);
-  background: var(--tl-cream);
+  background: var(--tl-bg);
 }
+.prose { font-family: 'EB Garamond', Georgia, serif; font-size: 1.125rem; line-height: 1.7; }
 ```
 
 ### Type scale
@@ -112,15 +130,15 @@ body {
 | Hero heading    | 700    | 2.5rem    | Large section openers, page titles       |
 | Section h2      | 600    | 1.75rem   | Section headings                         |
 | Card h3         | 600    | 1.2rem    | Card titles, chart titles                |
-| Overline/label  | 500    | 0.75rem   | Section labels ("WHO WE ARE"), uppercase  |
-| Body            | 400    | 1rem      | Default prose                            |
+| Overline/label  | 500    | 0.75rem   | Section labels ("WHO WE ARE"), uppercase, blue |
+| Body            | 400    | 1rem      | Default prose (Poppins or EB Garamond)   |
 | Caption         | 400    | 0.85rem   | Source notes, footnotes                  |
-| KPI value       | 700    | 2.25rem   | Large metric numbers                     |
+| KPI value       | 700    | 2.25rem   | Large metric numbers, `--tl-blue-dark`   |
 | KPI label       | 400    | 0.85rem   | Descriptor below KPI values              |
 
 ### Overline pattern
 
-Tahoe Living uses small uppercase labels above section headings to provide context. This is a signature pattern:
+Small uppercase labels above section headings are a signature pattern:
 
 ```css
 .overline {
@@ -128,7 +146,7 @@ Tahoe Living uses small uppercase labels above section headings to provide conte
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--tl-sage);
+  color: var(--tl-blue);
   margin-bottom: 0.5rem;
 }
 ```
@@ -142,18 +160,43 @@ Tahoe Living uses small uppercase labels above section headings to provide conte
 
 ## Logo
 
-Tahoe Living uses a custom wordmark logo — a stylized outline of Lake Tahoe (the lake shape) rendered as a continuous line, paired with "Tahoe Living" text.
+The Tahoe Living logo is a bold outline of Lake Tahoe in blue, filled with three colored panels that each carry a white icon: **purple** (a family, top), **green** (pine trees, middle), and **mauve** (a house, bottom). The "Tahoe Living" wordmark sits to the right in the same blue. It is a filled, multi-color mark — not a line drawing — and it is not the TRPA institutional logo.
+
+**Asset files** (in this skill's `logos/` folder; do not redraw the logo in SVG or CSS):
+
+| File | Use |
+|------|-----|
+| `TahoeLiving_Logo_COLOR.png` | Full-color master, 3000 x 3001 px with a wide transparent margin |
+| `TahoeLiving_Logo_WHITE.png` | All-white master for dark backgrounds, same dimensions |
+| `TahoeLiving_Logo_COLOR_trimmed.png` | Color, margin trimmed (1800 x 1542) — use for web |
+| `TahoeLiving_Logo_WHITE_trimmed.png` | White, margin trimmed — use for web on dark backgrounds |
+
+For a web page, copy the trimmed version into the page's `assets/` folder and scale it down (about 800 px wide is plenty). The `LongRange/html/assets/` folder in the Planning repo already has `tahoe-living-logo-color.png`, `tahoe-living-logo-white.png`, and `trpa-logo-white.png` ready to use.
+
+**Logo colors** (sampled from the master file; they are the same hues as the palette above, within a few RGB points of the site values):
+
+| Element | Logo file | Palette token |
+|---------|-----------|---------------|
+| Lake outline and wordmark | `#107CC0` | `--tl-blue` `#0A7EC2` |
+| Purple panel (people) | `#5C54A4` | `--tl-purple` `#5F57A5` |
+| Green panel (trees) | `#90A858` | `--tl-green` `#93A959` |
+| Mauve panel (house) | `#A464A8` | `--tl-mauve` `#A766AA` |
 
 **Logo placement:**
-- Top-left of navigation, linking to tahoeliving.org homepage
-- The logo is an SVG line-drawing style — it is not the TRPA institutional logo
-- On sage/forest/dark backgrounds, use a white version
-- On cream/light backgrounds, use the dark (forest green) version
+- Top-left of the header, linking to tahoeliving.org. Render it 40–48 px tall on desktop so the wordmark stays legible; the wordmark is part of the image, so do not repeat "Tahoe Living" as text beside it.
+- On white or light backgrounds use the color version. On `--tl-blue-dark`, `--tl-purple-dark`, or any dark background use the white version.
+- Keep clear space around the mark of at least the height of the wordmark's capital "T". Do not stretch, recolor, crop the lake outline, or put the color version on a busy photo.
+
+```html
+<a class="brand-mark" href="https://www.tahoeliving.org/" aria-label="Tahoe Living">
+  <img src="assets/tahoe-living-logo-color.png" alt="Tahoe Living" height="40" />
+</a>
+```
 
 **TRPA co-branding:**
-- The TRPA full logo appears in the **footer only**, not in the header
-- Tahoe Living is the lead brand in the header; TRPA is the authority in the footer
-- This deliberate separation keeps the community-facing feel in the navigation while maintaining institutional credibility at the page bottom
+- The TRPA logo appears in the **footer only**, not in the header. Use the white TRPA logo (`trpa-brand/logos/TRPALogo_WHITE.png`) on the dark-blue footer, next to the white Tahoe Living logo.
+- Tahoe Living is the lead brand in the header; TRPA is the authority in the footer.
+- This deliberate separation keeps the community-facing feel in the navigation while maintaining institutional credibility at the page bottom.
 
 ---
 
@@ -161,13 +204,13 @@ Tahoe Living uses a custom wordmark logo — a stylized outline of Lake Tahoe (t
 
 ### Header / Navigation
 
-Tahoe Living uses a clean, minimal sticky nav with the logo on the left and horizontal nav links.
+Clean, minimal sticky nav on white with the logo on the left and horizontal nav links.
 
 ```css
 .tl-nav {
-  background: var(--tl-warm-white);
+  background: var(--tl-white);
   border-bottom: 1px solid var(--tl-border);
-  padding: 0.75rem 2rem;
+  padding: 0.5rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -175,20 +218,13 @@ Tahoe Living uses a clean, minimal sticky nav with the logo on the left and hori
   top: 0;
   z-index: 100;
 }
-.tl-nav a {
-  color: var(--tl-text-primary);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-.tl-nav a:hover {
-  color: var(--tl-sage);
-}
+.tl-nav a { color: var(--tl-text-primary); text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+.tl-nav a:hover { color: var(--tl-blue); }
 ```
 
 ### Hero sections
 
-Full-width hero sections with landscape photography and overlaid text are a core pattern:
+Full-width photography with overlaid text, using a dark-blue gradient for legibility:
 
 ```css
 .tl-hero {
@@ -204,116 +240,100 @@ Full-width hero sections with landscape photography and overlaid text are a core
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(45,90,61,0.8) 0%, transparent 60%);
+  background: linear-gradient(to top, rgba(3,42,65,0.8) 0%, transparent 60%);
 }
-.tl-hero h1 {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-  font-size: 2.5rem;
-  font-weight: 700;
-  max-width: 700px;
-}
+.tl-hero h1 { position: relative; z-index: 1; color: #fff; font-size: 2.5rem; font-weight: 700; max-width: 700px; }
 ```
 
 ### Content sections with alternating backgrounds
 
-Alternate between `--tl-cream` and `--tl-bg-section` to visually separate content blocks:
-
 ```css
 .section { padding: 4rem 2rem; }
-.section--cream { background: var(--tl-cream); }
-.section--sand { background: var(--tl-bg-section); }
+.section--white { background: var(--tl-white); }
+.section--gray  { background: var(--tl-bg-section); }
 ```
 
 ### Cards
 
-Warm white cards with rounded corners and subtle warm shadow:
-
 ```css
 .tl-card {
-  background: var(--tl-warm-white);
+  background: var(--tl-white);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(44,44,44,0.06);
+  box-shadow: 0 2px 8px rgba(32,32,32,0.06);
   border: 1px solid var(--tl-border);
 }
 ```
 
-Note: Border radius is `12px` (softer/rounder than TRPA's `6px`). This contributes to the warmer, less institutional feel.
+Border radius is `12px` (rounder than TRPA's `6px`) to keep the friendly feel.
 
 ### KPI cards
 
+Left border color-codes the metric (blue default; mauve, purple, green for the logo's other panels).
+
 ```css
 .tl-kpi {
-  background: var(--tl-warm-white);
+  background: var(--tl-white);
   border-radius: 12px;
   padding: 1.5rem;
-  border-left: 4px solid var(--tl-sage);
-  box-shadow: 0 2px 8px rgba(44,44,44,0.06);
+  border-left: 4px solid var(--tl-blue);
+  box-shadow: 0 2px 8px rgba(32,32,32,0.06);
 }
-.tl-kpi .value {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: var(--tl-forest);
-}
-.tl-kpi .label {
-  font-size: 0.85rem;
-  color: var(--tl-text-secondary);
-  margin-top: 0.25rem;
-}
+.tl-kpi .value { font-size: 2.25rem; font-weight: 700; color: var(--tl-blue-dark); }
+.tl-kpi .label { font-size: 0.85rem; color: var(--tl-text-secondary); margin-top: 0.25rem; }
 ```
 
 ### Buttons
 
 ```css
-/* Primary — terracotta CTA */
+/* Primary — blue */
 .tl-btn-primary {
-  background: var(--tl-terracotta);
+  background: var(--tl-blue);
   color: #fff;
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.2s;
 }
-.tl-btn-primary:hover { background: #A85D3D; }
+.tl-btn-primary:hover { background: var(--tl-blue-dark); }
 
-/* Secondary — outlined sage */
+/* Accent — mauve, for the one call to action on a page */
+.tl-btn-accent { background: var(--tl-mauve); color: #fff; }
+.tl-btn-accent:hover { background: var(--tl-mauve-dark); }
+
+/* Secondary — outlined blue */
 .tl-btn-secondary {
   background: transparent;
-  color: var(--tl-sage);
-  border: 2px solid var(--tl-sage);
+  color: var(--tl-blue);
+  border: 2px solid var(--tl-blue);
   border-radius: 8px;
   padding: 0.65rem 1.5rem;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
 }
-.tl-btn-secondary:hover {
-  background: var(--tl-sage);
-  color: #fff;
-}
+.tl-btn-secondary:hover { background: var(--tl-blue); color: #fff; }
 ```
 
 ### Footer
 
 ```css
 .tl-footer {
-  background: var(--tl-forest);
+  background: var(--tl-blue-dark);
   color: rgba(255,255,255,0.85);
   padding: 2.5rem 2rem;
   font-size: 0.85rem;
 }
 .tl-footer a { color: rgba(255,255,255,0.9); }
+.tl-footer a:hover { color: var(--tl-green-light); }
 ```
 
-The footer includes the TRPA logo (white variant), mailing address, social media links, and partner attribution.
+The footer carries the white Tahoe Living logo, the white TRPA logo, mailing address, social links, and partner attribution.
 
 ---
 
@@ -323,14 +343,14 @@ The footer includes the TRPA logo (white variant), mailing address, social media
 
 ```javascript
 const TL_COLORS = [
-  '#5B7B6B',  // Sage (primary series)
-  '#C4704B',  // Terracotta (contrast/accent)
-  '#6BA3BE',  // Sky
-  '#D4A843',  // Gold
-  '#3D6B4E',  // Pine
-  '#8B6F5E',  // Warm brown
-  '#7B8E9A',  // Muted blue-gray
-  '#2D5A3D',  // Forest (use sparingly — very dark)
+  '#0A7EC2',  // Blue (primary series)
+  '#A766AA',  // Mauve
+  '#93A959',  // Green
+  '#5F57A5',  // Purple
+  '#075481',  // Blue dark
+  '#C59FC6',  // Mauve light
+  '#62713B',  // Green dark
+  '#9A95C3',  // Purple light
 ];
 ```
 
@@ -338,57 +358,63 @@ const TL_COLORS = [
 
 ```javascript
 const TL_LAYOUT = {
-  font: {
-    family: 'Montserrat, system-ui, sans-serif',
-    color: '#2C2C2C',
-    size: 13
-  },
+  font: { family: 'Poppins, system-ui, sans-serif', color: '#202020', size: 13 },
   paper_bgcolor: 'transparent',
   plot_bgcolor: 'transparent',
   margin: { t: 30, r: 20, b: 40, l: 50 },
-  xaxis: { gridcolor: '#E0DDD7', linecolor: '#E0DDD7' },
-  yaxis: { gridcolor: '#E0DDD7', linecolor: '#E0DDD7' },
-  colorway: ['#5B7B6B', '#C4704B', '#6BA3BE', '#D4A843', '#3D6B4E', '#8B6F5E'],
-  hoverlabel: { font: { family: 'Montserrat, sans-serif' } }
+  xaxis: { gridcolor: '#E2E2E2', linecolor: '#E2E2E2' },
+  yaxis: { gridcolor: '#E2E2E2', linecolor: '#E2E2E2' },
+  colorway: ['#0A7EC2', '#A766AA', '#93A959', '#5F57A5', '#075481', '#C59FC6', '#62713B', '#9A95C3'],
+  hovermode: 'x unified',   // 'y unified' for horizontal bars
+  hoverlabel: { bgcolor: '#FFFFFF', bordercolor: '#E2E2E2', font: { family: 'Poppins, sans-serif', color: '#202020' } }
 };
 ```
 
+Always use unified hover (`x unified`, or `y unified` for horizontal bar charts) with a white hover label so stacked series read as one row.
+
 ### Housing-specific data patterns
 
-Housing dashboards frequently display income-level and equity data. Use these semantic mappings:
+Locked category colors — use the same color everywhere the category appears:
 
-| Category                   | Color           | Hex       |
-|---------------------------|-----------------|-----------|
-| Very low income (≤30% AMI) | Terracotta      | `#C4704B` |
-| Low income (30–50% AMI)   | Gold            | `#D4A843` |
-| Moderate income (50–80% AMI)| Sky            | `#6BA3BE` |
-| Above moderate (80–120% AMI)| Sage           | `#5B7B6B` |
-| Market rate (>120% AMI)   | Muted gray      | `#8A8A8A` |
+| Category                    | Color        | Hex       |
+|-----------------------------|--------------|-----------|
+| Market rate / non-restricted | Blue        | `#0A7EC2` |
+| Affordable & workforce      | Mauve        | `#A766AA` |
+| Deed-restricted             | Purple       | `#5F57A5` |
+| ADU                         | Green        | `#93A959` |
+| Pipeline / proposed         | Green (map) or light blue `#71B1D6` (charts) | |
+| Tourist / seasonal          | Gray         | `#757575` |
 
-For housing type breakdowns:
+Income levels (sequential, purple-to-blue):
 
-| Type                | Color      | Hex       |
-|--------------------|------------|-----------|
-| Single-family      | Sage       | `#5B7B6B` |
-| Multi-family       | Sky        | `#6BA3BE` |
-| ADU                | Gold       | `#D4A843` |
-| Tourist/Seasonal   | Muted gray | `#8A8A8A` |
-| Affordable/Deed-restricted | Pine | `#3D6B4E` |
+| Category                     | Hex       |
+|------------------------------|-----------|
+| Very low income (≤30% AMI)   | `#3F3A6E` |
+| Low income (30–50% AMI)      | `#5F57A5` |
+| Moderate income (50–80% AMI) | `#A766AA` |
+| Above moderate (80–120% AMI) | `#0A7EC2` |
+| Market rate (>120% AMI)      | `#757575` |
+
+### Maps
+
+- Basemap `gray-vector`; switch to `hybrid` via BasemapToggle for parcel context.
+- Point and polygon fills use the locked category colors above at 85 percent opacity with a thin white outline.
+- Map labels (including cluster labels) must use an Esri-hosted font such as `Noto Sans` — Poppins is not available to the ArcGIS label engine and will stall the layer.
 
 ---
 
 ## Photography & Imagery
 
-Tahoe Living uses warm, people-centered photography showing:
+Warm, people-centered photography showing:
 
 - Diverse community members (families, workers, neighbors)
 - Tahoe neighborhoods and streetscapes (not pristine wilderness — this is about *living* in Tahoe)
 - Construction and housing (new builds, ADUs, multi-family)
 - Community meetings and engagement events
 
-Photography is typically displayed full-bleed or in large rounded containers, with the forest-green gradient overlay for text readability.
+Photography is displayed full-bleed or in large rounded containers, with the dark-blue gradient overlay for text readability.
 
-**Avoid:** Stock-photo-looking imagery, exclusively lakefront/tourism shots (this is a housing project, not a tourism site), images that only show affluent settings.
+**Avoid:** stock-photo-looking imagery, exclusively lakefront/tourism shots (this is a housing project, not a tourism site), images that only show affluent settings.
 
 ---
 
@@ -399,13 +425,11 @@ Tahoe Living content is produced in **English and Spanish**. When building tools
 - Include language toggle or bilingual labels where appropriate
 - Ensure all chart labels and data table headers can accommodate Spanish translations (which tend to be ~20% longer than English)
 - Use ARIA labels on interactive elements
-- Ensure color contrast meets WCAG AA standards — the warm palette can trend light, so test body text against cream backgrounds carefully
+- Check contrast: green and light blue fail AA for small text on white (see Contrast notes above)
 
 ---
 
 ## Tone & Voice
-
-Tahoe Living's written tone is:
 
 - **Conversational and direct** — not bureaucratic; "we" and "you" language
 - **Community-oriented** — speak to people as neighbors, not as permit applicants
@@ -431,3 +455,5 @@ Example labels:
 | Dashboard tech stack (always)    | `trpa-dashboard-stack` |
 
 Tahoe Living is a **sub-brand** of TRPA. The TRPA logo appears in the footer for credibility, but the header, colors, and feel are entirely Tahoe Living. When building dashboards for housing data that will live on tahoeliving.org or be embedded in Tahoe Living materials, use this brand. When building the same housing data for an internal TRPA report or trpa.gov page, use `trpa-brand` instead.
+
+Reference implementation: `LongRange/html/multifamily-housing.html` in the Planning repo (header, KPIs, filters, Plotly charts, clustered ArcGIS map, AG Grid table, footer).

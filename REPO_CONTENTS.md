@@ -30,6 +30,7 @@ A multi-page web application that answers two core land-use questions: *"What ca
 | `parcel-lookup.html` | Address or APN → zoning district, tolerance district, jurisdiction, special designations, full permissible-uses table. Two-state UI (search → results with map + sidebar + drag-resizable bottom panel). Lazy MapView init, deep linking via `?q=`. |
 | `district-explorer.html` | Category → Use Type → Map. Three-state UI (8-category grid → grouped use-type list with zone counts → map view with `UniqueValueRenderer` highlighting matched districts). Deep links via `?cat=…&use=…`. |
 | `deed-restriction-explorer.html` | Deed Restriction Explorer (single-file viewer) |
+| `multifamily-housing.html` | Housing Progress Since 2012 — Tahoe Living-branded housing dashboard (KPIs, by-jurisdiction charts, timeline with policy milestones, clustered parcel map, featured projects, AG Grid table). Reads `LongRange/data/multifamily_parcels.js` and joins live to `Parcels/FeatureServer/0` and `VHR/MapServer/0`. |
 | `CCCB_EIS_Webmap_8.html` | CCCB EIS Cumulative Projects — Visual Analysis Map (one-off web map supporting the EIS) |
 
 ### Plan / reference docs
@@ -41,7 +42,8 @@ A multi-page web application that answers two core land-use questions: *"What ca
 | `parcel-lookup-plan.md` | Architecture/spec for `parcel-lookup.html` — user flow, two states, service-call sequence, function inventory, panel layouts, constraints (no AG Grid due to ArcGIS AMD loader conflict, Calcite pinned to 2.13.0). |
 | `district-explorer-plan.md` | Architecture/spec for `district-explorer.html` — three-state flow, category color mapping, `UniqueValueRenderer` setup, click handler logic, caching strategy. |
 | `skills.md` | Inventory of design-engineering skills installed under `.agents/skills/` (Emil, Impeccable, Stitch, etc.) used during front-end development. |
-| `data/`, `scripts/` | Currently empty placeholders |
+| `data/multifamily_parcels.js` | Generated housing records (one row per housing record) consumed by `multifamily-housing.html`. Regenerate with the build script below when a new spreadsheet arrives. |
+| `scripts/build_multifamily_data.py` | Converts the "Aff and WF parcels" spreadsheet into `data/multifamily_parcels.js` (cleans APNs, years, whitespace). Run in `arcgispro-py3`. |
 
 ---
 
