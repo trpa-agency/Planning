@@ -11,7 +11,7 @@ This skill defines the required tech stack and patterns. **Always pair with the 
 
 - **General TRPA tools** → `trpa-brand` (TRPA Blue `#0072CE`, Open Sans)
 - **EIP projects** → `trpa-eip-brand` (EIP palette, Lexend Deca)
-- **Housing / Tahoe Living** → `tahoe-living-brand` (sage/terracotta, Montserrat)
+- **Housing / Tahoe Living** → `tahoe-living-brand` (blue/mauve/green/purple from the logo, Poppins + EB Garamond)
 
 ---
 
@@ -96,8 +96,8 @@ const BRAND_TEXT = '#0B1F41';  // EIP Navy
 ### Tahoe Living (tahoe-living-brand)
 
 ```javascript
-const BRAND_COLORS = ['#5B7B6B', '#C4704B', '#6BA3BE', '#D4A843', '#3D6B4E', '#8B6F5E'];
-const BRAND_FONT = 'Montserrat, system-ui, sans-serif';
+const BRAND_COLORS = ['#0A7EC2', '#A766AA', '#93A959', '#5F57A5', '#075481', '#C59FC6', '#62713B', '#9A95C3'];
+const BRAND_FONT = 'Poppins, system-ui, sans-serif';
 const BRAND_TEXT = '#2C2C2C';
 ```
 
@@ -132,7 +132,7 @@ Every dashboard follows this structure. The template below uses EIP brand tokens
   <!-- Google Fonts — swap per brand:
        EIP:          Lexend Deca
        TRPA Agency:  Open Sans
-       Tahoe Living: Montserrat
+       Tahoe Living: Poppins (UI) + EB Garamond (prose)
   -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
@@ -329,7 +329,7 @@ Every dashboard follows this structure. The template below uses EIP brand tokens
     // Read BRAND_COLORS from the active brand skill
     const BRAND_COLORS = ['#007DC3', '#6EBE44', '#F16022', '#0B1F41'];
     // TRPA Agency: ['#0072CE', '#003B71', '#E87722', '#4A6118', '#9C3E27', '#B5A64C', '#7B6A8A', '#B4CBE8']
-    // Tahoe Living: ['#5B7B6B', '#C4704B', '#6BA3BE', '#D4A843', '#3D6B4E', '#8B6F5E']
+    // Tahoe Living: ['#0A7EC2', '#A766AA', '#93A959', '#5F57A5', '#075481', '#C59FC6', '#62713B', '#9A95C3']
 
     function buildChart(data) {
       const trace = {
@@ -413,6 +413,7 @@ Every dashboard follows this structure. The template below uses EIP brand tokens
 - **Use `paper_bgcolor: 'transparent'` and `plot_bgcolor: 'transparent'`** — the chart container provides the white background.
 - **Font:** Set `font.family` and `font.color` from the active brand skill.
 - **Color cycle:** Use `colorway` from the active brand skill's color array. For sequential data, use tints of the brand primary. For categorical data, cycle through the full brand palette.
+- **Locked data category colors:** When a data category recurs across multiple dashboards or views (commodities like Residential / Commercial / Tourist, allocation statuses like Allocated / Jurisdiction / TRPA / Unreleased, etc.), use the **same color everywhere** that category appears. The active brand skill has the canonical mapping under "Locked data category colors" — defer to it. Don't reinvent a color scheme per dashboard; viewers learn the legend once and re-use it across the ecosystem.
 - **Number formatting:** Use `Plotly.d3.format` for consistent number display. Comma-separate thousands. No unnecessary decimals.
 - **Symbols in charts:** Per TRPA style guide, symbols (%, $, °) are acceptable in charts and tables even though they should be spelled out in body text.
 - **Annotations and titles:** Prefer chart section headings (via `<h3>` above the chart div) over Plotly's built-in title, which is harder to style consistently.
