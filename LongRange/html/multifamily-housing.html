@@ -235,7 +235,9 @@
     /* Featured projects */
     .featured-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      /* auto-fit (not auto-fill) so that with few cards the columns stretch to fill the row;
+         drops to one column below ~600px */
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 1.25rem;
       margin-top: 1.25rem;
     }
@@ -252,7 +254,7 @@
     }
     .project-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(32,32,32,0.12); }
     .project-photo {
-      height: 170px;
+      height: clamp(150px, 14vw, 220px);   /* scales with the wider cards on big screens */
       background: linear-gradient(160deg, var(--tl-bg-section), #E2E2E2);
       background-size: cover;
       background-position: center;
