@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Housing Progress Since 2012 — Tahoe Living</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
 
   <!-- Calcite Design System (pinned to match ArcGIS 4.31 + sibling LongRange tools) -->
   <script type="module" src="https://js.arcgis.com/calcite-components/2.13.0/calcite.esm.js"></script>
@@ -1096,7 +1100,7 @@
             center: [-120.02, 39.04],   // slightly south of the lake's center so the basin sits higher in the frame
             zoom: 9,
             constraints: { snapToZoom: false },
-            popup: { dockEnabled: true, dockOptions: { buttonEnabled: false, breakpoint: false, position: "bottom-right" } },
+            popup: { dockEnabled: true, dockOptions: { buttonEnabled: false, breakpoint: false, position: "top-right" } },
           });
           mapView.ui.add(new Home({ view: mapView }), "top-left");
           mapView.ui.add(new Fullscreen({ view: mapView, element: document.getElementById("map-card") }), "top-left");
