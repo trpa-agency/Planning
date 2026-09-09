@@ -586,7 +586,8 @@
   // Featured projects. Add `photo` (URL or relative path) and `blurb` per project;
   // units, year built, jurisdiction, and address are pulled from the data by APN.
   // Optional per project: `url` (project website), `stats` (overrides the computed
-  // built / pipeline / year figures with custom [{ value, label }] entries).
+  // built / pipeline / year figures with custom [{ value, label }] entries), and
+  // `apns` (an array, for a card that covers more than one parcel).
   const FEATURED_PROJECTS = [
     {
       apn: "027-323-019",
@@ -613,6 +614,17 @@
       stats: [
         { value: "21", label: "affordable units planned" },
         { value: "22", label: "existing motel units" },
+      ],
+    },
+    {
+      apns: ["093-130-014", "094-070-006"],
+      title: "Commercial space turned into homes",
+      tag: "Commercial conversion",
+      blurb: "Placer County has converted commercial floor area into housing: 17 apartments in 2021 and 13 more homes, including an accessory dwelling unit, in 2024.",
+      photo: "",
+      stats: [
+        { value: "30", label: "homes created" },
+        { value: "2", label: "commercial sites converted" },
       ],
     },
   ];
@@ -1129,39 +1141,51 @@
     pointLayerView.filter = { objectIds: oids.length ? oids : [-1] };
   }
 
-  async function drawParcelOutline(apn) {
-    if (!highlightLayer || !esriMods) return;
+  async function drawParcelOutlines(apns) {
+    if (!highlightLayer || !esriMods || !apns.length) return;
     try {
       const json = await postQuery(PARCELS_URL, {
-        where: `APN = ${q(apn)}`, outFields: "APN", returnGeometry: "true", outSR: "4326",
+        where: `APN IN (${apns.map(q).join(",")})`, outFields: "APN", returnGeometry: "true", outSR: "4326",
       });
       highlightLayer.removeAll();
-      const f = json.features?.[0];
-      if (!f?.geometry) return;
-      highlightLayer.add(new esriMods.Graphic({
-        geometry: { type: "polygon", rings: f.geometry.rings, spatialReference: { wkid: 4326 } },
-        symbol: { type: "simple-fill", color: [147, 169, 89, 0.18], outline: { color: [167, 102, 170, 1], width: 2.5 } },
-      }));
+      for (const f of json.features || []) {
+        if (!f.geometry) continue;
+        highlightLayer.add(new esriMods.Graphic({
+          geometry: { type: "polygon", rings: f.geometry.rings, spatialReference: { wkid: 4326 } },
+          symbol: { type: "simple-fill", color: [147, 169, 89, 0.18], outline: { color: [167, 102, 170, 1], width: 2.5 } },
+        }));
+      }
     } catch (err) { console.warn("Parcel outline failed:", err); }
   }
+  const drawParcelOutline = (apn) => drawParcelOutlines([apn]);
 
-  async function focusOnApn(apn) {
-    const entry = parcels.get(apn);
-    if (!mapView || !entry || entry.lon == null) return;
+  // Accepts one APN or several (a featured card can cover more than one parcel).
+  async function focusOnApns(apnList) {
+    const entries = apnList.map((a) => parcels.get(a)).filter((e) => e && e.lon != null);
+    if (!mapView || !entries.length) return;
     document.getElementById("map-section").scrollIntoView({ behavior: "smooth", block: "start" });
-    const target = new esriMods.Point({ longitude: entry.lon, latitude: entry.lat });
-    await mapView.goTo({ target, zoom: Math.max(mapView.zoom, 17) }, { duration: 500 });
-    drawParcelOutline(apn);
-    mapView.openPopup({ title: `APN ${apn}`, content: popupContent(apn), location: target });
+    const points = entries.map((e) => new esriMods.Point({ longitude: e.lon, latitude: e.lat }));
+    // Draw the highlight first so it does not depend on the camera animation finishing.
+    drawParcelOutlines(entries.map((e) => e.apn));
+    if (points.length === 1) {
+      await mapView.goTo({ target: points[0], zoom: Math.max(mapView.zoom, 17) }, { duration: 500 });
+    } else {
+      await mapView.goTo(points, { duration: 500 });   // fits the extent of every parcel
+    }
+    if (points.length === 1) {
+      const apn = entries[0].apn;
+      mapView.openPopup({ title: `APN ${apn}`, content: popupContent(apn), location: points[0] });
+    }
   }
+  const focusOnApn = (apn) => focusOnApns([apn]);
 
   // ── Featured projects ──────────────────────────────────────────────
   function renderFeatured() {
     const grid = $("featured-grid");
     grid.innerHTML = "";
     for (const proj of FEATURED_PROJECTS) {
-      const entry = parcels.get(proj.apn);
-      const recs = entry ? entry.records : [];
+      const apns = proj.apns || [proj.apn];
+      const recs = apns.flatMap((a) => (parcels.get(a)?.records) || []);
       const first = recs[0];
       const existing = recs.filter((r) => r.isExisting);
       const pipeline = recs.filter((r) => r.isPipeline);
@@ -1174,6 +1198,12 @@
       const link = proj.url
         ? ` &middot; <a href="${proj.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Project website</a>`
         : "";
+      // One parcel shows its address; several show the jurisdiction and a parcel count.
+      const place = !first
+        ? `APN ${apns.join(", ")} (not in current data)`
+        : apns.length > 1
+          ? `${first.jurisName} &middot; ${apns.length} parcels`
+          : `${first.address || "APN " + apns[0]}${first.town ? ", " + first.town : ""} &middot; ${first.jurisName}`;
       const card = document.createElement("div");
       card.className = "project-card";
       card.innerHTML = `
@@ -1181,11 +1211,11 @@
         <div class="project-body">
           <span class="project-tag">${proj.tag || ""}</span>
           <h3>${proj.title}</h3>
-          <div class="meta">${first ? `${first.address || "APN " + proj.apn}${first.town ? ", " + first.town : ""} &middot; ${first.jurisName}` : `APN ${proj.apn} (not in current data)`}${link}</div>
+          <div class="meta">${place}${link}</div>
           <p>${proj.blurb || ""}</p>
           <div class="project-stats">${stats}</div>
         </div>`;
-      card.addEventListener("click", () => focusOnApn(proj.apn));
+      card.addEventListener("click", () => focusOnApns(apns));
       grid.appendChild(card);
     }
   }
