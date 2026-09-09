@@ -24,9 +24,19 @@ Or use the launch configuration in `.claude/launch.json` (server name: `longrang
 
 ## Reviewing the housing dashboard wording
 
-`docs/housing-dashboard-text.md` lists every piece of text on the housing dashboard with a
-stable ID (T01–T116). Share it with reviewers, who fill in a `New:` line under anything they
-want reworded and send it back. The IDs map each change to its place in the page.
+Every piece of text on the housing dashboard is listed with a stable ID (T01–T116).
+Reviewers write their replacement wording next to anything they want changed and send the
+file back; the IDs map each change to its place in the page. Three formats, same content:
+
+| File | For |
+|------|-----|
+| `docs/Housing Dashboard - Text Review.docx` | **Send this to reviewers.** Word tables with a shaded column to type in |
+| `docs/housing-dashboard-text.txt` | Plain-text fallback for anyone who would rather reply by email |
+| `docs/housing-dashboard-text.md` | Source of truth; regenerate the other two from it |
+
+To rebuild after the page wording changes, re-extract the strings and rerun the two
+generator scripts in `scripts/` (`build_review_docx.py` writes the Word file from a parsed
+copy of the Markdown; both were generated the same way).
 
 ## Refreshing the housing data
 
