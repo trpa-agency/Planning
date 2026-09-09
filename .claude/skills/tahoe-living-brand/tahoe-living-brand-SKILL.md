@@ -170,6 +170,9 @@ The Tahoe Living logo is a bold outline of Lake Tahoe in blue, filled with three
 | `TahoeLiving_Logo_WHITE.png` | All-white master for dark backgrounds, same dimensions |
 | `TahoeLiving_Logo_COLOR_trimmed.png` | Color, margin trimmed (1800 x 1542) — use for web |
 | `TahoeLiving_Logo_WHITE_trimmed.png` | White, margin trimmed — use for web on dark backgrounds |
+| `TahoeLiving_Mark_square.png` | Lake mark only (no wordmark) on a square transparent canvas — source for favicons and app icons |
+
+Favicons: resize the square mark to 32, 64, 180 (apple-touch-icon), and 512 px PNGs and link them in `<head>`. `LongRange/html/assets/` has a ready set (`favicon-32.png`, `favicon-64.png`, `favicon-512.png`, `apple-touch-icon.png`).
 
 For a web page, copy the trimmed version into the page's `assets/` folder and scale it down (about 800 px wide is plenty). The `LongRange/html/assets/` folder in the Planning repo already has `tahoe-living-logo-color.png`, `tahoe-living-logo-white.png`, and `trpa-logo-white.png` ready to use.
 
