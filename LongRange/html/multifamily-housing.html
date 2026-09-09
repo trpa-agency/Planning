@@ -988,7 +988,7 @@
         VHR: <b>${first.vhr}</b>${first.vhrCount > 1 ? ` (${first.vhrCount} permits)` : ""} &middot; ${first.acres != null ? Number(first.acres).toFixed(2) + " ac" : ""}
       </div>
       <table class="popup-records">
-        <thead><tr><th>Type</th><th style="text-align:right">Units</th><th>Timing</th><th>Built</th><th>Aff/WF</th></tr></thead>
+        <thead><tr><th>Type</th><th style="text-align:right">Units</th><th>Timing</th><th>Built</th><th>Affordable &amp; workforce</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
       ${notes.length ? `<div class="popup-meta">${notes.map((n) => `&bull; ${n}`).join("<br>")}</div>` : ""}
