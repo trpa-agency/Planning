@@ -44,13 +44,20 @@ COLUMNS = [
 
 MIN_PLAUSIBLE_YEAR = 1850
 
+# Records with a blank Timing are permitted or proposed units that have not been
+# constructed yet (per Mason, 2026-09-09). Give them an explicit label so the page can
+# count them in the pipeline and show them in the Timing filter.
+TIMING_BLANK_FILL = "Permitted or Proposed - Not Constructed"
+
 # APNs in the spreadsheet that have been retired or renumbered since the record was
 # entered. Left side is the spreadsheet value, right side is the current APN in the
 # Parcels service. Records keep their attributes; only the APN changes.
 APN_REMAP = {
     "029-170-001": "029-170-008",   # CSLT, 75 reserved affordable bonus units (confirmed by Mason 2026-09-09)
     "015-032-029": "015-032-030",   # El Dorado County, 2-unit multifamily (confirmed by Mason 2026-09-09)
-    "093-041-006": "093-041-008",   # Placer County, duplex (confirmed by Mason 2026-09-09)
+    "093-041-006": "093-041-008",   # Placer County: 093-041-004 and 093-041-006 were merged into 093-041-008.
+                                    # TRPA verified 2 residential units (duplex) plus some commercial on the merged
+                                    # 093-041-008, so the 2 units carry forward (Mason, 2026-09-09).
 }
 
 
@@ -107,7 +114,7 @@ def build(xlsx_path: Path, out_path: Path) -> None:
             clean_year(rec["Year Built"]),
             clean_text(rec["COUNTY_LANDUSE_DESCRIPTION"]),
             clean_text(rec["Affordable and Workforce"]),
-            clean_text(rec["Timing"]),
+            clean_text(rec["Timing"]) or TIMING_BLANK_FILL,
             clean_text(rec["Type"]),
             clean_text(rec["Project Notes"]),
         ]
