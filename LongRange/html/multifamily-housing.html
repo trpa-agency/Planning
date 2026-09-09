@@ -453,12 +453,12 @@
         </div>
         <div class="tl-card">
           <h3>Existing accessory dwelling units</h3>
-          <div class="caption">Records whose housing type includes an ADU</div>
+          <div class="caption">Existing ADUs, counted one per record. Parcel unit totals include the main home, so units are not summed here.</div>
           <div id="chart-adu" class="chart"></div>
         </div>
         <div class="tl-card">
           <h3>Units in the pipeline</h3>
-          <div class="caption">Permitted but not yet constructed, plus bonus units reserved for projects not yet submitted</div>
+          <div class="caption">Permitted or proposed but not yet constructed, plus bonus units reserved for projects not yet submitted</div>
           <div id="chart-pipeline" class="chart"></div>
         </div>
       </div>
@@ -506,7 +506,7 @@
 <section class="section" id="table-section" hidden>
   <div class="section-inner">
     <p class="overline">The data</p>
-    <h2>Every housing record</h2>
+    <h2>Every multi-family housing record</h2>
     <div class="tl-card" id="grid-card">
       <div class="grid-toolbar">
         <div class="caption" id="grid-caption">One row per housing record. A parcel can have more than one record.</div>
@@ -566,6 +566,7 @@
   const TIMING_EXISTING_PRE  = "Existing - Built Pre-2012";
   const PIPELINE_TIMINGS = new NativeSet([
     "Permitted Not Constructed",
+    "Permitted or Proposed - Not Constructed",   // blank Timing in the spreadsheet, labeled by the build script
     "Bonus Units Reserved, Application not submitted",
   ]);
 
@@ -813,7 +814,11 @@
     set("kpi-post2012", "kpi-post2012-sub", rows.filter((r) => r.isPost2012), "parcels");
     set("kpi-affwf", "kpi-affwf-sub", rows.filter((r) => r.isExisting && r.affwf === "Yes"), "parcels, existing");
     set("kpi-dr", "kpi-dr-sub", rows.filter((r) => r.isExisting && r.isDR), "parcels, existing");
-    set("kpi-adu", "kpi-adu-sub", rows.filter((r) => r.isExisting && r.isADU), "parcels, existing");
+    // ADUs are counted per record, not by summing Units: on ADU records the spreadsheet's
+    // Units value is the parcel total (main home plus ADU), which would overcount.
+    const adu = rows.filter((r) => r.isExisting && r.isADU);
+    $("kpi-adu").textContent = fmt(adu.length);
+    $("kpi-adu-sub").textContent = `on ${fmt(parcelCount(adu))} parcels, existing`;
     set("kpi-pipeline", "kpi-pipeline-sub", rows.filter((r) => r.isPipeline), "parcels, permitted or reserved");
   }
 
@@ -821,6 +826,11 @@
   function unitsByJuris(rows) {
     const m = new NativeMap();
     for (const r of rows) m.set(r.juris, (m.get(r.juris) || 0) + r.units);
+    return m;
+  }
+  function recordsByJuris(rows) {
+    const m = new NativeMap();
+    for (const r of rows) m.set(r.juris, (m.get(r.juris) || 0) + 1);
     return m;
   }
 
@@ -833,13 +843,13 @@
     return order.reverse();
   }
 
-  function hbarTrace(name, jurisList, unitsMap, color) {
+  function hbarTrace(name, jurisList, unitsMap, color, unitLabel = "units") {
     return {
       type: "bar", orientation: "h", name,
       y: jurisList.map((j) => JURIS_NAMES[j] || j),
       x: jurisList.map((j) => unitsMap.get(j) || 0),
       marker: { color },
-      hovertemplate: "%{x:,d} units",
+      hovertemplate: `%{x:,d} ${unitLabel}`,
     };
   }
 
@@ -860,7 +870,7 @@
       hbarTrace("Deed-restricted", axis, unitsByJuris(dr), TL.purple),
       hbarTrace("Other affordable & workforce", axis, unitsByJuris(otherAff), TL.mauve),
     ], stacked, PLOT_CONFIG);
-    Plotly.react("chart-adu", [hbarTrace("ADUs", axis, unitsByJuris(adu), TL.green)], single, PLOT_CONFIG);
+    Plotly.react("chart-adu", [hbarTrace("ADUs", axis, recordsByJuris(adu), TL.green, "ADUs")], single, PLOT_CONFIG);
     Plotly.react("chart-pipeline", [
       hbarTrace("Affordable & workforce", axis, unitsByJuris(pipeAff), TL.mauve),
       hbarTrace("Market rate", axis, unitsByJuris(pipeMkt), TL.blue),
@@ -988,7 +998,7 @@
         VHR: <b>${first.vhr}</b>${first.vhrCount > 1 ? ` (${first.vhrCount} permits)` : ""} &middot; ${first.acres != null ? Number(first.acres).toFixed(2) + " ac" : ""}
       </div>
       <table class="popup-records">
-        <thead><tr><th>Type</th><th style="text-align:right">Units</th><th>Timing</th><th>Built</th><th>Aff/WF</th></tr></thead>
+        <thead><tr><th>Type</th><th style="text-align:right">Units</th><th>Timing</th><th>Built</th><th>Affordable &amp; workforce</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
       ${notes.length ? `<div class="popup-meta">${notes.map((n) => `&bull; ${n}`).join("<br>")}</div>` : ""}
@@ -1081,7 +1091,7 @@
           mapView = new MapView({
             container: "map-view",
             map,
-            center: [-120.02, 39.12],
+            center: [-120.02, 39.04],   // slightly south of the lake's center so the basin sits higher in the frame
             zoom: 9,
             constraints: { snapToZoom: false },
             popup: { dockEnabled: true, dockOptions: { buttonEnabled: false, breakpoint: false, position: "bottom-right" } },
