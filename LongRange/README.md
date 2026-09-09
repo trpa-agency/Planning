@@ -22,6 +22,12 @@ python -m http.server 8766 --directory LongRange
 
 Or use the launch configuration in `.claude/launch.json` (server name: `longrange-html`, port 8766). Pages are then at `http://localhost:8766/html/<page>.html`.
 
+## Reviewing the housing dashboard wording
+
+`docs/housing-dashboard-text.md` lists every piece of text on the housing dashboard with a
+stable ID (T01–T116). Share it with reviewers, who fill in a `New:` line under anything they
+want reworded and send it back. The IDs map each change to its place in the page.
+
 ## Refreshing the housing data
 
 The housing dashboard reads `data/multifamily_parcels.js`, generated from the "Aff and WF parcels" spreadsheet. To refresh after a new spreadsheet arrives (run in `arcgispro-py3`):
