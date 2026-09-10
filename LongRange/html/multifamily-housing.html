@@ -215,6 +215,7 @@
     }
     .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 0.4rem; vertical-align: -1px; border: 1.5px solid rgba(0,0,0,0.25); }
     .legend-line { display: inline-block; width: 16px; height: 0; border-top: 2px solid var(--tl-blue-dark); margin-right: 0.4rem; vertical-align: 3px; }
+    .legend-line--parcel { border-top-width: 1px; border-top-color: #8C8C8C; }
     .charts-col { display: flex; flex-direction: column; gap: 1.25rem; }
     .tl-card {
       background: var(--tl-white);
@@ -476,6 +477,7 @@
           <span><i class="legend-dot" style="background:#0A7EC2"></i>Market rate</span>
           <span><i class="legend-dot" style="background:#93A959"></i>Pipeline only</span>
           <span><i class="legend-line"></i>TRPA boundary</span>
+          <span><i class="legend-line legend-line--parcel"></i>Parcel boundaries, once zoomed in</span>
           <span>Cluster labels show total units. Zoom in to see individual parcels.</span>
         </div>
       </div>
@@ -554,6 +556,7 @@
   ];
   const VHR_URL = "https://maps.trpa.org/server/rest/services/VHR/MapServer/0";
   const BOUNDARY_URL = "https://maps.trpa.org/server/rest/services/Boundaries/FeatureServer/4";
+  const PARCEL_REF_MIN_SCALE = 72224;   // ~zoom 13; grey parcel outlines appear at this scale and closer
   const CHUNK_SIZE = 400;   // APNs per Parcels query (POST, so URL length is not a constraint)
   const CONCURRENCY = 6;
   const VHR_PAGE = 2000;    // VHR MaxRecordCount
@@ -1106,7 +1109,27 @@
             },
           });
 
-          const map = new EsriMap({ basemap: "gray-vector", layers: [boundaryLayer, highlightLayer, pointLayer] });
+          // Every parcel in the Basin, drawn as a thin grey outline purely for context.
+          // Reference only: no attributes are fetched, it cannot be clicked, popped up,
+          // or highlighted, and the click handler below hit-tests pointLayer alone.
+          // minScale keeps it hidden until the view is close enough for parcels to read
+          // as individual shapes rather than grey mush.
+          const parcelRefLayer = new FeatureLayer({
+            url: PARCELS_URL,
+            title: "Parcel boundaries (reference)",
+            outFields: [],
+            popupEnabled: false,
+            legendEnabled: false,
+            labelsVisible: false,
+            listMode: "hide",
+            minScale: PARCEL_REF_MIN_SCALE,
+            renderer: {
+              type: "simple",
+              symbol: { type: "simple-fill", color: [0, 0, 0, 0], outline: { color: [140, 140, 140, 0.7], width: 0.5 } },
+            },
+          });
+
+          const map = new EsriMap({ basemap: "gray-vector", layers: [parcelRefLayer, boundaryLayer, highlightLayer, pointLayer] });
           mapView = new MapView({
             container: "map-view",
             map,
