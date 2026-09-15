@@ -118,7 +118,7 @@ def build(blocks):
                     size=24, color=GREY, after=240, border_bottom=BLUE))
     out.append(para("This is every piece of wording on the housing dashboard, in the "
                     "order you meet it going down the page. Use it to rewrite any of "
-                    "the text without touching the website.", after=180))
+                    "the text.", after=180))
 
     out.append(para("How to use this", bold=True, size=24, color=BLUE_DARK, after=100))
     steps = [
@@ -132,7 +132,7 @@ def build(blocks):
     ]
     for i, s in enumerate(steps, 1):
         out.append(para(f"{i}.\t{s}", after=70, indent=(460, 460)))
-    out.append(para("Anything that does not fit the tables goes in Other feedback at the "
+    out.append(para("Put anything that doesn't fit the tables in Other feedback at the "
                     "end. Rough notes are fine, for example “T34 feels too passive” "
                     "or “can the pipeline chart come first?”.", before=100, after=220))
 
@@ -140,10 +140,10 @@ def build(blocks):
                     color=BLUE_DARK, after=100))
     bullets = [
         "Every number. Unit counts, parcel counts, and years all come from the housing "
-        "spreadsheet. If a number looks wrong, note it under Other feedback so it gets "
-        "fixed in the source data.",
+        "spreadsheet. If a number looks wrong, note it under Other feedback so we can fix "
+        "it in the source data.",
         "Jurisdiction names and filter options. These are generated from the data.",
-        "Chart colours, layout, and the order of sections. Ask for those under Other "
+        "Chart colors, layout, and the order of sections. Ask for those under Other "
         "feedback.",
     ]
     for b in bullets:
@@ -226,9 +226,8 @@ DOC_RELS = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </Relationships>'''
 
 
-def main():
-    blocks = json.load(open(sys.argv[1], encoding="utf-8"))
-    out_path = sys.argv[2]
+def write_docx(blocks, out_path):
+    """Write the review document. `blocks` is the parsed sheet, see build_text_review.py."""
     document = build(blocks)
     with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("[Content_Types].xml", CONTENT_TYPES)
@@ -236,7 +235,13 @@ def main():
         z.writestr("word/_rels/document.xml.rels", DOC_RELS)
         z.writestr("word/styles.xml", STYLES)
         z.writestr("word/document.xml", document)
-    print(f"wrote {out_path}")
+    return out_path
+
+
+def main():
+    blocks = json.load(open(sys.argv[1], encoding="utf-8"))
+    write_docx(blocks, sys.argv[2])
+    print(f"wrote {sys.argv[2]}")
 
 
 if __name__ == "__main__":

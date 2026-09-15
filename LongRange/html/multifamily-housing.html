@@ -922,7 +922,10 @@
     tip.setAttribute("reference-element", icon.id);
     tip.setAttribute("placement", "bottom");
     tip.textContent = text;
-    document.body.appendChild(tip);
+    // Sits beside its icon, not at the end of <body>. Appended to the body it is laid out
+    // below the footer, so the moment Calcite gives it a size to position it the document
+    // grows and you can scroll past the footer into blank space.
+    host.appendChild(tip);
   }
 
   // ── Charts ─────────────────────────────────────────────────────────
