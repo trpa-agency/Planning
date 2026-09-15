@@ -4,8 +4,7 @@ Tahoe Living housing dashboard
 ==============================================================================
 
 This is every piece of wording on the housing dashboard, in the order you meet
-it going down the page. Use it to rewrite any of the text without touching the
-website.
+it going down the page. Use it to rewrite any of the text.
 
 HOW TO USE THIS
 ---------------
@@ -17,16 +16,16 @@ HOW TO USE THIS
 4. Save the file and send it back to Mason. Please keep the ID codes (T01,
    T02, and so on) - they are how your changes get applied.
 
-Anything that does not fit the list goes under OTHER FEEDBACK at the end.
-Rough notes are fine.
+Put anything that doesn't fit the list under OTHER FEEDBACK at the end. Rough
+notes are fine.
 
 WHAT THIS SHEET CANNOT CHANGE
 -----------------------------
  - Every number. Unit counts, parcel counts, and years all come from the
    housing spreadsheet. If a number looks wrong, note it under OTHER FEEDBACK
-   so it gets fixed in the source data.
+   so we can fix it in the source data.
  - Jurisdiction names and filter options. These are generated from the data.
- - Chart colours, layout, and the order of sections. Ask for those under OTHER
+ - Chart colors, layout, and the order of sections. Ask for those under OTHER
    FEEDBACK.
 
 

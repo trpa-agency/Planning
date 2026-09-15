@@ -107,8 +107,7 @@ def write_txt(blocks, out_path):
     o = ["=" * WRAP, "HOUSING PROGRESS SINCE 2012 - TEXT REVIEW SHEET",
          "Tahoe Living housing dashboard", "=" * WRAP, ""]
     o += wrap("This is every piece of wording on the housing dashboard, in the order you "
-              "meet it going down the page. Use it to rewrite any of the text without "
-              "touching the website.")
+              "meet it going down the page. Use it to rewrite any of the text.")
     o += ["", "HOW TO USE THIS", "-" * 15]
     for i, s in enumerate([
         "Open the dashboard side by side with this file.",
@@ -120,15 +119,15 @@ def write_txt(blocks, out_path):
         "so on) - they are how your changes get applied.",
     ], 1):
         o += wrap(s, indent="   ", first=f"{i}. ")
-    o += [""] + wrap("Anything that does not fit the list goes under OTHER FEEDBACK at the "
+    o += [""] + wrap("Put anything that doesn't fit the list under OTHER FEEDBACK at the "
                      "end. Rough notes are fine.")
     o += ["", "WHAT THIS SHEET CANNOT CHANGE", "-" * 29]
     for b in [
         "Every number. Unit counts, parcel counts, and years all come from the housing "
-        "spreadsheet. If a number looks wrong, note it under OTHER FEEDBACK so it gets "
-        "fixed in the source data.",
+        "spreadsheet. If a number looks wrong, note it under OTHER FEEDBACK so we can fix "
+        "it in the source data.",
         "Jurisdiction names and filter options. These are generated from the data.",
-        "Chart colours, layout, and the order of sections. Ask for those under OTHER FEEDBACK.",
+        "Chart colors, layout, and the order of sections. Ask for those under OTHER FEEDBACK.",
     ]:
         o += wrap(b, indent="   ", first=" - ")
 

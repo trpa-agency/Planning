@@ -2,7 +2,7 @@
 
 Version 2, rewritten 14 Sept. 2026 after Ken Kasman's review. This is every piece of
 text on the housing dashboard, in the order you meet it going down the page. Use it to
-rewrite any of the text without touching the site.
+rewrite any of the text.
 
 ## How to use this
 
@@ -12,13 +12,13 @@ rewrite any of the text without touching the site.
 4. Save the file and send it back to Mason. The ID codes (T01, T02, …) are how the
    changes get applied, so please keep them.
 
-Add anything that does not fit the list to **Other feedback** at the bottom. Rough notes
+Put anything that doesn't fit the list in **Other feedback** at the bottom. Rough notes
 are fine, for example "T34 feels too passive" or "can the pipeline chart come first?".
 
 ## What this file cannot change
 
 - **Every number.** Unit counts, parcel counts, and years all come from the housing
-  spreadsheet. If a number looks wrong, note it under Other feedback and it gets fixed in
+  spreadsheet. If a number looks wrong, note it under Other feedback so we can fix it in
   the source data, not here.
 - **Jurisdiction names and filter options.** These are generated from the data.
 - **Chart colors, layout, and section order.** Ask for those under Other feedback.
