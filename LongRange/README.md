@@ -34,9 +34,17 @@ file back; the IDs map each change to its place in the page. Three formats, same
 | `docs/housing-dashboard-text.txt` | Plain-text fallback for anyone who would rather reply by email |
 | `docs/housing-dashboard-text.md` | Source of truth; regenerate the other two from it |
 
-To rebuild after the page wording changes, re-extract the strings and rerun the two
-generator scripts in `scripts/` (`build_review_docx.py` writes the Word file from a parsed
-copy of the Markdown; both were generated the same way).
+After the page wording changes, update `docs/housing-dashboard-text.md` to match, then
+regenerate the other two:
+
+```bash
+python LongRange/scripts/build_text_review.py
+```
+
+The Markdown is the source of truth; never hand-edit the Word or text files, since the
+next run overwrites them. `build_text_review.py` parses the sheet and calls
+`build_review_docx.py` to write the Word file. Both refuse to run on a sheet with
+duplicate IDs or a missing `Now:` line.
 
 ## Refreshing the housing data
 

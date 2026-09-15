@@ -226,9 +226,8 @@ DOC_RELS = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </Relationships>'''
 
 
-def main():
-    blocks = json.load(open(sys.argv[1], encoding="utf-8"))
-    out_path = sys.argv[2]
+def write_docx(blocks, out_path):
+    """Write the review document. `blocks` is the parsed sheet, see build_text_review.py."""
     document = build(blocks)
     with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("[Content_Types].xml", CONTENT_TYPES)
@@ -236,7 +235,13 @@ def main():
         z.writestr("word/_rels/document.xml.rels", DOC_RELS)
         z.writestr("word/styles.xml", STYLES)
         z.writestr("word/document.xml", document)
-    print(f"wrote {out_path}")
+    return out_path
+
+
+def main():
+    blocks = json.load(open(sys.argv[1], encoding="utf-8"))
+    write_docx(blocks, sys.argv[2])
+    print(f"wrote {sys.argv[2]}")
 
 
 if __name__ == "__main__":
