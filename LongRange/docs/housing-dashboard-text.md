@@ -65,11 +65,11 @@ Now: Cultivating Community, Conserving the Basin
 New:
 
 **T10 — Main headline**
-Now: How Tahoe's housing policies have added homes since the 2012 Regional Plan
+Now: Lake Tahoe Affordable and Workforce Housing Snapshot
 New:
 
 **T11 — Opening paragraph**
-Now: Multifamily, deed-restricted, and accessory dwelling units built across the Basin's jurisdictions, plus the projects now in the pipeline.
+Now: Multifamily, deed-restricted, and accessory dwelling units built across the Tahoe Basin's jurisdictions, plus the projects now in the pipeline.
 New:
 
 ---
@@ -77,7 +77,9 @@ New:
 # 3. The five big numbers
 
 Only the labels can change here. The numbers are calculated from the spreadsheet. Each
-card also has a hover note, listed in section 4.
+card also has a hover note, listed in section 4. The cards now run in the order Karen
+asked for on 16 Sept. 2026, so on the page you meet T13, T14, T15, then T12, then T16.
+The ID codes have not moved, so they still match earlier copies of this sheet.
 
 **T12 — Label under the first number**
 Now: Multifamily units built since 2012
@@ -126,7 +128,7 @@ New:
 from Ken's review, so please keep them accurate as well as readable.*
 
 **T22 — On "Multifamily units built since 2012"**
-Now: Counts only the records TRPA tracks for affordable and workforce housing, not everything built in the Basin. Regionwide, 1,469 residential units were added since 2012, of which 409 are affordable or workforce. This figure also includes 293 subdivided condominium units, which are existing homes divided into separately owned units rather than new construction, and leaves out roughly 767 single-family homes.
+Now: Counts only the records TRPA tracks for affordable and workforce housing, not everything built in the Basin. Of this total, 409 units are affordable or workforce and 293 are unrestricted, most of them subdivided condominium units, which are existing homes divided into separately owned units rather than new construction. Regionwide, 1,469 residential units were added since 2012, so this figure also leaves out roughly 767 single-family homes.
 New:
 
 **T23 — On "Affordable & workforce units"**
@@ -134,15 +136,15 @@ Now: An estimate of the effective number of existing affordable and workforce un
 New:
 
 **T24 — On "Deed-restricted units"**
-Now: Constructed deed-restricted units only. Permitted units that are not yet built, and units still in the pipeline, are not counted here.
+Now: Constructed deed-restricted units only. Permitted units that are not yet built, and units still in the pipeline, are not counted here. Includes deed-restricted accessory dwelling units.
 New:
 
 **T25 — On "Accessory dwelling units"**
-Now: Accessory dwelling units that have been built. Those approved but not yet constructed appear in the chart below.
+Now: Constructed accessory dwelling units. Those approved but not yet constructed appear in the chart below. Some accessory dwelling units are deed-restricted, some are unrestricted.
 New:
 
 **T26 — On "Units in the pipeline"**
-Now: Affordable and workforce units only. Market-rate projects in the pipeline are not tracked here, and there are many more of them.
+Now: Affordable and workforce units only. Unrestricted single-family projects in the pipeline are not tracked here.
 New:
 
 **T27 — On the "Existing affordable & workforce units" chart**
@@ -154,11 +156,15 @@ Now: Incomplete. This covers units proposed or built as multifamily and later su
 New:
 
 **T29 — On the "Units in the pipeline" chart**
-Now: Market-rate multifamily in the pipeline is not tracked here. Market rate is not necessarily a worse outcome: many of these are multifamily units converted from commercial floor area or tourist accommodation units.
+Now: Unrestricted single-family housing, including condominiums, is not tracked here.
+New:
+
+**T131 — On the map legend entry "Unverified or non-residential"**
+Now: Constructed units that TRPA has not verified as affordable or workforce housing, or that are not residential at all, tourist accommodation units being the common case. They appear in the table but are counted in no total.
 New:
 
 **T30 — On the "Existing units by year built" chart**
-Now: Covers only units tracked in the affordable and workforce inventory. Single-family homes built as single-family are not included.
+Now: Units built since 2012, split into deed-restricted units and everything else tracked in the affordable and workforce inventory, which includes unrestricted multifamily and unrestricted accessory dwelling units. Single-family homes built as single-family are not included.
 New:
 
 ---
@@ -214,7 +220,7 @@ Now: By jurisdiction
 New:
 
 **T43 — Section heading**
-Now: Each jurisdiction is adding homes in its own way
+Now: Each jurisdiction addresses housing in its own way
 New:
 
 **T44 — Section paragraph**
@@ -272,7 +278,7 @@ New:
 **T57** Now: Affordable & workforce
 New:
 
-**T58** Now: Market rate
+**T58** Now: Unrestricted
 New:
 
 **T59** Now: Non-restricted multifamily
@@ -283,7 +289,7 @@ Legend under the map:
 **T60** Now: Affordable & workforce
 New:
 
-**T61** Now: Market rate
+**T61** Now: Unrestricted
 New:
 
 **T62** Now: Pipeline only
@@ -296,6 +302,10 @@ New:
 New:
 
 **T65** Now: Parcel boundaries, once zoomed in
+New:
+
+**T132 — Shown on a chart when the filters leave it with nothing to draw**
+Now: No units match the current filters
 New:
 
 **T66 — Note at the end of the map legend**
@@ -333,7 +343,7 @@ New:
 **T73** Now: 2023 Phase 2 Housing Amendments
 New:
 
-*Please confirm 2023 is the right year for the Phase 2 Housing Amendments.*
+*Confirmed by Karen Fink, 16 Sept. 2026: the Phase 2 Housing Amendments were approved in December 2023.*
 
 ---
 
