@@ -374,15 +374,13 @@
 <section class="section" id="intro">
   <div class="section-inner">
     <p class="overline">Cultivating Community, Conserving the Basin</p>
-    <h2>How Tahoe's housing policies have added homes since the 2012 Regional Plan</h2>
-    <p class="lede">Multifamily, deed-restricted, and accessory dwelling units built across the Basin's jurisdictions, plus the projects now in the pipeline.</p>
+    <h2>Lake Tahoe Affordable and Workforce Housing Snapshot</h2>
+    <p class="lede">Multifamily, deed-restricted, and accessory dwelling units built across the Tahoe Basin's jurisdictions, plus the projects now in the pipeline.</p>
 
+    <!-- Card order set by Karen Fink, 16 Sept. 2026: the affordable and workforce total
+         leads, then its deed-restricted and ADU components, then unrestricted multifamily,
+         then the pipeline. -->
     <div class="kpi-row">
-      <div class="tl-kpi accent-blue-light">
-        <div class="value" id="kpi-post2012">—</div>
-        <div class="label">Multifamily units built since 2012</div>
-        <div class="sub" id="kpi-post2012-sub">&nbsp;</div>
-      </div>
       <div class="tl-kpi accent-mauve">
         <div class="value" id="kpi-affwf">—</div>
         <div class="label">Affordable &amp; workforce units</div>
@@ -397,6 +395,15 @@
         <div class="value" id="kpi-adu">—</div>
         <div class="label">Accessory dwelling units</div>
         <div class="sub" id="kpi-adu-sub">&nbsp;</div>
+      </div>
+      <div class="tl-kpi accent-blue-light">
+        <div class="value" id="kpi-post2012">—</div>
+        <!-- Karen Fink asked for "Unrestricted multifamily units built since 2012". Not applied:
+             this card counts 702, of which 409 are affordable or workforce, so the word
+             unrestricted would misdescribe it. Pending her and Ken's decision on whether the
+             card should instead count the 293 unrestricted units only. -->
+        <div class="label">Multifamily units built since 2012</div>
+        <div class="sub" id="kpi-post2012-sub">&nbsp;</div>
       </div>
       <div class="tl-kpi accent-green">
         <div class="value" id="kpi-pipeline">—</div>
@@ -449,7 +456,7 @@
 <section class="section section--sand" id="map-section" hidden>
   <div class="section-inner">
     <p class="overline">By jurisdiction</p>
-    <h2>Each jurisdiction is adding homes in its own way</h2>
+    <h2>Each jurisdiction addresses housing in its own way</h2>
     <p class="lede">Click a parcel on the map or a row in the table to zoom to it and open its housing records. To change what the charts, map, and table show, use the filters above.</p>
 
     <div class="map-charts">
@@ -480,9 +487,9 @@
         <div id="map-view"></div>
         <div class="map-legend">
           <span><i class="legend-dot" style="background:#A766AA"></i>Affordable &amp; workforce</span>
-          <span><i class="legend-dot" style="background:#0A7EC2"></i>Market rate</span>
+          <span><i class="legend-dot" style="background:#0A7EC2"></i>Unrestricted</span>
           <span><i class="legend-dot" style="background:#93A959"></i>Pipeline only</span>
-          <span><i class="legend-dot" style="background:#757575"></i>Unverified or non-residential</span>
+          <span id="legend-unverified"><i class="legend-dot" style="background:#757575"></i>Unverified or non-residential</span>
           <span><i class="legend-line"></i>TRPA boundary</span>
           <span><i class="legend-line legend-line--parcel"></i>Parcel boundaries, once zoomed in</span>
           <span>Cluster labels show total units. Zoom in to see individual parcels.</span>
@@ -882,11 +889,11 @@
   // in a paragraph that nobody reads.
   function attachNotes() {
     const notes = [
-      ["kpi-post2012", `Counts only the records TRPA tracks for affordable and workforce housing, not everything built in the Basin. Regionwide, ${fmt(REGIONWIDE.units)} residential units were added since 2012, of which ${fmt(REGIONWIDE.affordable)} are affordable or workforce. This figure also includes ${fmt(REGIONWIDE.subdivided)} subdivided condominium units, which are existing homes divided into separately owned units rather than new construction, and leaves out roughly ${fmt(REGIONWIDE.singleFamily)} single-family homes.`],
+      ["kpi-post2012", `Counts only the records TRPA tracks for affordable and workforce housing, not everything built in the Basin. Of this total, ${fmt(REGIONWIDE.affordable)} units are affordable or workforce and ${fmt(REGIONWIDE.subdivided)} are unrestricted, most of them subdivided condominium units, which are existing homes divided into separately owned units rather than new construction. Regionwide, ${fmt(REGIONWIDE.units)} residential units were added since 2012, so this figure also leaves out roughly ${fmt(REGIONWIDE.singleFamily)} single-family homes.`],
       ["kpi-affwf", "An estimate of the effective number of existing affordable and workforce units."],
-      ["kpi-dr", "Constructed deed-restricted units only. Permitted units that are not yet built, and units still in the pipeline, are not counted here."],
-      ["kpi-adu", "Accessory dwelling units that have been built. Those approved but not yet constructed appear in the chart below."],
-      ["kpi-pipeline", "Affordable and workforce units only. Market-rate projects in the pipeline are not tracked here, and there are many more of them."],
+      ["kpi-dr", "Constructed deed-restricted units only. Permitted units that are not yet built, and units still in the pipeline, are not counted here. Includes deed-restricted accessory dwelling units."],
+      ["kpi-adu", "Constructed accessory dwelling units. Those approved but not yet constructed appear in the chart below. Some accessory dwelling units are deed-restricted, some are unrestricted."],
+      ["kpi-pipeline", "Affordable and workforce units only. Unrestricted single-family projects in the pipeline are not tracked here."],
     ];
     for (const [id, text] of notes) {
       const card = $(id).closest(".tl-kpi");
@@ -896,7 +903,7 @@
     const chartNotes = [
       ["chart-affwf", "Washoe and Douglas totals are shaped by multifamily condominium units being subdivided into individually owned units. This data does not treat those as affordable or workforce housing."],
       ["chart-mf", "Incomplete. This covers units proposed or built as multifamily and later subdivided. Single-family homes that were built as single-family are not included."],
-      ["chart-pipeline", "Market-rate multifamily in the pipeline is not tracked here. Market rate is not necessarily a worse outcome: many of these are multifamily units converted from commercial floor area or tourist accommodation units."],
+      ["chart-pipeline", "Unrestricted single-family housing, including condominiums, is not tracked here."],
     ];
     for (const [id, text] of chartNotes) {
       const card = $(id).closest(".tl-card");
@@ -904,7 +911,12 @@
     }
 
     addNote(document.querySelector("#timeline-section .caption"), "note-timeline",
-      "Covers only units tracked in the affordable and workforce inventory. Single-family homes built as single-family are not included.");
+      "Units built since 2012, split into deed-restricted units and everything else tracked in the affordable and workforce inventory, which includes unrestricted multifamily and unrestricted accessory dwelling units. Single-family homes built as single-family are not included.");
+
+    // Ken's blank-Timing bucket needs explaining: Karen flagged that the legend wording
+    // alone does not say what these parcels are.
+    addNote(document.getElementById("legend-unverified"), "note-unverified",
+      "Constructed units that TRPA has not verified as affordable or workforce housing, or that are not residential at all, tourist accommodation units being the common case. They appear in the table but are counted in no total.");
   }
 
   function addNote(host, id, text) {
@@ -963,6 +975,23 @@
     };
   }
 
+  // A chart whose series are all zero reads as broken. Karen Fink hit this filtering to
+  // "Affordable & workforce: No", which empties three of the four charts by definition.
+  // Say so rather than drawing an empty frame.
+  function withEmptyState(layout, total) {
+    if (total > 0) return layout;
+    return {
+      ...layout,
+      showlegend: false,
+      annotations: [...(layout.annotations || []), {
+        text: "No units match the current filters",
+        xref: "paper", yref: "paper", x: 0.5, y: 0.5,
+        xanchor: "center", yanchor: "middle", showarrow: false,
+        font: { size: 12, color: TL.gray },
+      }],
+    };
+  }
+
   function drawJurisCharts(rows) {
     const mf = rows.filter((r) => r.isPost2012 && r.affwf === "No");
     const dr = rows.filter((r) => r.isExisting && r.affwf === "Yes" && r.isDR);
@@ -976,20 +1005,22 @@
     const single = { ...PLOT_BASE, showlegend: false };
     const stacked = { ...PLOT_BASE, showlegend: true, margin: { ...PLOT_BASE.margin, b: 56 } };
 
-    Plotly.react("chart-mf", [hbarTrace("Non-restricted multifamily", axis, unitsByJuris(mf), TL.blue)], single, PLOT_CONFIG);
+    Plotly.react("chart-mf", [hbarTrace("Non-restricted multifamily", axis, unitsByJuris(mf), TL.blue)],
+      withEmptyState(single, sumUnits(mf)), PLOT_CONFIG);
     Plotly.react("chart-affwf", [
       hbarTrace("Deed-restricted", axis, unitsByJuris(dr), TL.purple),
       hbarTrace("Other affordable & workforce", axis, unitsByJuris(otherAff), TL.mauve),
-    ], stacked, PLOT_CONFIG);
+    ], withEmptyState(stacked, sumUnits(dr) + sumUnits(otherAff)), PLOT_CONFIG);
     Plotly.react("chart-adu", [
       hbarTrace("Built", axis, unitsByJuris(adu), TL.green, "ADUs"),
       hbarTrace("Approved, not yet built", axis, unitsByJuris(aduApproved), TL.greenLight, "ADUs"),
-    ], stacked, PLOT_CONFIG);
+    ], withEmptyState(stacked, sumUnits(adu) + sumUnits(aduApproved)), PLOT_CONFIG);
     // Every pipeline record is affordable or workforce today, so the market-rate series is
     // only drawn when it actually has units rather than sitting in the legend at zero.
     const pipeTraces = [hbarTrace("Affordable & workforce", axis, unitsByJuris(pipeAff), TL.mauve)];
-    if (sumUnits(pipeMkt) > 0) pipeTraces.push(hbarTrace("Market rate", axis, unitsByJuris(pipeMkt), TL.blue));
-    Plotly.react("chart-pipeline", pipeTraces, pipeTraces.length > 1 ? stacked : single, PLOT_CONFIG);
+    if (sumUnits(pipeMkt) > 0) pipeTraces.push(hbarTrace("Unrestricted", axis, unitsByJuris(pipeMkt), TL.blue));
+    Plotly.react("chart-pipeline", pipeTraces,
+      withEmptyState(pipeTraces.length > 1 ? stacked : single, sumUnits(pipeAff) + sumUnits(pipeMkt)), PLOT_CONFIG);
   }
 
   function drawTimeline(rows) {
@@ -1002,9 +1033,12 @@
       subset.forEach((r) => m.set(r.yearBuilt, (m.get(r.yearBuilt) || 0) + r.units));
       return years.map((y) => m.get(y) || 0);
     };
+    // Split by deed restriction rather than the affordable and workforce flag, per Karen
+    // Fink (16 Sept. 2026). The second series is everything else tracked in the inventory,
+    // which is where unrestricted multifamily and unrestricted ADUs land.
     const traces = [
-      { type: "bar", name: "Affordable & workforce", x: years, y: tally(post.filter((r) => r.affwf === "Yes")), marker: { color: TL.mauve }, hovertemplate: "%{y:,d} units" },
-      { type: "bar", name: "Market rate", x: years, y: tally(post.filter((r) => r.affwf === "No")), marker: { color: TL.blue }, hovertemplate: "%{y:,d} units" },
+      { type: "bar", name: "Deed-restricted units", x: years, y: tally(post.filter((r) => r.isDR)), marker: { color: TL.purple }, hovertemplate: "%{y:,d} units" },
+      { type: "bar", name: "Other affordable and workforce", x: years, y: tally(post.filter((r) => !r.isDR)), marker: { color: TL.mauve }, hovertemplate: "%{y:,d} units" },
     ];
     const layout = {
       ...PLOT_BASE,
@@ -1021,7 +1055,7 @@
         text: `<b>${m.year}</b> ${m.short}`, showarrow: false, font: { size: 10.5, color: TL.blueDark },
       })),
     };
-    Plotly.react("chart-timeline", traces, layout, PLOT_CONFIG);
+    Plotly.react("chart-timeline", traces, withEmptyState(layout, sumUnits(post)), PLOT_CONFIG);
   }
 
   // ── Grid ───────────────────────────────────────────────────────────
@@ -1076,7 +1110,10 @@
     if (recs.every((r) => r.isUnverified)) return "Unverified or non-residential";
     if (recs.every((r) => r.isPipeline)) return "Pipeline only";
     if (recs.some((r) => r.affwf === "Yes")) return "Affordable & workforce";
-    return "Market rate";
+    // Karen Fink asked to drop "market rate" as a term. Plain "Unrestricted" is used rather
+    // than her suggested "unrestricted single-family", because these parcels are mostly
+    // condominiums and multifamily, so the single-family wording would be wrong here.
+    return "Unrestricted";
   }
 
   function buildPointGraphics(Graphic, Point) {
@@ -1133,7 +1170,7 @@
 
           const classColors = {
             "Affordable & workforce": [167, 102, 170],
-            "Market rate": [10, 126, 194],
+            "Unrestricted": [10, 126, 194],
             "Pipeline only": [147, 169, 89],
             "Unverified or non-residential": [117, 117, 117],
           };
@@ -1547,7 +1584,9 @@
     get pointLayer() { return pointLayer; },
     get pointLayerView() { return pointLayerView; },
     get mapView() { return mapView; },
+    get filters() { return filters; },
     currentRecords,
+    applyFilters,
   };
 
   start();
