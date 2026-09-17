@@ -1046,12 +1046,14 @@
       margin: { t: 52, r: 16, b: 56, l: 50 },
       xaxis: { ...PLOT_BASE.xaxis, tickformat: "d", dtick: 1, gridcolor: "transparent" },
       yaxis: { gridcolor: TL.border, linecolor: TL.border, title: { text: "Units", font: { size: 11 } }, tickformat: ",d" },
+      // Milestone markers sit just past their own year's bar, so the units to the right of
+      // a line are the ones built after that policy took effect.
       shapes: MILESTONES.map((m) => ({
-        type: "line", x0: m.year - 0.5, x1: m.year - 0.5, y0: 0, y1: 1, yref: "paper",
+        type: "line", x0: m.year + 0.5, x1: m.year + 0.5, y0: 0, y1: 1, yref: "paper",
         line: { color: TL.blueDark, width: 1.5, dash: "dot" },
       })),
       annotations: MILESTONES.map((m) => ({
-        x: m.year - 0.5, y: 1.02 + m.row * 0.11, yref: "paper", xanchor: "left", yanchor: "bottom",
+        x: m.year + 0.5, y: 1.02 + m.row * 0.11, yref: "paper", xanchor: "left", yanchor: "bottom",
         text: `<b>${m.year}</b> ${m.short}`, showarrow: false, font: { size: 10.5, color: TL.blueDark },
       })),
     };
