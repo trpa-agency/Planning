@@ -440,7 +440,7 @@
   <div class="section-inner">
     <p class="overline">By jurisdiction</p>
     <h2>Each jurisdiction addresses housing in its own way</h2>
-    <p class="lede">The map groups affordable and workforce units by area. Click a circle to see how many units and parcels it covers. To change what the charts and map show, use the filters above.</p>
+    <p class="lede">The map groups existing affordable and workforce units by area, with bigger circles for more units. Click a circle to see how many units and parcels it covers. To change what the charts and map show, including units in the pipeline, use the filters above.</p>
 
     <div class="map-charts">
       <div class="charts-col">
@@ -466,11 +466,12 @@
         <!-- Ken Kasman (22 Sept. 2026) asked that the map not show housing at the parcel
              level. The view is capped at neighborhood scale (MAP_MAX_ZOOM) so the clusters
              never break apart into parcels, and no popup names an APN or address. -->
+        <!-- One color on purpose: Ken Kasman (23 Sept. 2026) found the chart colors confusing
+             on the map, where they meant something else. -->
         <div class="map-legend">
-          <span><i class="legend-dot" style="background:#A766AA"></i>Existing affordable &amp; workforce</span>
-          <span><i class="legend-dot" style="background:#93A959"></i>Pipeline only</span>
+          <span><i class="legend-dot" style="background:#0A7EC2"></i>Existing affordable &amp; workforce units. Circle size and label show the total.</span>
           <span><i class="legend-line"></i>TRPA boundary</span>
-          <span>Labels show total units. The map stays at neighborhood scale, so individual parcels are not shown.</span>
+          <span>Select a Timing filter to map units in the pipeline. The map stays at neighborhood scale, so individual parcels are not shown.</span>
         </div>
       </div>
     </div>
@@ -1039,8 +1040,24 @@
   }
 
   // ── Map ────────────────────────────────────────────────────────────
-  function mapClass(entry) {
-    return entry.records.every((r) => r.isPipeline) ? "Pipeline only" : "Existing affordable & workforce";
+  // Per-parcel unit totals from a set of records. Blank-Timing records are counted in no
+  // total, so they get no map presence either. Recomputed on every filter change so the
+  // map sums exactly the records the charts sum: Ken Kasman caught a parcel keeping its
+  // existing units on the map while the page was filtered to permitted-only.
+  // With no Timing filter the map counts existing units only, so its total is the headline
+  // card's 8,582 and not that plus the pipeline (Mason, 23 Sept. 2026). Pipeline records
+  // count once a Timing chip is selected, since the reader has then asked for them.
+  function mapRecords(recs) {
+    return filters.timing.size ? recs : recs.filter((r) => r.isExisting);
+  }
+
+  function parcelUnits(recs) {
+    const counted = mapRecords(recs).filter((r) => !r.isUnverified);
+    return {
+      units: sumUnits(counted),
+      unitsExisting: sumUnits(counted.filter((r) => r.isExisting)),
+      unitsPipeline: sumUnits(counted.filter((r) => r.isPipeline)),
+    };
   }
 
   function buildPointGraphics(Graphic, Point) {
@@ -1048,22 +1065,38 @@
     let oid = 1;
     for (const entry of parcels.values()) {
       if (entry.lon == null || entry.lat == null) continue;
-      // Blank-Timing records are counted in no total, so they get no map presence either.
-      if (entry.records.every((r) => r.isUnverified)) continue;
+      // Every parcel with a countable record gets a point, even one that starts at zero
+      // units because the default view counts existing only; a pipeline-only parcel must
+      // still be there to show when a Timing chip brings it in. Zero-unit points are hidden
+      // by syncMapToFilters.
+      if (!entry.records.some((r) => r.isExisting || r.isPipeline)) continue;
+      const totals = parcelUnits(entry.records);
       entry.oid = oid;
-      const units = sumUnits(entry.records.filter((r) => !r.isUnverified));
+      entry.mapUnits = totals.units;
       graphics.push(new Graphic({
         geometry: new Point({ longitude: entry.lon, latitude: entry.lat }),
-        attributes: {
-          oid: oid++,
-          apn: entry.apn,
-          units,
-          mapClass: mapClass(entry),
-          juris: entry.records[0].juris,
-        },
+        attributes: { oid: oid++, apn: entry.apn, juris: entry.records[0].juris, ...totals },
       }));
     }
     return graphics;
+  }
+
+  // Circle size follows units. The same stops serve a lone parcel (layer renderer, on
+  // `units`) and a cluster (cluster renderer, on the summed `units_sum`), so a two-parcel
+  // project with 248 units draws bigger than a ten-parcel cluster with 15. Sizing the
+  // layer renderer alone would not do: clustering then averages the field per cluster.
+  const UNIT_SIZE_STOPS = [
+    { value: 1, size: 10 }, { value: 25, size: 18 }, { value: 100, size: 28 },
+    { value: 500, size: 44 }, { value: 2500, size: 64 },
+  ];
+  function unitRenderer(field) {
+    return {
+      type: "simple",
+      // One color for the whole map, Tahoe Living blue. Ken Kasman (23 Sept. 2026): the map
+      // must not reuse the chart colors, which mean different things there.
+      symbol: { type: "simple-marker", color: [10, 126, 194, 0.8], outline: { color: [255, 255, 255, 0.9], width: 1 } },
+      visualVariables: [{ type: "size", field, stops: UNIT_SIZE_STOPS }],
+    };
   }
 
   // Parcel detail is used only by the featured project cards, which name their projects
@@ -1089,6 +1122,15 @@
       <div class="popup-meta" style="margin-top:0.4rem"><a href="${first.ltinfo}" target="_blank" rel="noopener">Open in Lake Tahoe Info</a></div>`;
   }
 
+  // Popup body for a circle. Names the pipeline share only when there is one, which with
+  // no Timing filter is never.
+  function unitBreakdown(existing, pipeline, where) {
+    const e = existing || 0, p = pipeline || 0;
+    if (p === 0) return `Existing units, ${where}.`;
+    if (e === 0) return `Units in the pipeline, ${where}.`;
+    return `${fmt(e)} existing and ${fmt(p)} in the pipeline, ${where}.`;
+  }
+
   function initMap() {
     return new Promise((resolve, reject) => {
       require([
@@ -1099,16 +1141,7 @@
           esriMods = { Graphic, Point };
           const graphics = buildPointGraphics(Graphic, Point);
 
-          const classColors = {
-            "Existing affordable & workforce": [167, 102, 170],
-            "Pipeline only": [147, 169, 89],
-          };
-          // A lone parcel draws with this symbol. At the capped zoom it spans a few hundred
-          // metres, so it reads as an area, not a lot.
-          const marker = (rgb) => ({
-            type: "simple-marker", color: [...rgb, 0.85], size: 12,
-            outline: { color: [255, 255, 255, 0.9], width: 0.8 },
-          });
+          const unitFormat = (name) => ({ fieldName: name, format: { digitSeparator: true, places: 0 } });
 
           pointLayer = new FeatureLayer({
             title: "Housing parcels",
@@ -1119,24 +1152,21 @@
             fields: [
               { name: "oid", type: "oid" },
               { name: "apn", type: "string" },
-              { name: "units", type: "integer" },
-              { name: "mapClass", type: "string" },
               { name: "juris", type: "string" },
+              { name: "units", type: "integer" },
+              { name: "unitsExisting", type: "integer" },
+              { name: "unitsPipeline", type: "integer" },
             ],
-            renderer: {
-              type: "unique-value",
-              field: "mapClass",
-              defaultSymbol: marker([138, 138, 138]),
-              // No size visual variable: clustering derives cluster size from it and the
-              // per-parcel average (~1.6 units) collapses clusters to a few pixels.
-              uniqueValueInfos: Object.entries(classColors).map(([value, rgb]) => ({ value, symbol: marker(rgb), label: value })),
-            },
+            renderer: unitRenderer("units"),
             featureReduction: {
               type: "cluster",
               clusterRadius: "60px",
-              clusterMinSize: "22px",
-              clusterMaxSize: "52px",
-              fields: [{ name: "units_sum", alias: "Units", onStatisticField: "units", statisticType: "sum" }],
+              fields: [
+                { name: "units_sum", alias: "Units", onStatisticField: "units", statisticType: "sum" },
+                { name: "existing_sum", alias: "Existing units", onStatisticField: "unitsExisting", statisticType: "sum" },
+                { name: "pipeline_sum", alias: "Pipeline units", onStatisticField: "unitsPipeline", statisticType: "sum" },
+              ],
+              renderer: unitRenderer("units_sum"),
               labelingInfo: [{
                 deconflictionStrategy: "none",
                 labelExpressionInfo: { expression: "Text($feature.units_sum, '#,###')" },
@@ -1147,15 +1177,16 @@
               }],
               popupTemplate: {
                 title: "{units_sum} affordable and workforce units",
-                content: "Across {cluster_count} parcels in this area.",
-                fieldInfos: [{ fieldName: "cluster_count", format: { digitSeparator: true, places: 0 } }, { fieldName: "units_sum", format: { digitSeparator: true, places: 0 } }],
+                content: (ev) => unitBreakdown(ev.graphic.attributes.existing_sum, ev.graphic.attributes.pipeline_sum,
+                  `across ${fmt(ev.graphic.attributes.cluster_count)} parcel${ev.graphic.attributes.cluster_count === 1 ? "" : "s"} in this area`),
               },
             },
             // A cluster of one falls back to this template. Units only: no APN, no address.
             popupTemplate: {
               title: "{units} affordable and workforce units",
-              content: "On one parcel in this area ({mapClass}).",
-              fieldInfos: [{ fieldName: "units", format: { digitSeparator: true, places: 0 } }],
+              content: (ev) => unitBreakdown(ev.graphic.attributes.unitsExisting, ev.graphic.attributes.unitsPipeline,
+                "on one parcel in this area"),
+              outFields: ["*"],
             },
           });
 
@@ -1194,14 +1225,33 @@
     });
   }
 
-  function syncMapToFilters() {
-    if (!pointLayerView) return;
-    if (!anyFilterActive()) { pointLayerView.filter = null; return; }
-    const passing = new NativeSet();
-    for (const r of currentRecords()) passing.add(r.apn);
-    const oids = [];
-    for (const entry of parcels.values()) if (entry.oid && passing.has(entry.apn)) oids.push(entry.oid);
-    pointLayerView.filter = { objectIds: oids.length ? oids : [-1] };
+  // Re-sums every parcel from the records that pass the filters, writes the changed totals
+  // into the layer so clusters and labels re-aggregate, and hides parcels left at zero.
+  async function syncMapToFilters() {
+    if (!pointLayer || !pointLayerView) return;
+    const byApn = new NativeMap();
+    for (const r of currentRecords()) {
+      if (!byApn.has(r.apn)) byApn.set(r.apn, []);
+      byApn.get(r.apn).push(r);
+    }
+    const updates = [];
+    const visible = [];
+    for (const entry of parcels.values()) {
+      if (!entry.oid) continue;
+      const totals = parcelUnits(byApn.get(entry.apn) || []);
+      if (totals.units > 0) visible.push(entry.oid);
+      if (totals.units !== entry.mapUnits) {
+        entry.mapUnits = totals.units;
+        updates.push(new esriMods.Graphic({ attributes: { oid: entry.oid, ...totals } }));
+      }
+    }
+    if (updates.length) {
+      try { await pointLayer.applyEdits({ updateFeatures: updates }); }
+      catch (err) { console.warn("Map update failed:", err); }
+    }
+    // Always set, never null: with no filter the pipeline-only parcels sit at zero units
+    // and must stay hidden.
+    pointLayerView.filter = { objectIds: visible.length ? visible : [-1] };
   }
 
   async function drawParcelOutlines(apns) {
@@ -1215,7 +1265,7 @@
         if (!f.geometry) continue;
         highlightLayer.add(new esriMods.Graphic({
           geometry: { type: "polygon", rings: f.geometry.rings, spatialReference: { wkid: 4326 } },
-          symbol: { type: "simple-fill", color: [147, 169, 89, 0.18], outline: { color: [167, 102, 170, 1], width: 2.5 } },
+          symbol: { type: "simple-fill", color: [10, 126, 194, 0.15], outline: { color: [7, 84, 129, 1], width: 2.5 } },
         }));
       }
     } catch (err) { console.warn("Parcel outline failed:", err); }
