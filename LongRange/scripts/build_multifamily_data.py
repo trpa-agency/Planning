@@ -11,6 +11,13 @@ works when opened directly from disk (file://).
 Usage (arcgispro-py3):
     python LongRange/scripts/build_multifamily_data.py "C:/path/to/Aff and WF parcels.xlsx"
 
+A .csv export of the same sheet is accepted too.
+
+Only rows flagged Affordable and Workforce = Yes are written. Ken Kasman (2026-09-22)
+asked for the unrestricted units to come off the dashboard entirely, since they are
+not affordable or workforce housing under the definitions the page uses. Dropping
+them here rather than in the browser keeps them out of the published data file.
+
 Optional:
     --out LongRange/data/multifamily_parcels.js
 """
@@ -120,17 +127,24 @@ def stamp_page_version(generated: str) -> None:
 
 def build(xlsx_path: Path, out_path: Path) -> None:
     log.info("Reading %s", xlsx_path)
-    df = pd.read_excel(xlsx_path)
+    if xlsx_path.suffix.lower() == ".csv":
+        df = pd.read_csv(xlsx_path, dtype=str)
+    else:
+        df = pd.read_excel(xlsx_path)
 
     missing = [src for src, _ in COLUMNS if src not in df.columns]
     if missing:
         raise SystemExit(f"Spreadsheet is missing expected columns: {missing}")
 
     rows = []
+    dropped_unrestricted = 0
     for rec in df.to_dict("records"):
         apn = clean_text(rec["APN"])
         if not apn:
             log.warning("Skipping row with blank APN: %s", rec)
+            continue
+        if clean_text(rec["Affordable and Workforce"]) != "Yes":
+            dropped_unrestricted += 1
             continue
         if apn in APN_REMAP:
             log.info("Remapping APN %s -> %s", apn, APN_REMAP[apn])
@@ -151,6 +165,11 @@ def build(xlsx_path: Path, out_path: Path) -> None:
     n_apns = len({r[0] for r in rows})
     total_units = sum(r[2] for r in rows)
     log.info("%d records, %d unique APNs, %d units", len(rows), n_apns, total_units)
+    if dropped_unrestricted:
+        log.info("Dropped %d rows not flagged Affordable and Workforce = Yes", dropped_unrestricted)
+    blank_timing = sum(1 for r in rows if r[6] == TIMING_BLANK_FILL)
+    if blank_timing:
+        log.warning("%d affordable/workforce rows have a blank Timing; check them with Ken", blank_timing)
 
     payload = {
         "generated": date.today().isoformat(),
