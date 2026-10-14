@@ -1,0 +1,48 @@
+#!/bin/sh
+# Keeps the housing dashboard text review sheet honest.
+#
+#  * sheet edited  -> regenerate the Word and plain-text copies and stage them,
+#                     so the three never drift apart
+#  * page edited   -> check every sheet entry is still on the page, and block the
+#                     commit if not, because reviewers get sent the sheet
+#
+# Install on a new clone:  git config core.hooksPath .githooks
+# Bypass once:             git commit --no-verify
+
+set -e
+
+SHEET="LongRange/docs/housing-dashboard-text.md"
+PAGE="LongRange/html/multifamily-housing.html"
+STAGED=$(git diff --cached --name-only)
+
+echo "$STAGED" | grep -qx "$SHEET" && SHEET_STAGED=1 || SHEET_STAGED=0
+echo "$STAGED" | grep -qx "$PAGE"  && PAGE_STAGED=1  || PAGE_STAGED=0
+[ "$SHEET_STAGED" = 0 ] && [ "$PAGE_STAGED" = 0 ] && exit 0
+
+# Any Python 3 will do; these scripts are standard library only.
+PY=""
+for c in python python3 py; do
+  if command -v "$c" >/dev/null 2>&1 && "$c" -c "import sys; sys.exit(0 if sys.version_info[0]==3 else 1)" >/dev/null 2>&1; then
+    PY="$c"; break
+  fi
+done
+if [ -z "$PY" ] && [ -x "/c/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py3/python.exe" ]; then
+  PY="/c/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py3/python.exe"
+fi
+if [ -z "$PY" ]; then
+  echo "pre-commit: no Python 3 found, skipping the text review sheet checks."
+  exit 0
+fi
+
+export PYTHONIOENCODING=utf-8
+
+if [ "$SHEET_STAGED" = 1 ]; then
+  echo "pre-commit: regenerating the text review sheet"
+  "$PY" LongRange/scripts/build_text_review.py >/dev/null
+  git add "LongRange/docs/Housing Dashboard - Text Review.docx" \
+          "LongRange/docs/housing-dashboard-text.txt"
+fi
+
+if [ "$PAGE_STAGED" = 1 ]; then
+  "$PY" LongRange/scripts/check_text_review.py
+fi

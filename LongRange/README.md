@@ -42,7 +42,20 @@ python LongRange/scripts/build_text_review.py
 ```
 
 The Markdown is the source of truth; never hand-edit the Word or text files, since the
-next run overwrites them. `build_text_review.py` parses the sheet and calls
+next run overwrites them.
+
+A pre-commit hook keeps all this honest. Editing the Markdown regenerates the Word and
+text copies and stages them. Editing the dashboard page runs
+`scripts/check_text_review.py`, which blocks the commit if any sheet entry is no longer
+on the page, so reviewers never get a sheet that describes text that has moved on. Enable
+it once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Use `git commit --no-verify` to bypass it for a commit that deliberately leaves the sheet
+behind. `build_text_review.py` parses the sheet and calls
 `build_review_docx.py` to write the Word file. Both refuse to run on a sheet with
 duplicate IDs or a missing `Now:` line.
 
