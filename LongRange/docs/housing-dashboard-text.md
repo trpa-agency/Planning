@@ -1,6 +1,6 @@
-# Housing Progress Since 2012 — text review
+# Housing Progress — text review
 
-Version 2, rewritten 14 Sept. 2026 after Ken Kasman's review. This is every piece of
+Version 3, refreshed 14 Oct. 2026 against the live page. This is every piece of
 text on the housing dashboard, in the order you meet it going down the page. Use it to
 rewrite any of the text.
 
@@ -28,7 +28,7 @@ are fine, for example "T34 feels too passive" or "can the pipeline chart come fi
 # 1. Browser tab and header
 
 **T01 — Browser tab title**
-Now: Housing Progress Since 2012 — Tahoe Living
+Now: Housing Progress — Tahoe Living
 New:
 
 **T02 — Small label above the page title**
@@ -36,7 +36,7 @@ Now: Housing dashboard
 New:
 
 **T03 — Page title (top of every screen, keep it short)**
-Now: Housing Progress Since 2012
+Now: Housing Progress
 New:
 
 Navigation links across the top right:
@@ -48,9 +48,6 @@ New:
 New:
 
 **T06** Now: Featured projects
-New:
-
-**T07** Now: Data
 New:
 
 **T08** Now: All planning tools
@@ -82,7 +79,7 @@ asked for on 16 Sept. 2026, so on the page you meet T13, T14, T15, then T12, the
 The ID codes have not moved, so they still match earlier copies of this sheet.
 
 **T12 — Label under the first number**
-Now: Multifamily units built since 2012
+Now: Affordable & workforce units built since 2012
 New:
 
 **T13** Now: Affordable & workforce units
@@ -101,7 +98,7 @@ Grey small print under each number. The count fills itself in, so only the words
 can change.
 
 **T17 — Under the first number, for example "358 parcels · of 1,469 added regionwide"**
-Now: parcels · of 1,469 added regionwide
+Now: parcels
 New:
 
 **T18 — Under affordable & workforce**
@@ -128,7 +125,7 @@ New:
 from Ken's review, so please keep them accurate as well as readable.*
 
 **T22 — On "Multifamily units built since 2012"**
-Now: Counts only the records TRPA tracks for affordable and workforce housing, not everything built in the Basin. Of this total, 409 units are affordable or workforce and 293 are unrestricted, most of them subdivided condominium units, which are existing homes divided into separately owned units rather than new construction. Regionwide, 1,469 residential units were added since 2012, so this figure also leaves out roughly 767 single-family homes.
+Now: Counts only the records TRPA tracks for affordable and workforce housing, not everything built in the Basin. Since 2012, N affordable and workforce units have been constructed. Regionwide, 1,469 residential units were added since 2012, see data.trpa.gov/regional-plan-tracking for more details.
 New:
 
 **T23 — On "Affordable & workforce units"**
@@ -151,20 +148,12 @@ New:
 Now: Washoe and Douglas totals are shaped by multifamily condominium units being subdivided into individually owned units. This data does not treat those as affordable or workforce housing.
 New:
 
-**T28 — On the "Non-restricted multifamily units built since 2012" chart**
-Now: Incomplete. This covers units proposed or built as multifamily and later subdivided. Single-family homes that were built as single-family are not included.
-New:
-
 **T29 — On the "Units in the pipeline" chart**
 Now: Unrestricted single-family housing, including condominiums, is not tracked here.
 New:
 
-**T131 — On the map legend entry "Unverified or non-residential"**
-Now: Constructed units that TRPA has not verified as affordable or workforce housing, or that are not residential at all, tourist accommodation units being the common case. They appear in the table but are counted in no total.
-New:
-
 **T30 — On the "Existing units by year built" chart**
-Now: Units built since 2012, split into deed-restricted units and everything else tracked in the affordable and workforce inventory, which includes unrestricted multifamily and unrestricted accessory dwelling units. Single-family homes built as single-family are not included.
+Now: Units built since 2012, split into deed-restricted units, accessory dwelling units, and other affordable and workforce inventory. Single-family homes and subdivided units are not included.
 New:
 
 ---
@@ -224,10 +213,10 @@ Now: Each jurisdiction addresses housing in its own way
 New:
 
 **T44 — Section paragraph**
-Now: Click a parcel on the map or a row in the table to zoom to it and open its housing records. To change what the charts, map, and table show, use the filters above.
+Now: The map groups existing affordable and workforce units by area, with bigger circles for more units. Click a circle to see how many units and parcels it covers. To change what the charts and map show, including units in the pipeline, use the filters above.
 New:
 
-The four charts, in the order they appear:
+The three charts, in the order they appear:
 
 **T45 — Chart 1 title**
 Now: Existing affordable & workforce units
@@ -253,14 +242,6 @@ New:
 Now: Permitted but not yet constructed, plus bonus units reserved for projects not yet submitted
 New:
 
-**T51 — Chart 4 title**
-Now: Non-restricted multifamily units built since 2012
-New:
-
-**T52 — Chart 4 caption**
-Now: Existing units, built 2012 or later, not flagged affordable or workforce
-New:
-
 Labels inside the charts, shown in the small legends and when you hover:
 
 **T53** Now: Deed-restricted
@@ -281,27 +262,12 @@ New:
 **T58** Now: Unrestricted
 New:
 
-**T59** Now: Non-restricted multifamily
-New:
-
 Legend under the map:
 
-**T60** Now: Affordable & workforce
-New:
-
-**T61** Now: Unrestricted
-New:
-
-**T62** Now: Pipeline only
-New:
-
-**T63** Now: Unverified or non-residential
+**T60** Now: Existing affordable & workforce units. Circle size and label show the total.
 New:
 
 **T64** Now: TRPA boundary
-New:
-
-**T65** Now: Parcel boundaries, once zoomed in
 New:
 
 **T132 — Shown on a chart when the filters leave it with nothing to draw**
@@ -309,7 +275,7 @@ Now: No units match the current filters
 New:
 
 **T66 — Note at the end of the map legend**
-Now: Cluster labels show total units. Zoom in to see individual parcels.
+Now: Select a Timing filter to map units in the pipeline. The map stays at neighborhood scale, so individual parcels are not shown.
 New:
 
 ---
@@ -329,7 +295,7 @@ Now: Existing units by year built
 New:
 
 **T70 — Chart caption**
-Now: Existing units built 2012 or later. Policy milestones marked.
+Now: Affordable and workforce units built 2012 or later, with accessory dwelling units shown on their own. Policy milestones marked.
 New:
 
 The policy milestones marked on this chart. The year and its label can both change.
@@ -341,6 +307,38 @@ New:
 New:
 
 **T73** Now: 2023 Phase 2 Housing Amendments
+New:
+
+**T133** Now: 2021 Phase 1 Housing Amendments
+New:
+
+The sentence under each milestone, shown in the list below the chart:
+
+**T134 — Under 2012 Regional Plan Update**
+Now: The updated Regional Plan set the framework that later housing incentives build on.
+New:
+
+**T135 — Under 2018 Development Rights Strategic Initiative**
+Now: Allowed the conversion of existing development using environmentally neutral conversion rates.
+New:
+
+**T136 — Under 2021 Phase 1 Housing Amendments**
+Now: Made accessory dwelling units easier to build, allowing up to two per residential parcel, and expanded where bonus units can be used.
+New:
+
+**T137 — Under 2023 Phase 2 Housing Amendments**
+Now: Gave deed-restricted housing more height, density, and coverage flexibility in and near town centers.
+New:
+
+The three bars on this chart:
+
+**T138** Now: Deed-restricted units
+New:
+
+**T139** Now: Accessory dwelling units
+New:
+
+**T140** Now: Other affordable and workforce
 New:
 
 *Confirmed by Karen Fink, 16 Sept. 2026: the Phase 2 Housing Amendments were approved in December 2023.*
@@ -470,83 +468,7 @@ dormitory units built in 2025 by converting tourist accommodation units.*
 
 ---
 
-# 9. Data table
-
-**T99 — Section label**
-Now: The data
-New:
-
-**T100 — Section heading**
-Now: Every multi-family housing record
-New:
-
-**T101 — Note above the table**
-Now: One row per housing record. A parcel can have more than one record.
-New:
-
-**T102 — Download button**
-Now: Export CSV
-New:
-
-Column headings, left to right:
-
-**T103** Now: APN
-New:
-
-**T104** Now: Jurisdiction
-New:
-
-**T105** Now: Address
-New:
-
-**T106** Now: Town
-New:
-
-**T107** Now: Units
-New:
-
-**T108** Now: Year Built
-New:
-
-**T109** Now: Affordable & Workforce
-New:
-
-**T110** Now: Timing
-New:
-
-**T111** Now: Housing Type
-New:
-
-**T112** Now: VHR
-New:
-
-**T113** Now: County Land Use
-New:
-
-**T114** Now: Zoning
-New:
-
-**T115** Now: Plan
-New:
-
-**T116** Now: Town Center Proximity
-New:
-
-**T117** Now: Acres
-New:
-
-**T118** Now: Ownership
-New:
-
-**T119** Now: Project Notes
-New:
-
-**T120** Now: LT Info
-New:
-
----
-
-# 10. Map pop-up
+# 9. Map pop-up
 
 The panel that appears when you click a parcel.
 
@@ -560,7 +482,7 @@ New:
 
 ---
 
-# 11. Footer
+# 10. Footer
 
 **T123**
 Now: A project of the Tahoe Regional Planning Agency
@@ -572,7 +494,7 @@ New:
 
 ---
 
-# 12. Loading and error messages
+# 11. Loading and error messages
 
 Most people will only see the first two. The rest appear when something goes wrong.
 
