@@ -1,0 +1,5 @@
+FIX_ID,CLIP_FROM_ZONING_ID,KEEP_ZONING_ID,ACRES,CONFIDENCE,REASON
+F26,111_SA2,TVAP_TC_NP,6.439,Likely,Overlap lies 100 percent inside the Tahoe Valley Area Plan boundary (LocalPlan layer 1) and the 15 parcels mostly inside it already carry PLAN_ID 110
+F27,030,040,0.521,Likely,"142 edge slivers along the shared boundary; the smaller, more detailed district 040 keeps its line"
+F28,114,114_SA1,0.012,Likely,"6 edge slivers; the special area keeps its line, base district is clipped"
+F29,,TVAP_TC_G,1.045,Likely,Hole in district coverage inside the Tahoe Valley Area Plan boundary; parcel 032-141-018 in it is stored as TVAP_TC_G

@@ -1,0 +1,5 @@
+OBJECTID,ZONING_ID,ZONING_DESCRIPTION,PLAN_ID,PLAN_NAME,PLAN_TYPE,SPECIAL_AREA_NAME,SPECIAL_AREA_NUMBER,OVERLAY,ACRES,DESIGN_GUIDELINES_HYPERLINK,GlobalID,created_user,created_date,last_edited_user,last_edited_date,FIX_ID,ACRES_OLD,ACRES_CHANGE
+152,111_SA2,Tahoe Island Special Area #2,111,Tahoe Island,Plan Area Statement,Tahoe Island Sa#2,2, ,72.0672,https://www.trpa.gov/wp-content/uploads/documents/archive/2/CSLT-Citywide-Standards-and-Guidelines.pdf,{D69F26C2-3DA8-416C-B54B-0BCCE3915EB8},,,ABETTINGER,1743802137000,F26,78.50548225,-6.4386
+402,030,Mount Rose,WCTAP,Washoe County Tahoe Area Plan,Area Plan,,, ,8087.5067,,{8B5B2D9E-31B7-42D4-98F9-AA0C619D5F6E},,,ABETTINGER,1767738287000,F27,8092.59052139,-0.5213
+48,114,Bonanza,114,Bonanza,Plan Area Statement,,, ,125.7223,https://www.trpa.gov/wp-content/uploads/documents/archive/2/CSLT-Citywide-Standards-and-Guidelines.pdf,{18C6EF6F-C6C5-428A-B622-1A72E2D25FF6},,,ABETTINGER,1743802137000,F28,125.73346001,-0.0117
+174,TVAP_TC_G,Tahoe Valley Area Plan - Town Center Gateway District,TVAP,Tahoe Valley Area Plan,Area Plan,,, ,60.8727,,{F6FF26A2-3B97-4C68-B107-1757E376265B},,,SDE,1782772788000,F29,66.78028992,1.0451

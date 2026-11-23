@@ -1,0 +1,106 @@
+PLAN_ID,PLAN_NAME,PLAN_TYPE,districts,pages,http,is_pdf,url
+110,Tahoe Valley Area Plan,Area Plan,8,228,200,True,https://www.trpa.gov/wp-content/uploads/TRPATahoeValleyAreaPlan_Amended2024.pdf
+MAP,Meyers Area Plan,Area Plan,5,144,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/MeyersAreaPlan_Final_March2018_Combined.pdf
+PCAP,Placer County Tahoe Basin Area Plan,Area Plan,81,325,200,True,https://www.trpa.gov/wp-content/uploads/documents/Final-TBAP_Implement-Regs_Feb_2021.pdf
+SSAP,South Shore Area Plan,Area Plan,4,91,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/SSAP.pdf
+TCAP,Tourist Core Area Plan,Area Plan,9,236,200,True,https://www.trpa.gov/wp-content/uploads/FINAL-TCAP-DEC-2024-TRPA-Version-1.pdf
+WCTAP,Washoe County Tahoe Area Plan,Area Plan,38,394,200,True,https://www.trpa.gov/wp-content/uploads/documents/WCTAP_Final_Full.pdf
+071,Roundhill Community Plan,Community Plan,2,87,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/RH-cp.pdf
+098,Bijou/Al Tahoe Community Plan,Community Plan,4,94,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/Bijou-Al_Tahoe_CP.pdf
+113,South Y Industrial Tract CP,Community Plan,1,125,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/SouthYIndustrialTractCP.pdf
+019,Martis Peak,Plan Area Statement,0,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/019.pdf
+057,Spooner Lake,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/057.pdf
+058,Glenbrook,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/058.pdf
+059,Shakespeare Point,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/059.pdf
+060,Genoa Peak,Plan Area Statement,3,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/060.pdf
+061,Logan Creek,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/061.pdf
+062,Cave Rock,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/062.pdf
+063,Lincoln,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/063.pdf
+064,Lakeridge,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/064.pdf
+065,Skyland,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/065.pdf
+066,Zephyr Cove,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/066.pdf
+067,Marla Bay/Zephyr Heights,Plan Area Statement,3,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/067.pdf
+068,Round Mound,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/068.pdf
+069,Elk Point,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/069.pdf
+070A,Edgewood,Plan Area Statement,1,6,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/070A.pdf
+070B,Rabe,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/070B.pdf
+072,Round Hill/Tahoe Dempsey,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/072.pdf
+073,Lake Village,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/073.pdf
+074,Round Hill Residential,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/074.pdf
+075,Douglas County Sewer Improvement Dis.,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/075.pdf
+077,Oliver Park,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/077.pdf
+078,Middle Kingsbury,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/078.pdf
+079,Chimney Rock,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/079.pdf
+080,Kingsbury Drainage,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/080.pdf
+081,Kingsbury Village,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/081.pdf
+082,Upper Kingsbury,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/082.pdf
+083,Kingsbury Heights,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/083.pdf
+084,Palisades,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/084.pdf
+085,Lakeview Heights,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/085.pdf
+086,Heavenly Valley Nevada,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/086.pdf
+087,Heavenly Valley California,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/087.pdf
+088,Tahoe Village,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/088.pdf
+089,Lakeside Park,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/089.pdf
+089B,Stateline/Ski Run,Plan Area Statement,3,0,200,False,http://www.trpa.gov/
+090,Tahoe Meadows,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/090.pdf
+092,Pioneer/Ski Run,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/092.pdf
+093,Bijou,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/093.pdf
+094,Glenwood,Plan Area Statement,3,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/094.pdf
+095,Trout/Cold Creek,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/095.pdf
+096,Pioneer Village,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/096.pdf
+097,Bijou Pines,Plan Area Statement,2,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/097.pdf
+099,Al Tahoe,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/099.pdf
+100,Truckee Marsh,Plan Area Statement,2,5,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/100.pdf
+101,Bijou Meadows,Plan Area Statement,2,3,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/101.pdf
+102,Tahoe Keys,Plan Area Statement,3,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/102.pdf
+103,Sierra Tract Commercial,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/103.pdf
+104,Highland Woods,Plan Area Statement,2,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/104.pdf
+105,Sierra Tract,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/105.pdf
+106,Montgomery Estates,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/106.pdf
+107,Black Bart,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/107.pdf
+108,Winnemucca,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/108.pdf
+109,Tahoe Valley Campground,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/109.pdf
+111,Tahoe Island,Plan Area Statement,3,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/111.pdf
+112,Gardner Mountain,Plan Area Statement,3,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/112.pdf
+114,Bonanza,Plan Area Statement,4,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/114.pdf
+115,Golden Bear,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/115.pdf
+116,Airport,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/116.pdf
+117,Tahoe Paradise (TP) Washoan,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/117.pdf
+118,Twin Peaks,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/118.pdf
+119,Country Club Meadow,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/119.pdf
+120,Tahoe Paradise (TP) Meadowvale,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/120.pdf
+121,Freel Peak,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/121.pdf
+122,Tahoe Paradise - Mandan,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/122.pdf
+123,Meyers Forest,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/123.pdf
+124,Meyers Residential,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/124.pdf
+126,Pope Beach,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/126.pdf
+127,Camp Richardson,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/127.pdf
+128,Baldwin Beach,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/128.pdf
+129,Fallen Leaf North,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/129.pdf
+130,Angora Ridge,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/130.pdf
+131,Angora Highlands,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/131.pdf
+132,Mountain View,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/132.pdf
+133,Tahoe Paradise - Upper Truckee,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/133.pdf
+134,Echo View,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/134.pdf
+135,Tahoe Paradise Chiapa,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/135.pdf
+137,Christmas Valley,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/137.pdf
+138,Tahoe Paradise Nahane,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/138.pdf
+139,Dardenelles,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/139.pdf
+140,Echo Summit,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/140.pdf
+141,Luther Pass,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/141.pdf
+142,Echo Lake,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/142.pdf
+143,Desolation,Plan Area Statement,1,2,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/143.pdf
+144A,Fallen Leaf Forest Service Tracts,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/144A.pdf
+144B,Lilly/Angora Lakes,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/144B.pdf
+145,South Fallen Leaf Lake,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/145.pdf
+146,Emerald Bay,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/146.pdf
+147,Paradise Flat,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/147.pdf
+148,Meeks Creek,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/148.pdf
+149,Rubicon,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/149.pdf
+150,Meeks Bay,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/150.pdf
+151,Glenridge,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/151.pdf
+152,McKinney Lake,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/152.pdf
+153,Sugar Pine Point,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/153.pdf
+154,Tahoma Residential,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/154.pdf
+155,Tahoma Commercial,Plan Area Statement,1,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/155.pdf
+175,Cascade Properties,Plan Area Statement,2,4,200,True,https://www.trpa.gov/wp-content/uploads/documents/archive/2/175.pdf

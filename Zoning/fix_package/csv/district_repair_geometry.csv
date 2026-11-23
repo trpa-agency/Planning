@@ -1,0 +1,4 @@
+FIX_ID,OBJECTID,GlobalID,ZONING_ID,PROBLEM,CONFIDENCE
+F25,91,{645CEDC8-B071-4CD2-BB8D-012B983003E5},TVAP_CMX_S,Ring self-intersection (self-touching ring); repair changes area by 0 m2,Certain
+F25,172,{E4515E66-8C4A-4C21-9DA8-2810E3884B5B},PCAP_RES_KINGSWOODWEST,Ring self-intersection (self-touching ring); repair changes area by 0 m2,Certain
+F25,416,{803F0C34-1D3B-4D40-A8CA-621F9357172D},046,Ring self-intersection (self-touching ring); repair changes area by 0 m2,Certain

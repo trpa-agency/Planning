@@ -1,0 +1,1389 @@
+page,label,zone,raw,category,foot,basis
+170,Employee Housing,032B,S,,,listed
+170,Multiple Family Dwelling (more than four units),032B,AR,,,listed
+170,Multiple Family Dwelling (four units or less),032B,A,,,listed
+170,Multi-Person Dwelling,032B,S,,,listed
+170,Single Family Dwelling,032B,A,,,listed
+170,Bed and Breakfast Facilities,032B,A,,,listed
+170,"Hotels, Motels and Other Transient Dwelling Units",032B,A,,,listed
+170,Timeshare (Hotel/Motel Design),032B,S,,,listed
+170,Eating and Drinking Places,032B,A,,,listed
+170,Food and Beverage Retail Sales,032B,A,,,listed
+170,Service Stations,032B,S,,,listed
+170,General Merchandise Stores,032B,S,,,listed
+170,Amusements and Recreation Services,032B,S,,,listed
+170,Gaming Non-restricted,032B,A,,,listed
+170,Privately Owned Assembly and Entertainment,032B,S,,,listed
+170,Outdoor Amusements,032B,S,,,listed
+171,Broadcasting Studios,032B,A,,,listed
+171,Business Support Services,032B,A,,,listed
+171,Financial Services,032B,A,,,listed
+171,Health Care Services,032B,A,,,listed
+171,Personal Services,032B,A,,,listed
+171,Professional Offices,032B,A,,,listed
+171,Repair Services,032B,S,,,listed
+171,Schools – Business and Vocational,032B,S,,,listed
+171,Vehicle Storage and Parking,032B,S,,,listed
+171,Churches,032B,S,,,listed
+171,Cultural Facilities,032B,S,,,listed
+171,Day Care Centers/Preschools,032B,A,,,listed
+171,Local Assembly and Entertainment,032B,A,,,listed
+171,Local Post Office,032B,A,,,listed
+171,Local Public Health and Safety Facilities,032B,A,,,listed
+171,Publicly Owned Assembly and Entertainment,032B,S,,,listed
+171,Regional Public Health and Safety Facilities,032B,S,,,listed
+171,Pipelines and Power Transmission,032B,S,,,listed
+171,Public Utility Centers,032B,S,,,listed
+171,Transit Stations and Terminals,032B,S,,,listed
+171,Transportation Routes,032B,S,,,listed
+171,Transmission and Receiving Facilities,032B,S,,,listed
+171,Day Use Areas,032B,A,,,listed
+171,Participant Sports Facilities,032B,S,,,listed
+171,Sport Assembly,032B,S,,,listed
+171,Outdoor Recreation Concessions,032B,A,,,listed
+171,Visitor Information Center,032B,S,,,listed
+171,Reforestation,032B,A,,,listed
+171,Sanitation Salvage Cut,032B,A,,,listed
+171,Thinning,032B,A,,,listed
+171,Tree Farms,032B,A,,,listed
+171,Early Successional Stage Vegetation Management,032B,A,,,listed
+171,Nonstructural Fish Habitat Management,032B,A,,,listed
+171,Nonstructural Wildlife Habitat Management,032B,A,,,listed
+171,Structural Fish Habitat Management,032B,A,,,listed
+171,Structural Wildlife Habitat Management,032B,A,,,listed
+171,Fire Detection and Suppression,032B,A,,,listed
+171,Fuels Treatment,032B,A,,,listed
+171,Insect and Disease Suppression,032B,A,,,listed
+171,Sensitive Plant Management,032B,A,,,listed
+171,Uncommon Plant Community Management,032B,A,,,listed
+172,Erosion Control,032B,A,,,listed
+172,Runoff Control,032B,A,,,listed
+172,Stream Environment Zone Restoration,032B,A,,,listed
+174,Employee Housing,045,A,Residential,,listed
+174,Multiple Family Dwelling (more than four units),045,AR,Residential,,listed
+174,Multiple Family Dwelling (four units or less),045,A,Residential,,listed
+174,Multi-Person Dwelling,045,S,Residential,,listed
+174,Nursing and Personal Care (Section 110.220.410),045,S,Residential,,listed
+174,Residential Care (Section 110.220.410),045,S,Residential,,listed
+174,Single Family Dwellings,045,S,Residential,,listed
+174,Bed and Breakfast Facilities,045,A,Tourist Accommodation,,listed
+174,"Hotels, Motels and Other Transient Dwelling Units",045,A,Tourist Accommodation,,listed
+174,Timeshare (Hotel/Motel Design),045,S,Tourist Accommodation,,listed
+174,Timeshare (Residential Design),045,S,Tourist Accommodation,,listed
+174,"Auto, Mobile Home and Vehicle Dealers",045,A,Commercial,,listed
+174,Building Materials and Hardware,045,A,Commercial,,listed
+174,Eating and Drinking Places,045,A,Commercial,,listed
+174,Food and Beverage Retail Sales,045,A,Commercial,,listed
+174,"Furniture, Home Furnishings and Equipment",045,A,Commercial,,listed
+174,General Merchandise Stores,045,A,Commercial,,listed
+174,Mail Order and Vending,045,A,Commercial,,listed
+174,Nursery,045,A,Commercial,,listed
+174,Outdoor Retail Sales,045,S,Commercial,,listed
+174,Service Stations,045,A,Commercial,,listed
+174,Amusements and Recreation Services,045,S,Commercial,,listed
+175,Privately Owned Assembly and Entertainment,045,S,Commercial,,listed
+175,Outdoor Amusements,045,S,Commercial,,listed
+175,Animal Husbandry Services,045,A,Commercial,,listed
+175,Auto Repair and Service,045,S,Commercial,,listed
+175,Broadcasting Studios,045,A,Commercial,,listed
+175,Business Support Services,045,A,Commercial,,listed
+175,Financial Services,045,A,Commercial,,listed
+175,Contract Construction Services,045,A,Commercial,,listed
+175,Health Care Services,045,A,Commercial,,listed
+175,Laundries and Dry Cleaning Plant,045,A,Commercial,,listed
+175,Personal Services,045,A,Commercial,,listed
+175,Professional Offices,045,A,Commercial,,listed
+175,Repair Services,045,A,Commercial,,listed
+175,Sales Lot,045,S,Commercial,,listed
+175,Schools – Business and Vocational,045,A,Commercial,,listed
+175,Secondary Storage,045,S,Commercial,,listed
+175,Food and Kindred Products,045,S,Commercial,,listed
+175,Fuel and Ice dealers,045,S,Commercial,,listed
+175,Industrial Services,045,S,Commercial,,listed
+175,Printing and Publishing,045,A,Commercial,,listed
+175,Small Scale Manufacturing,045,S,Commercial,,listed
+175,Storage Yards,045,S,Commercial,,listed
+175,Vehicle and Freight Terminals,045,S,Commercial,,listed
+175,Vehicle Storage and Parking,045,S,Commercial,,listed
+175,Warehousing,045,S,Commercial,,listed
+175,Wholesale and Distribution,045,S,Commercial,,listed
+175,Churches,045,A,Public Service,,listed
+175,Collection Stations,045,S,Public Service,,listed
+175,Regional Public Health and Safety Facilities,045,S,Public Service,,listed
+175,Cultural Facilities,045,A,Public Service,,listed
+175,Day Care Centers/Preschools,045,S,Public Service,,listed
+175,Government Offices,045,A,Public Service,,listed
+175,Hospitals,045,A,Public Service,,listed
+175,Local Assembly and Entertainment,045,A,Public Service,,listed
+175,Local Post Office,045,A,Public Service,,listed
+175,Local Public Health and Safety Facilities,045,A,Public Service,,listed
+175,Membership Organizations,045,A,Public Service,,listed
+175,Publicly Owned Assembly and Entertainment,045,S,Public Service,,listed
+175,Pipelines and Power Transmission,045,S,Public Service,,listed
+175,Schools – Kindergarten through Secondary,045,A,Public Service,,listed
+175,Social Service Organizations,045,A,Public Service,,listed
+175,Threshold-Related Research Facilities,045,S,Public Service,,listed
+175,Transit Stations and Terminals,045,S,Public Service,,listed
+175,Transportation Routes,045,S,Public Service,,listed
+175,Transmission and Receiving Facilities,045,S,Public Service,,listed
+175,Day Use Areas,045,A,Recreation,,listed
+175,Participant Sports Facilities,045,A,Recreation,,listed
+175,Outdoor Recreation Concessions,045,S,Recreation,,listed
+175,Recreational Centers,045,A,Recreation,,listed
+175,Riding and Hiking Trails,045,S,Recreation,,listed
+176,Sport Assembly,045,S,Recreation,,listed
+176,Visitor Information Centers,045,S,Recreation,,listed
+176,Reforestation,045,A,Resource Management,,listed
+176,Sanitation Salvage Cut,045,A,Resource Management,,listed
+176,Thinning,045,A,Resource Management,,listed
+176,Tree Farms,045,A,Resource Management,,listed
+176,Early Successional Stage Vegetation Management,045,A,Resource Management,,listed
+176,Nonstructural Fish Habitat Management,045,A,Resource Management,,listed
+176,Nonstructural Wildlife Habitat Management,045,A,Resource Management,,listed
+176,Structural Fish Habitat Management,045,A,Resource Management,,listed
+176,Structural Wildlife Habitat Management,045,A,Resource Management,,listed
+176,Fire Detection and Suppression,045,A,Resource Management,,listed
+176,Fuels Treatment,045,A,Resource Management,,listed
+176,Insect and Disease Suppression,045,A,Resource Management,,listed
+176,Sensitive Plant Management,045,A,Resource Management,,listed
+176,Uncommon Plant Community Management,045,A,Resource Management,,listed
+176,Erosion Control,045,A,Resource Management,,listed
+176,Runoff Control,045,A,Resource Management,,listed
+176,Stream Environment Zone Restoration,045,A,Resource Management,,listed
+176,Single Family Dwelling*,045_SA1,A,Residential,,listed
+176,Multiple Family Dwelling,045_SA1,A,Residential,,listed
+176,Employee Housing,045_SA1,A,Residential,,listed
+176,Nursing and Personal Care (Section 110.220.410),045_SA1,S,Residential,,listed
+176,Residential Care (Section 110.220.410),045_SA1,S,Residential,,listed
+176,Building Materials and Hardware,045_SA1,S,Commercial,,listed
+176,Eating and Drinking Places,045_SA1,A,Commercial,,listed
+176,Food and Beverage Retail Sales,045_SA1,A,Commercial,,listed
+176,"Furniture, Home Furnishings and Equipment",045_SA1,A,Commercial,,listed
+176,General Merchandise Stores,045_SA1,A,Commercial,,listed
+176,Mail Order and Vending,045_SA1,A,Commercial,,listed
+176,Nursery,045_SA1,A,Commercial,,listed
+176,Outdoor Retail Sales,045_SA1,S,Commercial,,listed
+176,Service Stations,045_SA1,S,Commercial,,listed
+176,Privately Owned Assembly and Entertainment,045_SA1,S,Commercial,,listed
+176,Broadcasting Studios,045_SA1,A,Commercial,,listed
+176,Financial Services,045_SA1,A,Commercial,,listed
+176,Health Care Services,045_SA1,A,Commercial,,listed
+177,Personal Services,045_SA1,A,Commercial,,listed
+177,Professional Offices,045_SA1,A,Commercial,,listed
+177,Repair Services,045_SA1,A,Commercial,,listed
+177,Schools – Business and Vocational,045_SA1,A,Commercial,,listed
+177,Printing and Publishing,045_SA1,S,Commercial,,listed
+177,Churches,045_SA1,A,Public Service,,listed
+177,Cultural Facilities,045_SA1,A,Public Service,,listed
+177,Day Care Centers/Preschools,045_SA1,A,Public Service,,listed
+177,Government Offices,045_SA1,A,Public Service,,listed
+177,Local Assembly and Entertainment,045_SA1,A,Public Service,,listed
+177,Local Post Office,045_SA1,A,Public Service,,listed
+177,Local Public Health and Safety Facilities,045_SA1,A,Public Service,,listed
+177,Membership Organizations,045_SA1,A,Public Service,,listed
+177,Publicly Owned Assembly and Entertainment,045_SA1,S,Public Service,,listed
+177,Regional Public Health and Safety Facilities,045_SA1,A,Public Service,,listed
+177,Social Service Organizations,045_SA1,A,Public Service,,listed
+177,Pipelines and Power Transmission,045_SA1,S,Public Service,,listed
+177,Threshold-Related Research Facilities,045_SA1,S,Public Service,,listed
+177,Transit Stations and Terminals,045_SA1,S,Public Service,,listed
+177,Transportation Routes,045_SA1,S,Public Service,,listed
+177,Transmission and Receiving Facilities,045_SA1,S,Public Service,,listed
+177,General Merchandise Stores,045_SA2,A,Commercial,,listed
+177,Mail Order and Vending,045_SA2,A,Commercial,,listed
+177,Building Materials and Hardware,045_SA2,S,Commercial,,listed
+177,Eating and Drinking Places,045_SA2,A,Commercial,,listed
+177,Food and Beverage Retail Sales,045_SA2,A,Commercial,,listed
+177,"Furniture, Home Furnishings, and Equipment",045_SA2,A,Commercial,,listed
+177,Professional Offices,045_SA2,A,Commercial,,listed
+177,Broadcasting Studios,045_SA2,A,Commercial,,listed
+177,Schools – Business and Vocational,045_SA2,A,Commercial,,listed
+177,Financial Services,045_SA2,A,Commercial,,listed
+177,Health Care Services,045_SA2,A,Commercial,,listed
+177,Printing and Publishing,045_SA2,S,Commercial,,listed
+177,Churches,045_SA3,A,Public Service,,listed
+177,Collection Stations,045_SA3,S,Public Service,,listed
+177,Regional Public Health and Safety Facilities,045_SA3,S,Public Service,,listed
+177,Health Care Services,045_SA3,S,Public Service,,listed
+177,Cultural Facilities,045_SA3,A,Public Service,,listed
+177,Day Care Centers/Preschools,045_SA3,S,Public Service,,listed
+177,Government Offices,045_SA3,A,Public Service,,listed
+177,Hospitals,045_SA3,A,Public Service,,listed
+177,Local Assembly and Entertainment,045_SA3,A,Public Service,,listed
+177,Local Post Office,045_SA3,A,Public Service,,listed
+177,Local Public Health and Safety Facilities,045_SA3,A,Public Service,,listed
+177,Membership Organizations,045_SA3,A,Public Service,,listed
+178,Publicly Owned Assembly and Entertainment,045_SA3,S,Public Service,,listed
+178,Pipelines and Power Transmission,045_SA3,S,Public Service,,listed
+178,Schools – Kindergarten through Secondary,045_SA3,A,Public Service,,listed
+178,Social Service Organizations,045_SA3,A,Public Service,,listed
+178,Threshold-Related Research Facilities,045_SA3,S,Public Service,,listed
+178,Transit Stations and Terminals,045_SA3,S,Public Service,,listed
+178,Transportation Routes,045_SA3,S,Public Service,,listed
+178,Transmission and Receiving Facilities,045_SA3,S,Public Service,,listed
+178,Reforestation,045_SA3,A,Resource Management,,listed
+178,Sanitation Salvage Cut,045_SA3,S,Resource Management,,listed
+178,Thinning,045_SA3,A,Resource Management,,listed
+178,Tree Farms,045_SA3,A,Resource Management,,listed
+178,Early Successional Stage Vegetation Management,045_SA3,A,Resource Management,,listed
+178,Nonstructural Fish Habitat Management,045_SA3,A,Resource Management,,listed
+178,Nonstructural Wildlife Habitat Management,045_SA3,A,Resource Management,,listed
+178,Structural Fish Habitat Management,045_SA3,A,Resource Management,,listed
+178,Structural Wildlife Habitat Management,045_SA3,A,Resource Management,,listed
+178,Fire Detection and Suppression,045_SA3,A,Resource Management,,listed
+178,Fuels Treatment,045_SA3,A,Resource Management,,listed
+178,Insect and Disease Suppression,045_SA3,A,Resource Management,,listed
+178,Sensitive Plant Management,045_SA3,A,Resource Management,,listed
+178,Uncommon Plant Community Management,045_SA3,A,Resource Management,,listed
+178,Erosion Control,045_SA3,A,Resource Management,,listed
+178,Runoff Control,045_SA3,A,Resource Management,,listed
+178,Stream Environment Zone Restoration,045_SA3,A,Resource Management,,listed
+180,Eating and Drinking Places,048,A,Commercial,,listed
+181,Food and Beverage Retail Sales,048,A,Commercial,,listed
+181,"Furniture, Home Furnishings and Equipment",048,A,Commercial,,listed
+181,General Merchandise Stores,048,A,Commercial,,listed
+181,Mail Order and Vending,048,A,Commercial,,listed
+181,Nursery,048,S,Commercial,,listed
+181,Outdoor Retail Sales,048,S,Commercial,,listed
+181,Service Stations,048,S,Commercial,,listed
+181,Amusements and Recreation Services,048,S,Commercial,,listed
+181,Gaming - Non-restricted,048,A,Commercial,,listed
+181,Privately Owned Assembly and Entertainment,048,S,Commercial,,listed
+181,Outdoor Amusements,048,S,Commercial,,listed
+181,Broadcasting Studios,048,A,Commercial,,listed
+181,Business Support Services,048,A,Commercial,,listed
+181,Financial Services,048,A,Commercial,,listed
+181,Health Care Services,048,A,Commercial,,listed
+181,Personal Services,048,A,Commercial,,listed
+181,Professional Offices,048,A,Commercial,,listed
+181,Schools – Business and Vocational,048,S,Commercial,,listed
+181,Vehicle Storage and Parking,048,S,Commercial,,listed
+181,Cemeteries,048,S,Public Service,,listed
+181,Churches,048,S,Public Service,,listed
+181,Collection Stations,048,A,Public Service,,listed
+181,Cultural Facilities,048,A,Public Service,,listed
+181,Day Care Centers/Preschools,048,A,Public Service,,listed
+181,Government Offices,048,A,Public Service,,listed
+181,Hospitals,048,A,Public Service,,listed
+181,Local Assembly and Entertainment,048,A,Public Service,,listed
+181,Local Post Office,048,A,Public Service,,listed
+181,Local Public Health and Safety Facilities,048,A,Public Service,,listed
+181,Membership Organizations,048,A,Public Service,,listed
+181,Publicly Owned Assembly and Entertainment,048,S,Public Service,,listed
+181,Regional Public Health and Safety Facilities,048,S,Public Service,,listed
+181,Schools – Kindergarten through Secondary Schools,048,S,Public Service,,listed
+181,Schools – College,048,S,Public Service,,listed
+181,Social Service Organizations,048,A,Public Service,,listed
+181,Pipelines and Power Transmission,048,S,Public Service,,listed
+181,Threshold-Related Research Facilities,048,S,Public Service,,listed
+181,Transit Stations and Terminals,048,S,Public Service,,listed
+181,Transportation Routes,048,S,Public Service,,listed
+182,Transmission and Receiving Facilities,048,S,Public Service,,listed
+182,Beach Recreation,048,A,Recreation,,listed
+182,Boat Launching Facilities,048,S,Recreation,,listed
+182,Cross Country Skiing Courses,048,S,Recreation,,listed
+182,Day Use Areas,048,A,Recreation,,listed
+182,Golf Courses,048,S,Recreation,,listed
+182,Marinas,048,S,Recreation,,listed
+182,Outdoor Recreation Concessions,048,A,Recreation,,listed
+182,Participant Sports Facilities,048,S,Recreation,,listed
+182,Recreation Centers,048,S,Recreation,,listed
+182,Riding and Hiking Trails,048,A,Recreation,,listed
+182,Sport Assembly,048,S,Recreation,,listed
+182,Visitor Information Centers,048,A,Recreation,,listed
+182,Reforestation,048,A,Resource Management,,listed
+182,Regeneration Harvest,048,S,Resource Management,,listed
+182,Sanitation Salvage Cut,048,A,Resource Management,,listed
+182,Special Cut,048,S,Resource Management,,listed
+182,Thinning,048,A,Resource Management,,listed
+182,Timber Stand Improvements,048,S,Resource Management,,listed
+182,Early Successional Stage Vegetation Management,048,A,Resource Management,,listed
+182,Nonstructural Fish Habitat Management,048,A,Resource Management,,listed
+182,Structural Fish Habitat Management,048,A,Resource Management,,listed
+182,Structural Wildlife Habitat Management,048,A,Resource Management,,listed
+182,Fire Detection and Suppression,048,A,Resource Management,,listed
+182,Fuels Treatment/Management,048,A,Resource Management,,listed
+182,Insect and Disease Suppression,048,A,Resource Management,,listed
+182,Sensitive Plant Management,048,A,Resource Management,,listed
+182,Uncommon Plant Community Management,048,A,Resource Management,,listed
+182,Erosion Control,048,A,Resource Management,,listed
+182,Runoff Control,048,A,Resource Management,,listed
+182,Stream Environment Zone Restoration,048,A,Resource Management,,listed
+182,Cemeteries,048_SA1,S,Public Service,,listed
+182,Churches,048_SA1,S,Public Service,,listed
+182,Collection Stations,048_SA1,A,Public Service,,listed
+183,Cultural Facilities,048_SA1,A,Public Service,,listed
+183,Day Care Centers/Preschools,048_SA1,A,Public Service,,listed
+183,Government Offices,048_SA1,A,Public Service,,listed
+183,Hospitals,048_SA1,A,Public Service,,listed
+183,Local Assembly and Entertainment,048_SA1,A,Public Service,,listed
+183,Local Post Office,048_SA1,A,Public Service,,listed
+183,Local Public Health and Safety Facilities,048_SA1,A,Public Service,,listed
+183,Membership Organizations,048_SA1,A,Public Service,,listed
+183,Publicly Owned Assembly and Entertainment,048_SA1,S,Public Service,,listed
+183,Regional Public Health and Safety Facilities,048_SA1,S,Public Service,,listed
+183,Schools – College,048_SA1,S,Public Service,,listed
+183,Social Service Organizations,048_SA1,A,Public Service,,listed
+183,Pipelines and Power Transmission,048_SA1,S,Public Service,,listed
+183,Transit Stations and Terminals,048_SA1,S,Public Service,,listed
+183,Transportation Routes,048_SA1,S,Public Service,,listed
+183,Transmission and Receiving Facilities,048_SA1,S,Public Service,,listed
+183,Beach Recreation,048_SA1,A,Recreation,,listed
+183,Boat Launching Facilities,048_SA1,S,Recreation,,listed
+183,Cross Country Skiing Courses,048_SA1,S,Recreation,,listed
+183,Day Use Areas,048_SA1,A,Recreation,,listed
+183,Golf Courses,048_SA1,S,Recreation,,listed
+183,Marinas,048_SA1,S,Recreation,,listed
+183,Outdoor Recreation Concessions,048_SA1,A,Recreation,,listed
+183,Participant Sports Facilities,048_SA1,S,Recreation,,listed
+183,Recreation Centers,048_SA1,S,Recreation,,listed
+183,Riding and Hiking Trails,048_SA1,A,Recreation,,listed
+183,Sport Assembly,048_SA1,S,Recreation,,listed
+183,Visitor Information Centers,048_SA1,A,Recreation,,listed
+183,Reforestation,048_SA1,A,Resource Management,,listed
+183,Regeneration Harvest,048_SA1,S,Resource Management,,listed
+183,Sanitation Salvage Cut,048_SA1,A,Resource Management,,listed
+183,Special Cut,048_SA1,S,Resource Management,,listed
+183,Thinning,048_SA1,A,Resource Management,,listed
+183,Timber Stand Improvements,048_SA1,S,Resource Management,,listed
+183,Early Successional Stage Vegetation Management,048_SA1,A,Resource Management,,listed
+183,Nonstructural Fish Habitat Management,048_SA1,A,Resource Management,,listed
+183,Nonstructural Wildlife Habitat Management,048_SA1,A,Resource Management,,listed
+183,Structural Fish Habitat Management,048_SA1,A,Resource Management,,listed
+183,Structural Wildlife Habitat Management,048_SA1,A,Resource Management,,listed
+184,Fire Detection and Suppression,048_SA1,A,Resource Management,,listed
+184,Fuels Treatment/Management,048_SA1,A,Resource Management,,listed
+184,Insect and Disease Suppression,048_SA1,A,Resource Management,,listed
+184,Sensitive Plant Management,048_SA1,A,Resource Management,,listed
+184,Uncommon Plant Community Management,048_SA1,A,Resource Management,,listed
+184,Erosion Control,048_SA1,A,Resource Management,,listed
+184,Runoff Control,048_SA1,A,Resource Management,,listed
+184,Stream Environment Zone Restoration,048_SA1,A,Resource Management,,listed
+184,Water-Oriented Outdoor,048_SA1,A,Resource Management,,listed
+184,Water Borne Transit,048_SA1,S,Resource Management,,listed
+184,Tour Boat Operations,048_SA1,S,Resource Management,,listed
+184,Safety and Navigation Facilities,048_SA1,A,Resource Management,,listed
+184,Salvage Operations,048_SA1,S,Resource Management,,listed
+184,Buoys,048_SA1,A,Resource Management,,listed
+184,Piers,048_SA1,A,Resource Management,,listed
+184,Fences,048_SA1,S,Resource Management,,listed
+184,Boat Ramps,048_SA1,A,Resource Management,,listed
+184,Breakwaters or Jetties,048_SA1,S,Resource Management,,listed
+184,Floating Docks and Platforms,048_SA1,A,Resource Management,,listed
+184,Shoreline Protective Structures,048_SA1,S,Resource Management,,listed
+184,Water Intake Lines,048_SA1,A,Resource Management,,listed
+187,Multiple Family Dwelling,054,A,Residential,,listed
+187,Employee Housing,054,A,Residential,,listed
+187,"Auto, Mobile Home and Vehicle Dealers",054,S,Commercial,,listed
+187,Building Materials and Hardware,054,A,Commercial,,listed
+187,Eating and Drinking Places,054,A,Commercial,,listed
+187,Food and Beverage Retail Sales,054,A,Commercial,,listed
+187,"Furniture, Home Furnishings and Equipment",054,A,Commercial,,listed
+187,General Merchandise Stores,054,A,Commercial,,listed
+187,Mail Order and Vending,054,A,Commercial,,listed
+187,Nursery,054,A,Commercial,,listed
+187,Animal Husbandry Services,054,A,Commercial,,listed
+187,Auto Repair and Service,054,A,Commercial,,listed
+187,Broadcasting Studios,054,A,Commercial,,listed
+187,Business Support Services,054,A,Commercial,,listed
+187,Contract Construction Services,054,A,Commercial,,listed
+187,Laundries and Dry Cleaning Plant,054,A,Commercial,,listed
+187,Repair Services,054,A,Commercial,,listed
+187,Sales Lot,054,A,Commercial,,listed
+187,Secondary Storage,054,S,Commercial,,listed
+187,Batch Plants,054,S,Commercial,,listed
+187,Food and Kindred Products,054,S,Commercial,,listed
+187,Fuel and Ice dealers,054,S,Commercial,,listed
+187,Industrial Services,054,S,Commercial,,listed
+187,Printing and Publishing,054,A,Commercial,,listed
+187,Recycling and Scrap,054,S,Commercial,,listed
+187,Small Scale Manufacturing,054,A,Commercial,,listed
+187,Storage Yards,054,A,Commercial,,listed
+187,Vehicle and Freight Terminals,054,A,Commercial,,listed
+187,Vehicle Storage and Parking,054,A,Commercial,,listed
+187,Warehousing,054,A,Commercial,,listed
+187,Wholesale and Distribution,054,A,Commercial,,listed
+187,Collection Stations,054,S,Public Service,,listed
+187,Day Care Centers/Preschools,054,A,Public Service,,listed
+187,Local Post Office,054,A,Public Service,,listed
+187,Local Public Health and Safety Facilities,054,S,Public Service,,listed
+187,Public Utility Centers,054,S,Public Service,,listed
+187,Regional Public Health and Safety Facilities,054,S,Public Service,,listed
+187,Social Service Organizations,054,S,Public Service,,listed
+187,Pipelines and Power Transmissions,054,S,Public Service,,listed
+187,Transit Stations and Terminals,054,A,Public Service,,listed
+187,Transportation Routes,054,S,Public Service,,listed
+187,Transmission and Receiving Facilities,054,S,Public Service,,listed
+187,Cross Country Ski Courses,054,S,Recreation,,listed
+188,Day Use Areas,054,A,Recreation,,listed
+188,Riding and Hiking Trails,054,A,Recreation,,listed
+188,Reforestation,054,A,Resource Management,,listed
+188,Regeneration Harvest,054,A,Resource Management,,listed
+188,Sanitation Salvage Cut,054,A,Resource Management,,listed
+188,Selection Cut,054,A,Resource Management,,listed
+188,Special Cut,054,A,Resource Management,,listed
+188,Thinning,054,A,Resource Management,,listed
+188,Timber Stand Improvement,054,A,Resource Management,,listed
+188,Tree Farms,054,A,Resource Management,,listed
+188,Early Successional Stage Vegetation Management,054,A,Resource Management,,listed
+188,Nonstructural Fish Habitat Management,054,A,Resource Management,,listed
+188,Nonstructural Wildlife Habitat Management,054,A,Resource Management,,listed
+188,Structural Fish Habitat Management,054,A,Resource Management,,listed
+188,Structural Wildlife Habitat Management,054,A,Resource Management,,listed
+188,Fuels Treatment/Management,054,S,Resource Management,,listed
+188,Insect and Disease Suppression,054,S,Resource Management,,listed
+188,Sensitive Plant Management,054,A,Resource Management,,listed
+188,Uncommon Plant Community Management,054,A,Resource Management,,listed
+188,Erosion Control,054,A,Resource Management,,listed
+188,Runoff Control,054,A,Resource Management,,listed
+188,Stream Environment Zone Restoration,054,A,Resource Management,,listed
+188,Employee Housing,054_SA1,A,Residential,,listed
+188,Multiple Family Dwelling,054_SA1,A,Residential,,listed
+188,Nursing and Personal Care,054_SA1,S,Residential,,listed
+188,Residential Care,054_SA1,S,Residential,,listed
+188,10% or more of units with kitchens,054_SA1,A,Residential,,listed
+188,Eating and Drinking Places,054_SA1,A,Commercial,,listed
+188,"Amusements and Recreation Services (Limited, See Ponderosa Ranch Special Policies)",054_SA1,A,Commercial,,listed
+188,Business Support Services (Limited - See Ponderosa Ranch Special Policies),054_SA1,A,Commercial,,listed
+188,Professional Offices,054_SA1,A,Commercial,,listed
+188,Animal husbandry (Limited – See Ponderosa Ranch Special Policies),054_SA1,A,Commercial,,listed
+188,Financial Services,054_SA1,A,Commercial,,listed
+188,Vehicle Storage and Parking,054_SA1,S,Commercial,,listed
+188,Cultural Facilities,054_SA1,A,Public Service,,listed
+189,Cross Country Ski Courses,054_SA1,S,Recreation,,listed
+189,Day Use Areas,054_SA1,A,Recreation,,listed
+189,Group Facilities,054_SA1,S,Recreation,,listed
+189,Outdoor Recreation Concessions,054_SA1,A,Recreation,,listed
+189,Riding and Hiking Trails,054_SA1,A,Recreation,,listed
+189,Rural Sports,054_SA1,A,Recreation,,listed
+189,Undeveloped Campgrounds,054_SA1,S,Recreation,,listed
+189,Visitor Information Centers,054_SA1,S,Recreation,,listed
+189,Farm/Ranch Accessory Structures,054_SA1,A,Resource Management,,listed
+192,Single Family Dwelling,040,A,Residential,,listed
+192,Local Public Health and Safety Facilities,040,S,Public Service,,listed
+192,Transit Stations and Terminals,040,S,Public Service,,listed
+192,Pipelines and Power Transmission,040,S,Public Service,,listed
+192,Transmission and Receiving Facilities,040,S,Public Service,,listed
+192,Transportation Routes,040,S,Public Service,,listed
+192,Public Utility Centers,040,S,Public Service,,listed
+192,Local Post Offices,040,S,Public Service,,listed
+192,Participant Sports Facilities,040,S,Recreation,,listed
+192,Day Use Areas,040,A,Recreation,,listed
+192,Riding and Hiking Trails,040,A,Recreation,,listed
+192,Reforestation,040,A,Resource Management,,listed
+192,Sanitation Salvage Cut,040,A,Resource Management,,listed
+192,Special Cut,040,A,Resource Management,,listed
+192,Thinning,040,A,Resource Management,,listed
+192,Early Successional Stage Vegetation Management,040,A,Resource Management,,listed
+192,Structural and Nonstructural Fish/Wildlife Habitat Management,040,A,Resource Management,,listed
+192,Fire Detection and Suppression,040,A,Resource Management,,listed
+192,Fuels Treatment/Management,040,A,Resource Management,,listed
+192,Insect and Disease Suppression,040,A,Resource Management,,listed
+192,Sensitive and Uncommon Plant Management,040,A,Resource Management,,listed
+192,Erosion Control,040,A,Resource Management,,listed
+192,SEZ Restoration,040,A,Resource Management,,listed
+192,Runoff Control,040,A,Resource Management,,listed
+194,Single Family Dwelling,039,A,Residential,,listed
+194,Local Public Health and Safety Facilities,039,S,Public Service,,listed
+194,Transit Stations and Terminals,039,S,Public Service,,listed
+194,Pipelines and Power Transmission,039,S,Public Service,,listed
+194,Transmission and Receiving Facilities,039,S,Public Service,,listed
+194,Transportation Routes,039,S,Public Service,,listed
+194,Public Utility Centers,039,S,Public Service,,listed
+194,Local Post Offices,039,S,Public Service,,listed
+194,Participant Sports Facilities,039,S,Recreation,,listed
+194,Day Use Areas,039,A,Recreation,,listed
+194,Riding and Hiking Trails,039,A,Recreation,,listed
+194,Reforestation,039,A,Resource Management,,listed
+194,Sanitation Salvage Cut,039,A,Resource Management,,listed
+194,Special Cut,039,A,Resource Management,,listed
+194,Thinning,039,A,Resource Management,,listed
+194,Early Successional Stage Vegetation Management,039,A,Resource Management,,listed
+194,Structural and Nonstructural Fish/Wildlife Habitat Management,039,A,Resource Management,,listed
+194,Fire Detection and Suppression,039,A,Resource Management,,listed
+194,Fuels Treatment/Management,039,A,Resource Management,,listed
+194,Insect and Disease Suppression,039,A,Resource Management,,listed
+194,Sensitive and Uncommon Plant Management,039,A,Resource Management,,listed
+194,Uncommon Plant Community Management,039,A,Resource Management,,listed
+194,Erosion Control,039,A,Resource Management,,listed
+194,SEZ Restoration,039,A,Resource Management,,listed
+194,Runoff Control,039,A,Resource Management,,listed
+196,Single Family Dwelling,041,A,Residential,,listed
+196,Multiple Family Dwellings,041,A,Residential,,listed
+196,Mobile Home Dwellings,041,A,Residential,,listed
+196,Local Public Health and Safety Facilities,041,S,Public Service,,listed
+196,Transit Stations and Terminals,041,S,Public Service,,listed
+196,Pipelines and Power Transmission,041,S,Public Service,,listed
+196,Transmission and Receiving Facilities,041,S,Public Service,,listed
+196,Transportation Routes,041,S,Public Service,,listed
+196,Public Utility Centers,041,S,Public Service,,listed
+196,Churches,041,S,Public Service,,listed
+196,Schools – College,041,A,Public Service,,listed
+196,Local Post Offices,041,S,Public Service,,listed
+196,Day Care Centers/Pre-Schools,041,S,Public Service,,listed
+196,Participant Sports Facilities,041,S,Recreation,,listed
+196,Day Use Areas,041,A,Recreation,,listed
+196,Riding and Hiking Trails,041,A,Recreation,,listed
+196,Outdoor Recreation Concessions,041,A,Recreation,,listed
+196,Golf Courses,041,A,Recreation,,listed
+196,Reforestation,041,A,Resource Management,,listed
+196,Sanitation Salvage Cut,041,A,Resource Management,,listed
+196,Special Cut,041,A,Resource Management,,listed
+196,Thinning,041,A,Resource Management,,listed
+196,Early Successional Stage Vegetation Management,041,A,Resource Management,,listed
+196,Structural and Nonstructural Fish/Wildlife Habitat Management,041,A,Resource Management,,listed
+196,Fire Detection and Suppression,041,A,Resource Management,,listed
+196,Fuels Treatment/Management,041,A,Resource Management,,listed
+196,Insect and Disease Suppression,041,A,Resource Management,,listed
+196,Sensitive and Uncommon Plant Management,041,A,Resource Management,,listed
+196,Erosion Control,041,A,Resource Management,,listed
+196,SEZ Restoration,041,A,Resource Management,,listed
+196,Runoff Control,041,A,Resource Management,,listed
+196,Multiple Family Dwelling,041_SA1,S,Residential,,listed
+196,Single Family Dwellings,041_SA1,A,Residential,,listed
+197,Employee Housing,041_SA1,A,Residential,,listed
+199,Single Family Dwelling,036,A,Residential,,listed
+199,Multiple Family Dwellings,036,A,Residential,,listed
+199,Local Public Health and Safety Facilities,036,S,Public Service,,listed
+199,Transit Stations and Terminals,036,S,Public Service,,listed
+199,Pipelines and Power Transmissions,036,S,Public Service,,listed
+199,Transmission and Receiving Facilities,036,S,Public Service,,listed
+199,Transportation Routes,036,S,Public Service,,listed
+199,Public Utility Centers,036,S,Public Service,,listed
+199,Local Post Offices,036,S,Public Service,,listed
+199,Participant Sports Facilities,036,S,Recreation,,listed
+199,Day Use Areas,036,A,Recreation,,listed
+199,Riding and Hiking Trails,036,A,Recreation,,listed
+199,Reforestation,036,A,Resource Management,,listed
+199,Sanitation Salvage Cut,036,A,Resource Management,,listed
+199,Special Cut,036,A,Resource Management,,listed
+199,Thinning,036,A,Resource Management,,listed
+199,Early Successional Stage Vegetation Management,036,A,Resource Management,,listed
+199,Structural and Nonstructural Fish/Wildlife Habitat Management,036,A,Resource Management,,listed
+199,Fire Detection and Suppression,036,A,Resource Management,,listed
+199,Fuels Treatment/Management,036,A,Resource Management,,listed
+199,Insect and Disease Suppression,036,A,Resource Management,,listed
+199,Sensitive and Uncommon Plant Management,036,A,Resource Management,,listed
+199,Erosion Control,036,A,Resource Management,,listed
+199,SEZ Restoration,036,A,Resource Management,,listed
+199,Runoff Control,036,A,Resource Management,,listed
+202,Single Family Dwelling,042,A,Residential,,listed
+202,Local Public Health and Safety Facilities,042,S,Public Service,,listed
+202,Transit Stations and Terminals,042,S,Public Service,,listed
+202,Pipelines and Power Transmission,042,S,Public Service,,listed
+202,Transmission and Receiving Facilities,042,S,Public Service,,listed
+202,Transportation Routes,042,S,Public Service,,listed
+202,Public Utility Centers,042,S,Public Service,,listed
+202,Participant Sports,042,S,Recreation,,listed
+202,Day Use Areas,042,A,Recreation,,listed
+202,Riding and Hiking Trails,042,A,Recreation,,listed
+202,Reforestation,042,A,Resource Management,,listed
+202,Sanitation Salvage Cut,042,A,Resource Management,,listed
+202,Special Cut,042,A,Resource Management,,listed
+202,Thinning,042,A,Resource Management,,listed
+202,Early Successional Stage Vegetation Management,042,A,Resource Management,,listed
+202,Structural and Nonstructural Fish/Wildlife Habitat Management,042,A,Resource Management,,listed
+202,Fire Detection and Suppression,042,A,Resource Management,,listed
+202,Fuels Treatment/Management,042,A,Resource Management,,listed
+202,Insect and Disease Suppression,042,A,Resource Management,,listed
+202,Sensitive and Uncommon Plant Management,042,A,Resource Management,,listed
+202,Erosion Control,042,A,Resource Management,,listed
+202,SEZ Restoration,042,A,Resource Management,,listed
+202,Runoff Control,042,A,Resource Management,,listed
+204,Single Family Dwelling,046,S,Residential,,listed
+204,Multiple Family Dwellings,046,A,Residential,,listed
+204,Multi-Person Dwellings,046,S,Residential,,listed
+204,Employee Housing,046,S,Residential,,listed
+204,Nursing and Personal Care,046,S,Residential,,listed
+204,Residential Care,046,S,Residential,,listed
+204,Timeshare (Residential Design),046,S,Tourist Accommodation,,listed
+204,Local Public Health and Safety Facilities,046,S,Public Service,,listed
+204,Transit Stations and Terminals,046,S,Public Service,,listed
+204,Pipelines and Power Transmission,046,S,Public Service,,listed
+204,Transmission and Receiving Facilities,046,S,Public Service,,listed
+204,Transportation Routes,046,S,Public Service,,listed
+204,Public Utility Centers,046,S,Public Service,,listed
+204,Churches,046,S,Public Service,,listed
+204,Local Post Offices,046,S,Public Service,,listed
+204,Schools – Pre-schools,046,A,Public Service,,listed
+204,Cultural Facilities,046,S,Public Service,,listed
+204,Publicly Owned Assembly and Entertainment,046,S,Public Service,,listed
+204,Schools – Kindergarten through Secondary,046,S,Public Service,,listed
+204,Day Care Centers/Pre-schools,046,S,Public Service,,listed
+204,Participant Sports Facilities,046,S,Recreation,,listed
+204,Day Use Areas,046,A,Recreation,,listed
+204,Sports Assembly,046,S,Recreation,,listed
+204,Rural Sports,046,S,Recreation,,listed
+204,Outdoor Recreation Concessions,046,S,Recreation,,listed
+204,Reforestation,046,A,Resource Management,,listed
+204,Sanitation Salvage Cut,046,A,Resource Management,,listed
+204,Special Cut,046,A,Resource Management,,listed
+204,Thinning,046,A,Resource Management,,listed
+204,Early Successional Stage Vegetation Management,046,A,Resource Management,,listed
+204,Fire Detection and Suppression,046,A,Resource Management,,listed
+204,Fuels Treatment/Management,046,A,Resource Management,,listed
+204,Insect and Disease Suppression,046,A,Resource Management,,listed
+205,Sensitive and Uncommon Plant Management,046,A,Resource Management,,listed
+205,Erosion Control,046,A,Resource Management,,listed
+205,SEZ Restoration,046,A,Resource Management,,listed
+205,Runoff Control,046,A,Resource Management,,listed
+207,Single Family Dwelling,033,A,Residential,,listed
+207,Local Public Health and Safety Facilities,033,S,Public Service,,listed
+207,Transit Stations and Terminals,033,S,Public Service,,listed
+207,Pipelines and Power Transmission,033,S,Public Service,,listed
+207,Transmission and Receiving Facilities,033,S,Public Service,,listed
+207,Transportation Routes,033,S,Public Service,,listed
+207,Public Utility Centers,033,S,Public Service,,listed
+207,Participant Sports Facilities,033,S,Recreation,,listed
+207,Day Use Areas,033,A,Recreation,,listed
+207,Riding and Hiking Trails,033,A,Recreation,,listed
+207,Beach Recreation,033,A,Recreation,,listed
+207,Reforestation,033,A,Resource Management,,listed
+207,Sanitation Salvage Cut,033,A,Resource Management,,listed
+207,Special Cut,033,A,Resource Management,,listed
+207,Thinning,033,A,Resource Management,,listed
+207,Early Successional Stage Vegetation Management,033,A,Resource Management,,listed
+207,Structural and Nonstructural Fish/Wildlife Habitat Management,033,A,Resource Management,,listed
+207,Fire Detection and Suppression,033,A,Resource Management,,listed
+207,Fuels Treatment/Management,033,A,Resource Management,,listed
+207,Insect and Disease Suppression,033,A,Resource Management,,listed
+207,Sensitive and Uncommon Plant Management,033,A,Resource Management,,listed
+207,Erosion Control,033,A,Resource Management,,listed
+207,SEZ Restoration,033,A,Resource Management,,listed
+207,Runoff Control,033,A,Resource Management,,listed
+207,Salvage Operations,033,A,Resource Management,,listed
+207,Safety and Navigation Devices,033,A,Resource Management,,listed
+207,Buoys,033,A,Resource Management,,listed
+207,Piers,033,A,Resource Management,,listed
+207,Floating Docks and Platforms,033,A,Resource Management,,listed
+208,Fences,033,S,Resource Management,,listed
+208,Boat Ramps,033,S,Resource Management,,listed
+208,Breakwaters or Jetties,033,S,Resource Management,,listed
+208,Shoreline Protective Structures,033,S,Resource Management,,listed
+208,Water Intake Lines,033,S,Resource Management,,listed
+210,Single Family Dwelling,034,A,Residential,,listed
+210,Local Public Health and Safety Facilities,034,S,Public Service,,listed
+210,Transit Stations,034,S,Public Service,,listed
+210,Pipelines and Power Transmission,034,S,Public Service,,listed
+210,Transmission and Receiving Facilities,034,S,Public Service,,listed
+210,Transportation Routes,034,S,Public Service,,listed
+210,Public Utility Centers,034,S,Public Service,,listed
+210,Riding and Hiking Trails,034,A,Recreation,,listed
+210,Reforestation,034,A,Resource Management,,listed
+210,Sanitation Salvage Cut,034,A,Resource Management,,listed
+210,Special Cut,034,A,Resource Management,,listed
+210,Thinning,034,A,Resource Management,,listed
+210,Early Successional Stage Vegetation Management,034,A,Resource Management,,listed
+210,Structural and Nonstructural Fish/Wildlife Habitat Management,034,A,Resource Management,,listed
+210,Fire Detection and Suppression,034,A,Resource Management,,listed
+210,Fuels Management/Treatment,034,A,Resource Management,,listed
+210,Insect and Disease Suppression,034,A,Resource Management,,listed
+210,Sensitive and Uncommon Plant Management,034,A,Resource Management,,listed
+210,Erosion Control,034,A,Resource Management,,listed
+210,SEZ Restoration,034,A,Resource Management,,listed
+210,Runoff Control,034,A,Resource Management,,listed
+210,Salvage Operations,034,A,Resource Management,,listed
+210,Safety and Navigation Devices,034,A,Resource Management,,listed
+210,Buoys,034,A,Resource Management,,listed
+210,Piers,034,A,Resource Management,,listed
+210,Floating Docks and Platforms,034,A,Resource Management,,listed
+210,Fences,034,S,Resource Management,,listed
+210,Boat Ramps,034,S,Resource Management,,listed
+210,Breakwaters or Jetties,034,S,Resource Management,,listed
+210,Shoreline Protective Structures,034,S,Resource Management,,listed
+211,Water Intake Lines,034,S,Resource Management,,listed
+213,Single Family Dwelling,035,A,Residential,,listed
+213,Local Public Health and Safety Facilities,035,S,Public Service,,listed
+213,Transit Stations and Terminals,035,S,Public Service,,listed
+213,Pipelines and Power Transmission,035,S,Public Service,,listed
+213,Transmission and Receiving Facilities,035,S,Public Service,,listed
+213,Transportation Routes,035,S,Public Service,,listed
+213,Public Utility Centers,035,S,Public Service,,listed
+213,Participant Sports Facilities,035,S,Recreation,,listed
+213,Day Use Areas,035,A,Recreation,,listed
+213,Riding and Hiking Trails,035,A,Recreation,,listed
+213,Beach Recreation,035,A,Recreation,,listed
+213,Reforestation,035,A,Resource Management,,listed
+213,Sanitation Salvage Cut,035,A,Resource Management,,listed
+213,Special Cut,035,A,Resource Management,,listed
+213,Thinning,035,A,Resource Management,,listed
+213,Early Successional Stage Vegetation Management,035,A,Resource Management,,listed
+213,Structural and Nonstructural Fish/Wildlife Habitat Management,035,A,Resource Management,,listed
+213,Fire Detection and Suppression,035,A,Resource Management,,listed
+213,Fuels Treatment/Management,035,A,Resource Management,,listed
+213,Insect and Disease Suppression,035,A,Resource Management,,listed
+213,Sensitive and Uncommon Plant Management,035,A,Resource Management,,listed
+213,Erosion Control,035,A,Resource Management,,listed
+213,SEZ Restoration,035,A,Resource Management,,listed
+213,Runoff Control,035,A,Resource Management,,listed
+213,Single Family Dwelling,035_SA1,A,Residential,,listed
+213,Multiple Family Dwellings,035_SA1,A,Residential,,listed
+213,Eating and drinking Places,035_SA1,A,Commercial,,listed
+213,Food and Beverage Retail Sales,035_SA1,A,Commercial,,listed
+213,Service Station,035_SA1,A,Commercial,,listed
+213,Outdoor Retail Sales,035_SA1,S,Commercial,,listed
+214,Professional Offices,035_SA1,S,Commercial,,listed
+214,"Furniture, Home Furnishings and Equipment",035_SA1,S,Commercial,,listed
+214,General Merchandising Stores,035_SA1,S,Commercial,,listed
+214,Salvage Operations,035_SA1,A,Resource Management,,listed
+214,Safety and Navigation Devices,035_SA1,A,Resource Management,,listed
+214,Buoys,035_SA1,A,Resource Management,,listed
+214,Piers,035_SA1,A,Resource Management,,listed
+214,Floating Docks and Platforms,035_SA1,A,Resource Management,,listed
+214,Fences,035_SA1,S,Resource Management,,listed
+214,Boat Ramps,035_SA1,S,Resource Management,,listed
+214,Breakwaters or Jetties,035_SA1,S,Resource Management,,listed
+214,Shoreline Protective Structures,035_SA1,S,Resource Management,,listed
+214,Water Intake Lines,035_SA1,S,Resource Management,,listed
+216,Single Family Dwelling,037,A,Residential,,listed
+216,Bed and Breakfast Facilities,037,S,Tourist Accommodation,,listed
+216,Local Public Health and Safety Facilities,037,S,Public Service,,listed
+216,Transit Stations and Terminals,037,S,Public Service,,listed
+216,Pipelines and Power Transmission,037,S,Public Service,,listed
+216,Transmission and Receiving Facilities,037,S,Public Service,,listed
+216,Transportation Routes,037,S,Public Service,,listed
+216,Public Utility Centers,037,S,Public Service,,listed
+216,Local Post Offices,037,S,Public Service,,listed
+216,Participant Sports,037,S,Recreation,,listed
+216,Temporary Events,037,A,Recreation,,listed
+216,Day Use Areas,037,A,Recreation,,listed
+216,Riding and Hiking Trails,037,A,Recreation,,listed
+216,Beach Recreation,037,A,Recreation,,listed
+216,Reforestation,037,A,Resource Management,,listed
+216,Sanitation Salvage Cut,037,A,Resource Management,,listed
+216,Special Cut,037,A,Resource Management,,listed
+216,Thinning,037,A,Resource Management,,listed
+216,Early Successional Stage Vegetation Management,037,A,Resource Management,,listed
+216,Structural and Nonstructural Fish/Wildlife Habitat Management,037,A,Resource Management,,listed
+216,Fire Detection and Suppression,037,A,Resource Management,,listed
+216,Fuels Treatment/Management,037,A,Resource Management,,listed
+216,Insect and Disease Suppression,037,A,Resource Management,,listed
+216,Sensitive and Uncommon Plant Management,037,A,Resource Management,,listed
+216,Erosion Control,037,A,Resource Management,,listed
+216,SEZ Restoration,037,A,Resource Management,,listed
+216,Runoff Control,037,A,Resource Management,,listed
+216,Salvage Operations,037,A,Resource Management,,listed
+217,Safety and Navigation Devices,037,A,Resource Management,,listed
+217,Buoys,037,A,Resource Management,,listed
+217,Piers,037,A,Resource Management,,listed
+217,Floating Docks and Piers,037,A,Resource Management,,listed
+217,Fences,037,S,Resource Management,,listed
+217,Boat Ramps,037,A,Resource Management,,listed
+217,Breakwaters or Jetties,037,S,Resource Management,,listed
+217,Shoreline Protective Structures,037,S,Resource Management,,listed
+217,Water Intake Lines,037,A,Resource Management,,listed
+219,Single Family Dwelling,038,A,Residential,,listed
+219,Bed and Breakfast Facilities,038,S,Tourist Accommodation,,listed
+219,Schools – Kindergarten through Secondary*,038,S,Public Service,,listed
+219,Local Public Health and Safety Facilities,038,S,Public Service,,listed
+219,Transit Stations and Terminals,038,S,Public Service,,listed
+219,Pipelines and Power Transmission,038,S,Public Service,,listed
+219,Transmission and Receiving Facilities,038,S,Public Service,,listed
+219,Transportation Routes,038,S,Public Service,,listed
+219,Public Utility Centers,038,S,Public Service,,listed
+219,Churches,038,S,Public Service,,listed
+219,Day Care Centers/Pre-Schools,038,S,Public Service,,listed
+219,Participant Sports Facilities,038,S,Recreation,,listed
+219,Day Use Areas,038,A,Recreation,,listed
+219,Riding and Hiking Trails,038,A,Recreation,,listed
+219,Reforestation,038,A,Resource Management,,listed
+219,Sanitation Salvage Cut,038,A,Resource Management,,listed
+219,Special Cut,038,A,Resource Management,,listed
+219,Thinning,038,A,Resource Management,,listed
+219,Early Successional Stage Vegetation Management,038,A,Resource Management,,listed
+219,Structural and Nonstructural Fish/Wildlife Habitat Management,038,A,Resource Management,,listed
+219,Fire Detection and Suppression,038,A,Resource Management,,listed
+219,Fuels Treatment/Management,038,A,Resource Management,,listed
+219,Insect and Disease Suppression,038,A,Resource Management,,listed
+219,Sensitive and Uncommon Plant Management,038,A,Resource Management,,listed
+219,Erosion Control,038,A,Resource Management,,listed
+219,SEZ Restoration,038,A,Resource Management,,listed
+219,Runoff Control,038,A,Resource Management,,listed
+219,Privately Owned Assembly and Entertainment,038_SA1,S,Commercial,,listed
+219,Regional Public Health and Safety Facilities,038_SA1,S,Public Service,,listed
+219,Cultural Facilities,038_SA1,S,Public Service,,listed
+219,Government Offices,038_SA1,S,Public Service,,listed
+220,Local Assembly and Entertainment,038_SA1,S,Public Service,,listed
+220,Sport Assembly,038_SA1,S,Recreation,,listed
+220,Outdoor Recreation Concessions,038_SA1,A,Recreation,,listed
+220,Rural Sports,038_SA1,S,Recreation,,listed
+220,Visitor Information Center,038_SA1,S,Recreation,,listed
+222,Single Family Dwelling,043,A,Residential,,listed
+222,Local Public Health and Safety Facilities,043,S,Public Service,,listed
+222,Transit Stations and Terminals,043,S,Public Service,,listed
+222,Pipelines and Power Transmission,043,S,Public Service,,listed
+222,Transmission and Receiving Facilities,043,S,Public Service,,listed
+222,Transportation Routes,043,S,Public Service,,listed
+222,Public Utility Centers,043,S,Public Service,,listed
+222,Participant Sports,043,S,Recreation,,listed
+222,Day Use Areas,043,A,Recreation,,listed
+222,Riding and Hiking Trails,043,A,Recreation,,listed
+222,Reforestation,043,A,Resource Management,,listed
+222,Sanitation Salvage Cut,043,A,Resource Management,,listed
+222,Special Cut,043,A,Resource Management,,listed
+222,Thinning,043,A,Resource Management,,listed
+222,Early Successional Stage Vegetation Management,043,A,Resource Management,,listed
+222,Structural and Nonstructural Fish/Wildlife Habitat Management,043,A,Resource Management,,listed
+222,Fire Detection and Suppression,043,A,Resource Management,,listed
+222,Fuels Treatment/Management,043,A,Resource Management,,listed
+222,Insect and Disease Suppression,043,A,Resource Management,,listed
+222,Sensitive and Uncommon Plant Management,043,A,Resource Management,,listed
+222,Erosion Control,043,A,Resource Management,,listed
+222,SEZ Restoration,043,A,Resource Management,,listed
+222,Runoff Control,043,A,Resource Management,,listed
+224,Single Family Dwelling,044,A,Residential,,listed
+224,Churches,044,S,Public Service,,listed
+224,Cultural Facilities,044,S,Public Service,,listed
+224,Local Public Health and Safety Facilities,044,S,Public Service,,listed
+224,Public Utility Centers,044,S,Public Service,,listed
+224,Pipelines and Power Transmission,044,S,Public Service,,listed
+224,Transit stations and terminals,044,S,Public Service,,listed
+224,Transmission and Receiving Facilities,044,S,Public Service,,listed
+224,Transportation Routes,044,S,Public Service,,listed
+224,Publicly Owned Assembly and Entertainment,044,S,Public Service,,listed
+224,Day Care Centers/Pre-schools,044,S,Public Service,,listed
+224,Cross Country Skiing Courses,044,A,Recreation,,listed
+224,Day Use Areas,044,A,Recreation,,listed
+224,Golf Courses,044,A,Recreation,,listed
+224,Reforestation,044,A,Resource Management,,listed
+224,Sanitation Salvage Cut,044,A,Resource Management,,listed
+224,Thinning,044,A,Resource Management,,listed
+224,Tree Farms,044,A,Resource Management,,listed
+224,Early Successional Stage Vegetation Management,044,A,Resource Management,,listed
+224,Nonstructural Fish Habitat Management,044,A,Resource Management,,listed
+224,Nonstructural Wildlife Habitat Management,044,A,Resource Management,,listed
+224,Structural Fish Habitat Management,044,A,Resource Management,,listed
+224,Structural Wildlife Habitat Management,044,A,Resource Management,,listed
+224,Fire Detection and Suppression,044,A,Resource Management,,listed
+224,Fuels Treatment,044,A,Resource Management,,listed
+224,Insect and Disease Suppression,044,A,Resource Management,,listed
+224,Sensitive Plant Management,044,A,Resource Management,,listed
+224,Uncommon Plant Community Management,044,A,Resource Management,,listed
+224,Erosion Control,044,A,Resource Management,,listed
+224,SEZ Restoration,044,A,Resource Management,,listed
+224,Runoff Control,044,A,Resource Management,,listed
+224,Employee Housing,044_SA1,A,Residential,,listed
+225,Multiple Family Dwellings,044_SA1,A,Residential,,listed
+225,Nursing and Personal Care,044_SA1,A,Residential,,listed
+225,Residential Care,044_SA1,A,Residential,,listed
+225,"Hotel, Motels, and Other Transient Dwelling Units Less than 10% of units with kitchens",044_SA1,S,Tourist Accommodation,,listed
+225,Timesharing (Hotel/Motel Design),044_SA1,S,Tourist Accommodation,,listed
+225,Timesharing (Residential Design),044_SA1,S,Tourist Accommodation,,listed
+225,Eating and Drinking Places,044_SA1,S,Commercial,,listed
+225,Food and Beverage Retail Sales,044_SA1,S,Commercial,,listed
+225,General Merchandise Stores,044_SA1,S,Commercial,,listed
+225,Nursery,044_SA1,S,Commercial,,listed
+225,Amusements and Recreation Services,044_SA1,S,Commercial,,listed
+225,Financial Services,044_SA1,S,Commercial,,listed
+225,Health Care Services,044_SA1,S,Commercial,,listed
+225,Personal Services,044_SA1,S,Commercial,,listed
+225,Professional Offices,044_SA1,S,Commercial,,listed
+225,Government Offices,044_SA1,S,Public Service,,listed
+225,Membership Organizations,044_SA1,S,Public Service,,listed
+225,Public Assembly and Entertainment Facilities,044_SA1,S,Public Service,,listed
+225,Schools – Kindergarten through Secondary,044_SA1,S,Public Service,,listed
+225,Social Service Organizations,044_SA1,S,Public Service,,listed
+225,Participant Sports Facilities,044_SA1,S,Recreation,,listed
+225,Sport Assembly,044_SA1,S,Recreation,,listed
+228,Single Family Dwelling,049,A,Residential,,listed
+228,Bed and Breakfast Facilities,049,S,Tourist Accommodation,,listed
+228,Local Public Health and Safety Facilities,049,S,Public Service,,listed
+228,Transit Stations and Terminals,049,S,Public Service,,listed
+228,Pipelines and Power Transmission,049,S,Public Service,,listed
+228,Transmission and Receiving Facilities,049,S,Public Service,,listed
+228,Transportation Routes,049,S,Public Service,,listed
+228,Public Utility Centers,049,S,Public Service,,listed
+228,Churches,049,S,Public Service,,listed
+228,Local Post Offices,049,S,Public Service,,listed
+228,Day Care Centers/Pre-schools,049,S,Public Service,,listed
+228,Participant Sports Facilities,049,S,Recreation,,listed
+228,Day Use Areas,049,A,Recreation,,listed
+228,Riding and Hiking Trails,049,A,Recreation,,listed
+228,Beach Recreation,049,A,Recreation,,listed
+228,Reforestation,049,A,Resource Management,,listed
+228,Sanitation Salvage Cut,049,A,Resource Management,,listed
+228,Special Cut,049,A,Resource Management,,listed
+228,Thinning,049,A,Resource Management,,listed
+228,Early Successional Stage Vegetation Management,049,A,Resource Management,,listed
+228,Structural and Nonstructural Fish/Wildlife Habitat Management,049,A,Resource Management,,listed
+228,Fire Detection and Suppression,049,A,Resource Management,,listed
+228,Fuels Treatment/Management,049,A,Resource Management,,listed
+228,Insect and Disease Suppression,049,A,Resource Management,,listed
+228,Sensitive and Uncommon Plant Management,049,A,Resource Management,,listed
+228,Erosion Control,049,A,Resource Management,,listed
+228,SEZ Restoration,049,A,Resource Management,,listed
+228,Runoff Control,049,A,Resource Management,,listed
+229,Salvage Operations,049,A,Resource Management,,listed
+229,Safety and Navigation Devices,049,A,Resource Management,,listed
+229,Buoys,049,A,Resource Management,,listed
+229,Piers,049,A,Resource Management,,listed
+229,Floating Docks and Piers,049,A,Resource Management,,listed
+229,Fences,049,S,Resource Management,,listed
+229,Boat Ramps,049,S,Resource Management,,listed
+229,Breakwaters or Jetties,049,S,Resource Management,,listed
+229,Shoreline Protective Structures,049,S,Resource Management,,listed
+229,Water Intake Lines,049,S,Resource Management,,listed
+231,Single Family Dwellings,050,A,Residential,,listed
+231,Multiple Family Dwellings,050,S,Residential,,listed
+231,Local Public Health and Safety Facilities,050,S,Public Service,,listed
+231,Transit Stations,050,S,Public Service,,listed
+231,Pipelines and Power Transmission,050,S,Public Service,,listed
+231,Transmission and Receiving Facilities,050,S,Public Service,,listed
+231,Transportation Routes,050,S,Public Service,,listed
+231,Public Utility Centers,050,S,Public Service,,listed
+231,Government Offices,050,S,Public Service,,listed
+231,Churches,050,S,Public Service,,listed
+231,Participant Sports Facilities,050,S,Recreation,,listed
+231,Day Use Areas,050,A,Recreation,,listed
+231,Riding and Hiking Trails,050,A,Recreation,,listed
+231,Reforestation,050,A,Resource Management,,listed
+231,Sanitation Salvage Cut,050,A,Resource Management,,listed
+231,Special Cut,050,A,Resource Management,,listed
+231,Thinning,050,A,Resource Management,,listed
+231,Early Successional Stage Vegetation Management,050,A,Resource Management,,listed
+231,Structural and Nonstructural Fish/Wildlife Habitat Management,050,A,Resource Management,,listed
+231,Fire Detection and Suppression,050,A,Resource Management,,listed
+231,Fuels Treatment/Management,050,A,Resource Management,,listed
+231,Insect and Disease Suppression,050,A,Resource Management,,listed
+231,Sensitive and Uncommon Plant Management,050,A,Resource Management,,listed
+231,Erosion Control,050,A,Resource Management,,listed
+231,SEZ Restoration,050,A,Resource Management,,listed
+231,Runoff Control,050,A,Resource Management,,listed
+231,Eating and Drinking Places,050_SA1,A,Commercial,,listed
+231,Food and Beverages Retail Sales,050_SA1,S,Commercial,,listed
+231,Personal Services,050_SA1,A,Commercial,,listed
+231,Professional Offices,050_SA1,A,Commercial,,listed
+234,Single Family Dwellings,051,A,Residential,,listed
+234,Local Public Health and Safety Facilities,051,S,Public Service,,listed
+234,Transit Stations and Terminals,051,S,Public Service,,listed
+234,Pipelines and Power Transmission,051,S,Public Service,,listed
+234,Transmission and Receiving Facilities,051,S,Public Service,,listed
+234,Transportation Routes,051,S,Public Service,,listed
+234,Public Utility Centers,051,S,Public Service,,listed
+234,Participant Sports Facilities,051,S,Recreation,,listed
+234,Temporary Events,051,A,Recreation,,listed
+234,Day Use Areas,051,A,Recreation,,listed
+234,Riding and Hiking Trails,051,A,Recreation,,listed
+234,Reforestation,051,A,Resource Management,,listed
+234,Sanitation Salvage Cut,051,A,Resource Management,,listed
+234,Special Cut,051,A,Resource Management,,listed
+234,Thinning,051,A,Resource Management,,listed
+234,Early Successional Stage Vegetation Management,051,A,Resource Management,,listed
+234,Structural and Nonstructural Fish/Wildlife Habitat Management,051,A,Resource Management,,listed
+234,Fire Detection and Suppression,051,A,Resource Management,,listed
+234,Fuels Treatment/Management,051,A,Resource Management,,listed
+234,Insect and Disease Suppression,051,A,Resource Management,,listed
+234,Sensitive and Uncommon Plant Management,051,A,Resource Management,,listed
+234,Erosion Control,051,A,Resource Management,,listed
+234,SEZ Restoration,051,A,Resource Management,,listed
+234,Runoff Control,051,A,Resource Management,,listed
+234,Time Sharing – Residential Design (See Special Policies),051_SA1,S,Residential,,listed
+234,Bed and Breakfast Facilities,051_SA1,S,Residential,,listed
+237,Summer Homes,056,S,Residential,,listed
+237,Local Public and Safety Facilities,056,S,Public Service,,listed
+237,Day Use Areas,056,S,Recreation,,listed
+237,Cross Country Skiing Courses,056,S,Recreation,,listed
+237,Riding and Hiking Trails,056,A,Recreation,,listed
+237,Undeveloped Campgrounds,056,S,Recreation,,listed
+237,Reforestation,056,A,Resource Management,,listed
+237,Sanitation Salvage Cut,056,A,Resource Management,,listed
+237,Special Cut,056,A,Resource Management,,listed
+237,Selection Cut,056,A,Resource Management,,listed
+237,Thinning,056,A,Resource Management,,listed
+237,Early Successional Stage Vegetation Management,056,A,Resource Management,,listed
+237,Structural and Nonstructural Fish/Wildlife Habitat Management,056,A,Resource Management,,listed
+237,Fire Detection and Suppression,056,A,Resource Management,,listed
+237,Fuels Treatment,056,A,Resource Management,,listed
+237,Insect and Disease Suppression,056,A,Resource Management,,listed
+237,Sensitive and Uncommon Plant Management,056,A,Resource Management,,listed
+237,Erosion Control,056,A,Resource Management,,listed
+237,SEZ Restoration,056,A,Resource Management,,listed
+237,Runoff Control,056,A,Resource Management,,listed
+239,Summer Homes,019,S,Residential,,listed
+239,Transmission and Receiving Facilities,019,S,Public Service,,listed
+239,Transportation Routes,019,S,Public Service,,listed
+239,Pipelines and Power Transmission,019,S,Public Service,,listed
+239,Local Public Health and Safety Facilities,019,S,Public Service,,listed
+239,Day Use Areas,019,S,Recreation,,listed
+239,Developed Campgrounds,019,S,Recreation,,listed
+239,Riding and Hiking Trails,019,A,Recreation,,listed
+239,Rural Sports,019,S,Recreation,,listed
+239,Off-Road Vehicle Courses,019,S,Recreation,,listed
+239,Outdoor Recreation Concessions,019,S,Recreation,,listed
+239,Snowmobile Courses,019,S,Recreation,,listed
+239,Group Facilities,019,S,Recreation,,listed
+239,Undeveloped Campgrounds,019,S,Recreation,,listed
+239,Reforestation,019,A,Resource Management,,listed
+239,Regeneration Harvest,019,A,Resource Management,,listed
+239,Sanitation Salvage Cut,019,A,Resource Management,,listed
+239,Selection Cut,019,A,Resource Management,,listed
+239,Special Cut,019,S,Resource Management,,listed
+239,Thinning,019,A,Resource Management,,listed
+239,Timber Stand Improvement,019,A,Resource Management,,listed
+239,Tree Farms,019,S,Resource Management,,listed
+239,Early Successional Stage Vegetation Management,019,A,Resource Management,,listed
+239,Nonstructural Fish Habitat Management,019,A,Resource Management,,listed
+239,Nonstructural Wildlife Habitat Management,019,A,Resource Management,,listed
+239,Structural Fish Habitat Management,019,A,Resource Management,,listed
+239,Structural Wildlife Habitat Management,019,A,Resource Management,,listed
+239,Farm/Ranch Accessory Structures,019,A,Resource Management,,listed
+239,Fire Detection and Suppression,019,A,Resource Management,,listed
+239,Fuels Treatment,019,A,Resource Management,,listed
+239,Insect and Disease Suppression,019,A,Resource Management,,listed
+239,Prescribed Fire Management,019,A,Resource Management,,listed
+239,Sensitive Plant Management,019,A,Resource Management,,listed
+239,Uncommon Plant Community Management,019,A,Resource Management,,listed
+239,Erosion Control,019,A,Resource Management,,listed
+239,Runoff Control,019,A,Resource Management,,listed
+239,SEZ Restoration,019,A,Resource Management,,listed
+241,Summer Homes,030,S,Residential,,listed
+241,Local Public Health and Safety Facilities,030,S,Public Service,,listed
+241,Transportation Routes,030,S,Public Service,,listed
+241,Pipelines and Power Transmission,030,S,Public Service,,listed
+241,Transmission and Receiving Facilities,030,S,Public Service,,listed
+241,Cross Country Ski Courses,030,S,Recreation,,listed
+241,Outdoor Recreation Concessions,030,S,Recreation,,listed
+241,Riding and Hiking Trails,030,A,Recreation,,listed
+241,Reforestation,030,A,Resource Management,,listed
+241,Sanitation Salvage Cut,030,A,Resource Management,,listed
+241,Selection Cut,030,A,Resource Management,,listed
+241,Special Cut,030,A,Resource Management,,listed
+241,Thinning,030,A,Resource Management,,listed
+241,Timber Stand Improvement,030,A,Resource Management,,listed
+241,Early Successional Stage Vegetation Management,030,A,Resource Management,,listed
+241,Nonstructural Fish Habitat Management,030,A,Resource Management,,listed
+241,Nonstructural Wildlife Habitat Management,030,A,Resource Management,,listed
+241,Structural Fish Habitat Management,030,A,Resource Management,,listed
+241,Structural Wildlife Habitat Management,030,A,Resource Management,,listed
+241,Fire Detection and Suppression,030,A,Resource Management,,listed
+241,Fuels Treatment,030,A,Resource Management,,listed
+241,Insect and Disease Suppression,030,A,Resource Management,,listed
+241,Sensitive Plant Management,030,A,Resource Management,,listed
+241,Uncommon Plant Community Management,030,A,Resource Management,,listed
+241,Erosion Control,030,A,Resource Management,,listed
+241,Runoff Control,030,A,Resource Management,,listed
+241,SEZ Restoration,030,A,Resource Management,,listed
+243,Domestic Animal Raising,047,S,Residential,,listed
+243,Single Family Dwelling,047,S,Residential,,listed
+243,Summer Homes,047,S,Residential,,listed
+243,Transmission and Receiving Facilities,047,S,Public Service,,listed
+243,Pipelines and Power Transmission,047,S,Public Service,,listed
+243,Transportation Routes,047,S,Public Service,,listed
+243,Local Public Health and Safety Facilities,047,S,Public Service,,listed
+243,Day Use Areas,047,S,Recreation,,listed
+243,Cross Country Skiing Courses,047,A,Recreation,,listed
+243,Developed Campgrounds,047,S,Recreation,,listed
+243,Outdoor Recreation Concessions,047,S,Recreation,,listed
+243,Riding and Hiking Trails,047,A,Recreation,,listed
+243,Rural Sports,047,S,Recreation,,listed
+243,Undeveloped Campgrounds,047,S,Recreation,,listed
+243,Reforestation,047,A,Resource Management,,listed
+243,Sanitation Salvage Cut,047,A,Resource Management,,listed
+243,Selection Cut,047,A,Resource Management,,listed
+243,Special Cut,047,A,Resource Management,,listed
+243,Thinning,047,A,Resource Management,,listed
+243,Timber Stand Improvement,047,A,Resource Management,,listed
+243,Tree Farms,047,A,Resource Management,,listed
+243,Early Successional Stage Vegetation Management,047,A,Resource Management,,listed
+243,Nonstructural Fish Habitat Management,047,A,Resource Management,,listed
+243,Nonstructural Wildlife Habitat Management,047,A,Resource Management,,listed
+243,Structural Fish Habitat Management,047,A,Resource Management,,listed
+243,Structural Wildlife Habitat Management,047,A,Resource Management,,listed
+243,Farm/Ranch Accessory Structures,047,S,Resource Management,,listed
+243,Grazing,047,S,Resource Management,,listed
+243,Range Pasture Management,047,A,Resource Management,,listed
+243,Range Improvement,047,S,Resource Management,,listed
+243,Fire Detection and Suppression,047,A,Resource Management,,listed
+243,Fuels Treatment,047,A,Resource Management,,listed
+243,Insect and Disease Suppression,047,A,Resource Management,,listed
+243,Prescribed Fire Management,047,A,Resource Management,,listed
+244,Sensitive Plant Management,047,A,Resource Management,,listed
+244,Uncommon Plant Community Management,047,A,Resource Management,,listed
+244,Erosion Control,047,A,Resource Management,,listed
+244,Runoff Control,047,A,Resource Management,,listed
+244,SEZ Restoration,047,A,Resource Management,,listed
+244,Salvage Operations,047,S,Resource Management,,listed
+244,Safety and Navigation Devices,047,A,Resource Management,,listed
+244,Buoys,047,S,Resource Management,,listed
+244,Floating Docks and Platforms,047,A,Resource Management,,listed
+244,Piers,047,A,Resource Management,,listed
+244,Fences,047,S,Resource Management,,listed
+244,Shoreline Protective Structures,047,S,Resource Management,,listed
+244,Water Intake Lines,047,S,Resource Management,,listed
+246,Summer Homes,053,S,Residential,,listed
+246,Pipelines and Power Transmission,053,S,Public Service,,listed
+246,Transmission and Receiving Facilities,053,S,Public Service,,listed
+246,Local Public Safety Facilities,053,S,Public Service,,listed
+246,Public Utility Centers,053,S,Public Service,,listed
+246,Transportation Routes,053,S,Public Service,,listed
+246,Transit Stations and Terminals,053,S,Public Service,,listed
+246,Cross Country Skiing Courses,053,S,Recreation,,listed
+246,Day Use Areas,053,A,Recreation,,listed
+246,Riding and Hiking Trails,053,A,Recreation,,listed
+246,Undeveloped Campgrounds,053,S,Recreation,,listed
+246,Outdoor Recreation Concessions,053,S,Recreation,,listed
+246,Snowmobile Courses,053,S,Recreation,,listed
+246,Reforestation,053,A,Resource Management,,listed
+246,Sanitation Salvage Cut,053,A,Resource Management,,listed
+246,Selection Cut,053,A,Resource Management,,listed
+246,Special Cut,053,S,Resource Management,,listed
+246,Thinning,053,A,Resource Management,,listed
+246,Timber Stand Improvement,053,S,Resource Management,,listed
+246,Tree Farms,053,S,Resource Management,,listed
+246,Early Successional Stage Vegetation Management,053,A,Resource Management,,listed
+246,Nonstructural Fish Habitat Management,053,A,Resource Management,,listed
+246,Nonstructural Wildlife Habitat Management,053,A,Resource Management,,listed
+246,Structural Fish Habitat Management,053,S,Resource Management,,listed
+246,Structural Wildlife Habitat Management,053,S,Resource Management,,listed
+246,Grazing,053,S,Resource Management,,listed
+246,Range Pasture Management,053,A,Resource Management,,listed
+246,Range Improvement,053,S,Resource Management,,listed
+246,Fire Detection and Suppression,053,A,Resource Management,,listed
+246,Fuels Treatment,053,S,Resource Management,,listed
+246,Insect and Disease Suppression,053,A,Resource Management,,listed
+246,Sensitive Plant Management,053,A,Resource Management,,listed
+246,Uncommon Plant Community Management,053,A,Resource Management,,listed
+246,Erosion Control,053,A,Resource Management,,listed
+246,Runoff Control,053,A,Resource Management,,listed
+246,SEZ Restoration,053,A,Resource Management,,listed
+249,Employee Housing,055,S,Residential,,listed
+249,Single Family Dwelling,055,A,Residential,,listed
+249,Summer Homes,055,S,Residential,,listed
+249,Pipelines and Power Transmission,055,S,Public Service,,listed
+249,Local Public Safety Facilities,055,S,Public Service,,listed
+249,Publicly Owned Assembly and Entertainment,055,S,Public Service,,listed
+249,Cultural Facilities,055,S,Public Service,,listed
+249,Transportation Routes,055,S,Public Service,,listed
+249,Government Offices,055,S,Public Service,,listed
+249,Transit Stations and Terminals,055,S,Public Service,,listed
+249,Marinas,055,S,Recreation,,listed
+249,Day Use Areas,055,A,Recreation,,listed
+249,Riding and Hiking Trails,055,A,Recreation,,listed
+249,Undeveloped Campgrounds,055,A,Recreation,,listed
+249,Participant Sports,055,S,Recreation,,listed
+249,Developed Campgrounds,055,A,Recreation,,listed
+249,Outdoor Recreation Concessions,055,A,Recreation,,listed
+249,Rural Sports,055,S,Recreation,,listed
+249,Group Facilities,055,S,Recreation,,listed
+249,Beach Recreation,055,A,Recreation,,listed
+249,Boat Launching Facilities,055,S,Recreation,,listed
+249,Reforestation,055,A,Resource Management,,listed
+249,Sanitation Salvage Cut,055,A,Resource Management,,listed
+249,Special Cut,055,S,Resource Management,,listed
+249,Selection Cut,055,A,Resource Management,,listed
+249,Thinning,055,A,Resource Management,,listed
+249,Early Successional Stage Vegetation Management,055,A,Resource Management,,listed
+249,Structural and Nonstructural Fish/Wildlife Habitat Management,055,A,Resource Management,,listed
+249,Fire Detection and Suppression,055,A,Resource Management,,listed
+249,Fuels Treatment,055,A,Resource Management,,listed
+249,Insect and Disease Suppression,055,A,Resource Management,,listed
+249,Sensitive and Uncommon Plant Management,055,A,Resource Management,,listed
+249,Erosion Control,055,A,Resource Management,,listed
+249,SEZ Restoration,055,A,Resource Management,,listed
+249,Runoff Control,055,A,Resource Management,,listed
+250,Water-oriented Recreation Concessions,055,A,Resource Management,,listed
+250,Safety and Navigation Devices,055,A,Resource Management,,listed
+250,Tour Boat Operations,055,S,Resource Management,,listed
+250,Waterborne Transit,055,S,Resource Management,,listed
+250,Buoys,055,A,Resource Management,,listed
+250,Piers,055,A,Resource Management,,listed
+250,Floating Docks and Piers,055,A,Resource Management,,listed
+250,Fences,055,S,Resource Management,,listed
+250,Boat Ramps,055,A,Resource Management,,listed
+250,Breakwaters or Jetties,055,S,Resource Management,,listed
+250,Shoreline Protective Structures,055,S,Resource Management,,listed
+250,Water Intake Lines,055,A,Resource Management,,listed
+252,Pipelines and Power Transmission,052,S,Public Service,,listed
+252,Public Safety Facilities,052,S,Public Service,,listed
+252,Public Utility Centers,052,S,Public Service,,listed
+252,Publicly Owned Assembly and Entertainment,052,S,Public Service,,listed
+252,Transportation Routes,052,S,Public Service,,listed
+252,Transit Stations and Terminals,052,S,Public Service,,listed
+252,Transmission and Receiving Facilities,052,S,Public Service,,listed
+252,Cross Country Skiing Courses,052,S,Recreation,,listed
+252,Day Use Areas,052,A,Recreation,,listed
+252,Outdoor Recreation Concessions,052,S,Recreation,,listed
+252,Riding and Hiking Trails,052,A,Recreation,,listed
+252,Skiing Facilities,052,S,Recreation,,listed
+252,Snowmobile Courses,052,S,Recreation,,listed
+252,Reforestation,052,A,Resource Management,,listed
+252,Sanitation Salvage Cut,052,A,Resource Management,,listed
+252,Selection Cut,052,A,Resource Management,,listed
+252,Special Cut,052,A,Resource Management,,listed
+252,Thinning,052,A,Resource Management,,listed
+252,Timber Stand Improvement,052,A,Resource Management,,listed
+252,Tree Farms,052,A,Resource Management,,listed
+252,Early Successional Stage Vegetation Management,052,A,Resource Management,,listed
+252,Nonstructural Fish Habitat Management,052,A,Resource Management,,listed
+252,Nonstructural Wildlife Habitat Management,052,A,Resource Management,,listed
+252,Structural Fish Habitat Management,052,A,Resource Management,,listed
+252,Structural Wildlife Habitat Management,052,A,Resource Management,,listed
+252,Fire Detection and Suppression,052,A,Resource Management,,listed
+252,Fuels Treatment,052,A,Resource Management,,listed
+252,Insect and Disease Suppression,052,A,Resource Management,,listed
+252,Prescribed Fire Management,052,A,Resource Management,,listed
+252,Sensitive Plant Management,052,A,Resource Management,,listed
+252,Uncommon Plant Community Management,052,A,Resource Management,,listed
+252,Erosion Control,052,A,Resource Management,,listed
+252,Runoff Control,052,A,Resource Management,,listed
+252,SEZ Restoration,052,A,Resource Management,,listed
+187,Collection Stations,054_SA1,S,Public Service,,same as general list
+187,Day Care Centers/Preschools,054_SA1,A,Public Service,,same as general list
+187,Local Post Office,054_SA1,A,Public Service,,same as general list
+187,Local Public Health and Safety Facilities,054_SA1,S,Public Service,,same as general list
+187,Public Utility Centers,054_SA1,S,Public Service,,same as general list
+187,Regional Public Health and Safety Facilities,054_SA1,S,Public Service,,same as general list
+187,Social Service Organizations,054_SA1,S,Public Service,,same as general list
+187,Pipelines and Power Transmissions,054_SA1,S,Public Service,,same as general list
+187,Transit Stations and Terminals,054_SA1,A,Public Service,,same as general list
+187,Transportation Routes,054_SA1,S,Public Service,,same as general list
+187,Transmission and Receiving Facilities,054_SA1,S,Public Service,,same as general list
+188,Reforestation,054_SA1,A,Resource Management,,same as general list
+188,Regeneration Harvest,054_SA1,A,Resource Management,,same as general list
+188,Sanitation Salvage Cut,054_SA1,A,Resource Management,,same as general list
+188,Selection Cut,054_SA1,A,Resource Management,,same as general list
+188,Special Cut,054_SA1,A,Resource Management,,same as general list
+188,Thinning,054_SA1,A,Resource Management,,same as general list
+188,Timber Stand Improvement,054_SA1,A,Resource Management,,same as general list
+188,Tree Farms,054_SA1,A,Resource Management,,same as general list
+188,Early Successional Stage Vegetation Management,054_SA1,A,Resource Management,,same as general list
+188,Nonstructural Fish Habitat Management,054_SA1,A,Resource Management,,same as general list
+188,Nonstructural Wildlife Habitat Management,054_SA1,A,Resource Management,,same as general list
+188,Structural Fish Habitat Management,054_SA1,A,Resource Management,,same as general list
+188,Structural Wildlife Habitat Management,054_SA1,A,Resource Management,,same as general list
+188,Fuels Treatment/Management,054_SA1,S,Resource Management,,same as general list
+188,Insect and Disease Suppression,054_SA1,S,Resource Management,,same as general list
+188,Sensitive Plant Management,054_SA1,A,Resource Management,,same as general list
+188,Uncommon Plant Community Management,054_SA1,A,Resource Management,,same as general list
+188,Erosion Control,054_SA1,A,Resource Management,,same as general list
+188,Runoff Control,054_SA1,A,Resource Management,,same as general list
+188,Stream Environment Zone Restoration,054_SA1,A,Resource Management,,same as general list
+196,Local Public Health and Safety Facilities,041_SA1,S,Public Service,,same as general list
+196,Transit Stations and Terminals,041_SA1,S,Public Service,,same as general list
+196,Pipelines and Power Transmission,041_SA1,S,Public Service,,same as general list
+196,Transmission and Receiving Facilities,041_SA1,S,Public Service,,same as general list
+196,Transportation Routes,041_SA1,S,Public Service,,same as general list
+196,Public Utility Centers,041_SA1,S,Public Service,,same as general list
+196,Churches,041_SA1,S,Public Service,,same as general list
+196,Schools – College,041_SA1,A,Public Service,,same as general list
+196,Local Post Offices,041_SA1,S,Public Service,,same as general list
+196,Day Care Centers/Pre-Schools,041_SA1,S,Public Service,,same as general list
+196,Participant Sports Facilities,041_SA1,S,Recreation,,same as general list
+196,Day Use Areas,041_SA1,A,Recreation,,same as general list
+196,Riding and Hiking Trails,041_SA1,A,Recreation,,same as general list
+196,Outdoor Recreation Concessions,041_SA1,A,Recreation,,same as general list
+196,Golf Courses,041_SA1,A,Recreation,,same as general list
+196,Reforestation,041_SA1,A,Resource Management,,same as general list
+196,Sanitation Salvage Cut,041_SA1,A,Resource Management,,same as general list
+196,Special Cut,041_SA1,A,Resource Management,,same as general list
+196,Thinning,041_SA1,A,Resource Management,,same as general list
+196,Early Successional Stage Vegetation Management,041_SA1,A,Resource Management,,same as general list
+196,Structural and Nonstructural Fish/Wildlife Habitat Management,041_SA1,A,Resource Management,,same as general list
+196,Fire Detection and Suppression,041_SA1,A,Resource Management,,same as general list
+196,Fuels Treatment/Management,041_SA1,A,Resource Management,,same as general list
+196,Insect and Disease Suppression,041_SA1,A,Resource Management,,same as general list
+196,Sensitive and Uncommon Plant Management,041_SA1,A,Resource Management,,same as general list
+196,Erosion Control,041_SA1,A,Resource Management,,same as general list
+196,SEZ Restoration,041_SA1,A,Resource Management,,same as general list
+196,Runoff Control,041_SA1,A,Resource Management,,same as general list
+213,Local Public Health and Safety Facilities,035_SA1,S,Public Service,,same as general list
+213,Transit Stations and Terminals,035_SA1,S,Public Service,,same as general list
+213,Pipelines and Power Transmission,035_SA1,S,Public Service,,same as general list
+213,Transmission and Receiving Facilities,035_SA1,S,Public Service,,same as general list
+213,Transportation Routes,035_SA1,S,Public Service,,same as general list
+213,Public Utility Centers,035_SA1,S,Public Service,,same as general list
+213,Participant Sports Facilities,035_SA1,S,Recreation,,same as general list
+213,Day Use Areas,035_SA1,A,Recreation,,same as general list
+213,Riding and Hiking Trails,035_SA1,A,Recreation,,same as general list
+213,Beach Recreation,035_SA1,A,Recreation,,same as general list
+213,Reforestation,035_SA1,A,Resource Management,,same as general list
+213,Sanitation Salvage Cut,035_SA1,A,Resource Management,,same as general list
+213,Special Cut,035_SA1,A,Resource Management,,same as general list
+213,Thinning,035_SA1,A,Resource Management,,same as general list
+213,Early Successional Stage Vegetation Management,035_SA1,A,Resource Management,,same as general list
+213,Structural and Nonstructural Fish/Wildlife Habitat Management,035_SA1,A,Resource Management,,same as general list
+213,Fire Detection and Suppression,035_SA1,A,Resource Management,,same as general list
+213,Fuels Treatment/Management,035_SA1,A,Resource Management,,same as general list
+213,Insect and Disease Suppression,035_SA1,A,Resource Management,,same as general list
+213,Sensitive and Uncommon Plant Management,035_SA1,A,Resource Management,,same as general list
+213,Erosion Control,035_SA1,A,Resource Management,,same as general list
+213,SEZ Restoration,035_SA1,A,Resource Management,,same as general list
+213,Runoff Control,035_SA1,A,Resource Management,,same as general list
+219,Schools – Kindergarten through Secondary*,038_SA1,S,Public Service,,same as general list
+219,Local Public Health and Safety Facilities,038_SA1,S,Public Service,,same as general list
+219,Transit Stations and Terminals,038_SA1,S,Public Service,,same as general list
+219,Pipelines and Power Transmission,038_SA1,S,Public Service,,same as general list
+219,Transmission and Receiving Facilities,038_SA1,S,Public Service,,same as general list
+219,Transportation Routes,038_SA1,S,Public Service,,same as general list
+219,Public Utility Centers,038_SA1,S,Public Service,,same as general list
+219,Churches,038_SA1,S,Public Service,,same as general list
+219,Day Care Centers/Pre-Schools,038_SA1,S,Public Service,,same as general list
+219,Participant Sports Facilities,038_SA1,S,Recreation,,same as general list
+219,Day Use Areas,038_SA1,A,Recreation,,same as general list
+219,Riding and Hiking Trails,038_SA1,A,Recreation,,same as general list
+219,Reforestation,038_SA1,A,Resource Management,,same as general list
+219,Sanitation Salvage Cut,038_SA1,A,Resource Management,,same as general list
+219,Special Cut,038_SA1,A,Resource Management,,same as general list
+219,Thinning,038_SA1,A,Resource Management,,same as general list
+219,Early Successional Stage Vegetation Management,038_SA1,A,Resource Management,,same as general list
+219,Structural and Nonstructural Fish/Wildlife Habitat Management,038_SA1,A,Resource Management,,same as general list
+219,Fire Detection and Suppression,038_SA1,A,Resource Management,,same as general list
+219,Fuels Treatment/Management,038_SA1,A,Resource Management,,same as general list
+219,Insect and Disease Suppression,038_SA1,A,Resource Management,,same as general list
+219,Sensitive and Uncommon Plant Management,038_SA1,A,Resource Management,,same as general list
+219,Erosion Control,038_SA1,A,Resource Management,,same as general list
+219,SEZ Restoration,038_SA1,A,Resource Management,,same as general list
+219,Runoff Control,038_SA1,A,Resource Management,,same as general list
+224,Reforestation,044_SA1,A,Resource Management,,same as general list
+224,Sanitation Salvage Cut,044_SA1,A,Resource Management,,same as general list
+224,Thinning,044_SA1,A,Resource Management,,same as general list
+224,Tree Farms,044_SA1,A,Resource Management,,same as general list
+224,Early Successional Stage Vegetation Management,044_SA1,A,Resource Management,,same as general list
+224,Nonstructural Fish Habitat Management,044_SA1,A,Resource Management,,same as general list
+224,Nonstructural Wildlife Habitat Management,044_SA1,A,Resource Management,,same as general list
+224,Structural Fish Habitat Management,044_SA1,A,Resource Management,,same as general list
+224,Structural Wildlife Habitat Management,044_SA1,A,Resource Management,,same as general list
+224,Fire Detection and Suppression,044_SA1,A,Resource Management,,same as general list
+224,Fuels Treatment,044_SA1,A,Resource Management,,same as general list
+224,Insect and Disease Suppression,044_SA1,A,Resource Management,,same as general list
+224,Sensitive Plant Management,044_SA1,A,Resource Management,,same as general list
+224,Uncommon Plant Community Management,044_SA1,A,Resource Management,,same as general list
+224,Erosion Control,044_SA1,A,Resource Management,,same as general list
+224,SEZ Restoration,044_SA1,A,Resource Management,,same as general list
+224,Runoff Control,044_SA1,A,Resource Management,,same as general list
+234,Single Family Dwellings,051_SA1,A,Residential,,same as general list
+234,Local Public Health and Safety Facilities,051_SA1,S,Public Service,,same as general list
+234,Transit Stations and Terminals,051_SA1,S,Public Service,,same as general list
+234,Pipelines and Power Transmission,051_SA1,S,Public Service,,same as general list
+234,Transmission and Receiving Facilities,051_SA1,S,Public Service,,same as general list
+234,Transportation Routes,051_SA1,S,Public Service,,same as general list
+234,Public Utility Centers,051_SA1,S,Public Service,,same as general list
+234,Participant Sports Facilities,051_SA1,S,Recreation,,same as general list
+234,Temporary Events,051_SA1,A,Recreation,,same as general list
+234,Day Use Areas,051_SA1,A,Recreation,,same as general list
+234,Riding and Hiking Trails,051_SA1,A,Recreation,,same as general list
+234,Reforestation,051_SA1,A,Resource Management,,same as general list
+234,Sanitation Salvage Cut,051_SA1,A,Resource Management,,same as general list
+234,Special Cut,051_SA1,A,Resource Management,,same as general list
+234,Thinning,051_SA1,A,Resource Management,,same as general list
+234,Early Successional Stage Vegetation Management,051_SA1,A,Resource Management,,same as general list
+234,Structural and Nonstructural Fish/Wildlife Habitat Management,051_SA1,A,Resource Management,,same as general list
+234,Fire Detection and Suppression,051_SA1,A,Resource Management,,same as general list
+234,Fuels Treatment/Management,051_SA1,A,Resource Management,,same as general list
+234,Insect and Disease Suppression,051_SA1,A,Resource Management,,same as general list
+234,Sensitive and Uncommon Plant Management,051_SA1,A,Resource Management,,same as general list
+234,Erosion Control,051_SA1,A,Resource Management,,same as general list
+234,SEZ Restoration,051_SA1,A,Resource Management,,same as general list
+234,Runoff Control,051_SA1,A,Resource Management,,same as general list
+224,Single Family Dwelling,044_SA1,A,Residential,,as above
+180,Employee Housing,048,S,Residential,,read by hand
+180,Multiple Family Dwelling (more than four units) Within the Town Center,048,AR,Residential,,read by hand
+180,Multiple Family Dwelling (four units or less) Within the Town Center,048,A,Residential,,read by hand
+180,Multi-Person Dwelling,048,S,Residential,,read by hand
+180,Nursing and Personal Care,048,S,Residential,,read by hand
+180,Residential Care,048,S,Residential,,read by hand
+180,Single Family Dwelling,048,A,Residential,,read by hand
+180,Bed and Breakfast Facilities,048,A,Tourist Accommodation,,read by hand
+180,"Hotel, Motel, and Other Transient Dwelling Units",048,A,Tourist Accommodation,,read by hand
+180,Time Sharing (Residential Design),048,S,Tourist Accommodation,,read by hand
+180,Time Sharing (Hotel/Motel Design),048,S,Tourist Accommodation,,read by hand

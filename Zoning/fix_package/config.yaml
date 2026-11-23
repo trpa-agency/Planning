@@ -1,0 +1,26 @@
+project:
+  name: zoning-qa-fixes
+  owner: mason.bindl@trpa.gov
+  built: 2026-11-20
+
+# SDE targets. Point these at your own .sde connection file before running any script.
+# No credentials go here; the .sde connection file holds them.
+sde:
+  workspace: "C:/path/to/your/connection.sde"
+  district: "C:/path/to/your/connection.sde/SDE.District"
+  permissible_uses: "C:/path/to/your/connection.sde/SDE.PermissibleUses"
+  special_designation: "C:/path/to/your/connection.sde/SDE.Special_Designation"
+  parcel: "C:/path/to/your/connection.sde/SDE.Parcel"
+
+fixes:
+  gdb: data/Zoning_QA_Fixes_2026-11-20.gdb
+  replacement_shapes: F26_F29_District_ReplacementShapes
+
+# Live sources the fixes were built from (snapshot taken 2026-11-20)
+sources:
+  zoning_service: https://maps.trpa.org/server/rest/services/Zoning/MapServer
+  localplan_service: https://maps.trpa.org/server/rest/services/LocalPlan/MapServer
+  boundaries_service: https://maps.trpa.org/server/rest/services/Boundaries/MapServer
+
+run:
+  dry_run: true   # set to false to let scripts write to SDE

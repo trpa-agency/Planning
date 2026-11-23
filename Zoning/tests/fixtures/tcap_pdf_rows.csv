@@ -1,0 +1,478 @@
+page,label,zone,raw,heading
+180,Domestic Animal Raising,TCAP_TSC_C,-,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_TSC_MU,-,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_TSC_MUC,-,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_TSC_NMX,-,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_TSC_G,-,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_TSC_G_SA1,-,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_REC_TOURIST,S,RESIDENTIAL
+180,Domestic Animal Raising,TCAP_OS,-,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_C,A,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_MU,A,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_MUC,A,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_NMX,A,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_G,A,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_G_SA1,A,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_REC_TOURIST,A14,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_OS,-,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_C,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_MU,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_MUC,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_NMX,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_G,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_G_SA1,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_REC_TOURIST,A14,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_OS,-,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_C,A8,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_MU,A,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_MUC,A,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_NMX,A,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_G,A,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_G_SA1,A,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_REC_TOURIST,S1,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_OS,-,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_C,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_MU,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_MUC,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_NMX,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_G,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_G_SA1,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_REC_TOURIST,-,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_OS,-,RESIDENTIAL
+180,Residential Care,TCAP_TSC_C,A,RESIDENTIAL
+180,Residential Care,TCAP_TSC_MU,A,RESIDENTIAL
+180,Residential Care,TCAP_TSC_MUC,A,RESIDENTIAL
+180,Residential Care,TCAP_TSC_NMX,A,RESIDENTIAL
+180,Residential Care,TCAP_TSC_G,A,RESIDENTIAL
+180,Residential Care,TCAP_TSC_G_SA1,A,RESIDENTIAL
+180,Residential Care,TCAP_REC_TOURIST,-,RESIDENTIAL
+180,Residential Care,TCAP_OS,-,RESIDENTIAL
+180,Bed & Breakfast Facilities,TCAP_TSC_C,-,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_TSC_MU,A,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_TSC_MUC,A9,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_TSC_NMX,S,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_TSC_G,A,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_TSC_G_SA1,A,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+180,Bed & Breakfast Facilities,TCAP_OS,-,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_C,A,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_MU,A,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_MUC,A9,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_NMX,S,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_G,A,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_G_SA1,A,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_OS,-,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_C,A,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_MU,A,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_MUC,A9,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_NMX,S,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_G,S,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_G_SA1,A,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_OS,-,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_C,A,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_MU,A,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_MUC,A9,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_NMX,S,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_G,A,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_G_SA1,A,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_OS,-,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_C,S6,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_MU,-,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_MUC,-,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_NMX,-,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_G,-,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_G_SA1,S,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_OS,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_C,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_MU,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_MUC,A9,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_NMX,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_G,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_G_SA1,S,TOURIST ACCOMMODATION
+181,Nursery,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_OS,-,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_C,A,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_MU,-,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_MUC,S9,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_NMX,-,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_G,-,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_G_SA1,S,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_OS,-,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_C,A,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_MU,A,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_MUC,A9,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_NMX,A,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_G,A,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_G_SA1,A,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_OS,-,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_C,S,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_MU,S,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_MUC,-,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_NMX,-,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_G,S,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_G_SA1,S,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_REC_TOURIST,-,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_OS,-,TOURIST ACCOMMODATION
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_C,A13,ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_MU,A13,ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_MUC,"A9,13",ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_NMX,-,ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_G,A13,ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_G_SA1,A13,ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_REC_TOURIST,-,ENTERTAINMENT
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_OS,-,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_C,-,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_MU,S,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_MUC,S,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_NMX,-,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_G,S,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_G_SA1,S,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_REC_TOURIST,S,ENTERTAINMENT
+181,Outdoor Amusements,TCAP_OS,-,ENTERTAINMENT
+181,Animal Husbandry Services,TCAP_TSC_C,-,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_TSC_MU,-,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_TSC_MUC,-,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_TSC_NMX,-,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_TSC_G,-,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_TSC_G_SA1,A,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_REC_TOURIST,-,SERVICE COMMERCIAL
+181,Animal Husbandry Services,TCAP_OS,-,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_C,A7,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_MU,S,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_MUC,S9,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_NMX,-,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_G,S,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_G_SA1,A,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_REC_TOURIST,-,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_OS,-,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_C,A2,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_MU,-,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_MUC,A9,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_NMX,-,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_G,A,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_G_SA1,A,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_REC_TOURIST,-,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_OS,-,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_C,A4,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_MU,A,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_MUC,A9,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_NMX,A,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_G,A,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_G_SA1,A,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_REC_TOURIST,-,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_OS,-,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_C,S,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_MU,-,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_MUC,S9,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_NMX,-,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_G,S,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_G_SA1,A,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_REC_TOURIST,-,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_OS,-,SERVICE COMMERCIAL
+181,Small Scale Manufacturing,TCAP_TSC_C,S,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_TSC_MU,S,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_TSC_MUC,S9,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_TSC_NMX,S,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_TSC_G,-,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_TSC_G_SA1,S12,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_REC_TOURIST,-,LIGHT INDUSTRIAL
+181,Small Scale Manufacturing,TCAP_OS,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_C,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_MU,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_MUC,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_NMX,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_G,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_G_SA1,S12,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_REC_TOURIST,-,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_OS,-,LIGHT INDUSTRIAL
+181,Vehicle Storage & Parking,TCAP_TSC_C,S,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_TSC_MU,S,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_TSC_MUC,S9,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_TSC_NMX,S,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_TSC_G,S,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_TSC_G_SA1,S,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_REC_TOURIST,-,WHOLESALE/STORAGE
+181,Vehicle Storage & Parking,TCAP_OS,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_C,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_MU,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_MUC,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_NMX,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_G,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_G_SA1,S12,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_REC_TOURIST,-,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_OS,-,WHOLESALE/STORAGE
+181,Religious Assembly,TCAP_TSC_C,-,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_TSC_MU,S,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_TSC_MUC,S9,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_TSC_NMX,-,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_TSC_G,S,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_TSC_G_SA1,A,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Religious Assembly,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_C,S,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_MU,S,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_MUC,S9,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_NMX,-,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_G,S,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_G_SA1,A,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_C,A,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_MU,A,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_MUC,A9,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_NMX,A,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_G,A,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_G_SA1,A,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_C,-,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_MU,-,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_MUC,A9,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_NMX,-,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_G,-,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_G_SA1,S,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_C,A13,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_MU,A13,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_MUC,"A9,",GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_NMX,-,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_G,A13,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_G_SA1,A13,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_C,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_MU,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_MUC,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_NMX,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_G,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_G_SA1,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_REC_TOURIST,A,GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_OS,A,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_C,-,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_MU,S,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_MUC,-,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_NMX,-,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_G,-,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_G_SA1,-,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_C,-,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_MU,-,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_MUC,A9,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_NMX,-,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_G,A,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_G_SA1,A,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_REC_TOURIST,-,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_OS,-,GENERAL PUBLIC SERVICE
+181,Pipelines & Power Transmission,TCAP_TSC_C,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_TSC_MU,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_TSC_MUC,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_TSC_NMX,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_TSC_G,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_TSC_G_SA1,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_REC_TOURIST,S,LINEAR PUBLIC FACILITIES
+181,Pipelines & Power Transmission,TCAP_OS,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_C,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_MU,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_MUC,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_NMX,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_G,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_G_SA1,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_REC_TOURIST,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_OS,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_C,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_MU,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_MUC,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_NMX,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_G,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_G_SA1,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_REC_TOURIST,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_OS,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_C,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_MU,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_MUC,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_NMX,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_G,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_G_SA1,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_REC_TOURIST,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_OS,S,LINEAR PUBLIC FACILITIES
+182,Cross Country Ski Courses,TCAP_TSC_C,-,RECREATION
+182,Cross Country Ski Courses,TCAP_TSC_MU,-,RECREATION
+182,Cross Country Ski Courses,TCAP_TSC_MUC,-,RECREATION
+182,Cross Country Ski Courses,TCAP_TSC_NMX,-,RECREATION
+182,Cross Country Ski Courses,TCAP_TSC_G,-,RECREATION
+182,Cross Country Ski Courses,TCAP_TSC_G_SA1,-,RECREATION
+182,Cross Country Ski Courses,TCAP_REC_TOURIST,S,RECREATION
+182,Cross Country Ski Courses,TCAP_OS,-,RECREATION
+182,Day Use Areas,TCAP_TSC_C,A,RECREATION
+182,Day Use Areas,TCAP_TSC_MU,A,RECREATION
+182,Day Use Areas,TCAP_TSC_MUC,A,RECREATION
+182,Day Use Areas,TCAP_TSC_NMX,A,RECREATION
+182,Day Use Areas,TCAP_TSC_G,A,RECREATION
+182,Day Use Areas,TCAP_TSC_G_SA1,A,RECREATION
+182,Day Use Areas,TCAP_REC_TOURIST,A,RECREATION
+182,Day Use Areas,TCAP_OS,A,RECREATION
+182,Group Facilities,TCAP_TSC_C,-,RECREATION
+182,Group Facilities,TCAP_TSC_MU,-,RECREATION
+182,Group Facilities,TCAP_TSC_MUC,-,RECREATION
+182,Group Facilities,TCAP_TSC_NMX,-,RECREATION
+182,Group Facilities,TCAP_TSC_G,-,RECREATION
+182,Group Facilities,TCAP_TSC_G_SA1,-,RECREATION
+182,Group Facilities,TCAP_REC_TOURIST,S,RECREATION
+182,Group Facilities,TCAP_OS,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_C,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_MU,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_MUC,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_NMX,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_G,S,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_G_SA1,S,RECREATION
+182,Outdoor Recreation Concessions,TCAP_REC_TOURIST,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_OS,-,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_C,S,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_MU,-,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_MUC,-,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_NMX,-,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_G,-,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_G_SA1,-,RECREATION
+182,Participant Sport Facilities,TCAP_REC_TOURIST,-,RECREATION
+182,Participant Sport Facilities,TCAP_OS,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_C,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_MU,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_MUC,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_NMX,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_G,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_G_SA1,S,RECREATION
+182,Riding and Hiking Trails,TCAP_REC_TOURIST,S,RECREATION
+182,Riding and Hiking Trails,TCAP_OS,-,RECREATION
+182,Rural Sports,TCAP_TSC_C,-,RECREATION
+182,Rural Sports,TCAP_TSC_MU,-,RECREATION
+182,Rural Sports,TCAP_TSC_MUC,-,RECREATION
+182,Rural Sports,TCAP_TSC_NMX,-,RECREATION
+182,Rural Sports,TCAP_TSC_G,-,RECREATION
+182,Rural Sports,TCAP_TSC_G_SA1,S,RECREATION
+182,Rural Sports,TCAP_REC_TOURIST,S,RECREATION
+182,Rural Sports,TCAP_OS,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_C,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_MU,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_MUC,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_NMX,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_G,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_G_SA1,S,RECREATION
+182,Snowmobile Courses,TCAP_REC_TOURIST,S,RECREATION
+182,Snowmobile Courses,TCAP_OS,-,RECREATION
+182,Visitor Information Centers,TCAP_TSC_C,S,RECREATION
+182,Visitor Information Centers,TCAP_TSC_MU,S,RECREATION
+182,Visitor Information Centers,TCAP_TSC_MUC,-,RECREATION
+182,Visitor Information Centers,TCAP_TSC_NMX,-,RECREATION
+182,Visitor Information Centers,TCAP_TSC_G,S,RECREATION
+182,Visitor Information Centers,TCAP_TSC_G_SA1,-,RECREATION
+182,Visitor Information Centers,TCAP_REC_TOURIST,-,RECREATION
+182,Visitor Information Centers,TCAP_OS,-,RECREATION
+182,Forest and Timber Resource Management,TCAP_TSC_C,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_TSC_MU,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_TSC_MUC,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_TSC_NMX,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_TSC_G,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_TSC_G_SA1,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_REC_TOURIST,A,RESOURCE MANAGEMENT
+182,Forest and Timber Resource Management,TCAP_OS,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_C,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_MU,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_MUC,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_NMX,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_G,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_G_SA1,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_REC_TOURIST,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_OS,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_C,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_MU,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_MUC,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_NMX,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_G,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_G_SA1,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_REC_TOURIST,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_OS,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_C,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_MU,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_MUC,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_NMX,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_G,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_G_SA1,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_REC_TOURIST,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_OS,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_C,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_MU,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_MUC,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_NMX,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_G,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_G_SA1,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_REC_TOURIST,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_OS,-,RESOURCE MANAGEMENT
+182,Allowed in all areas of the Region,TCAP_TSC_C,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_TSC_MU,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_TSC_MUC,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_TSC_NMX,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_TSC_G,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_TSC_G_SA1,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_REC_TOURIST,A,OPEN SPACE
+182,Allowed in all areas of the Region,TCAP_OS,A,OPEN SPACE
+180,Domestic Animal Raising,TCAP_TSC_MUC_SA1,-,RESIDENTIAL
+180,Multiple Family Dwelling,TCAP_TSC_MUC_SA1,A,RESIDENTIAL
+180,Multi-Person Dwelling,TCAP_TSC_MUC_SA1,A,RESIDENTIAL
+180,Single Family Dwelling (includes condominiums),TCAP_TSC_MUC_SA1,A,RESIDENTIAL
+180,Nursing and Personal Care,TCAP_TSC_MUC_SA1,A,RESIDENTIAL
+180,Residential Care,TCAP_TSC_MUC_SA1,A,RESIDENTIAL
+180,Bed & Breakfast Facilities,TCAP_TSC_MUC_SA1,A9,TOURIST ACCOMMODATION
+180,"Hotel, Motel, Other Transient Dwelling Units",TCAP_TSC_MUC_SA1,A9,TOURIST ACCOMMODATION
+180,Time Sharing,TCAP_TSC_MUC_SA1,A9,TOURIST ACCOMMODATION
+181,General Retail and Personal Services,TCAP_TSC_MUC_SA1,A9,TOURIST ACCOMMODATION
+181,Building Material & Hardware,TCAP_TSC_MUC_SA1,-,TOURIST ACCOMMODATION
+181,Nursery,TCAP_TSC_MUC_SA1,A9,TOURIST ACCOMMODATION
+181,Outdoor Retail Sales,TCAP_TSC_MUC_SA1,S9,TOURIST ACCOMMODATION
+181,Eating & Drinking Places,TCAP_TSC_MUC_SA1,A9,TOURIST ACCOMMODATION
+181,Service Stations,TCAP_TSC_MUC_SA1,-,TOURIST ACCOMMODATION
+181,Amusement & Recreation and Assembly & Entertainment Facilities,TCAP_TSC_MUC_SA1,"A9,13",ENTERTAINMENT
+181,Outdoor Amusements,TCAP_TSC_MUC_SA1,S,ENTERTAINMENT
+181,Animal Husbandry Services,TCAP_TSC_MUC_SA1,-,SERVICE COMMERCIAL
+181,Business Support Services,TCAP_TSC_MUC_SA1,S9,SERVICE COMMERCIAL
+181,Health Care Services,TCAP_TSC_MUC_SA1,A9,SERVICE COMMERCIAL
+181,Professional Offices,TCAP_TSC_MUC_SA1,A9,SERVICE COMMERCIAL
+181,Schools – Business & Vocational,TCAP_TSC_MUC_SA1,S9,SERVICE COMMERCIAL
+181,Small Scale Manufacturing,TCAP_TSC_MUC_SA1,S9,LIGHT INDUSTRIAL
+181,Industrial Services,TCAP_TSC_MUC_SA1,-,LIGHT INDUSTRIAL
+181,Vehicle Storage & Parking,TCAP_TSC_MUC_SA1,S9,WHOLESALE/STORAGE
+181,Wholesale and Distribution,TCAP_TSC_MUC_SA1,-,WHOLESALE/STORAGE
+181,Religious Assembly,TCAP_TSC_MUC_SA1,S9,GENERAL PUBLIC SERVICE
+181,Cultural Facilities,TCAP_TSC_MUC_SA1,S9,GENERAL PUBLIC SERVICE
+181,Daycare Centers/Preschool,TCAP_TSC_MUC_SA1,A9,GENERAL PUBLIC SERVICE
+181,Government Offices,TCAP_TSC_MUC_SA1,A9,GENERAL PUBLIC SERVICE
+181,Local Public Assembly Facilities,TCAP_TSC_MUC_SA1,"A9,",GENERAL PUBLIC SERVICE
+181,Local Public Health and Safety Facilities,TCAP_TSC_MUC_SA1,A,GENERAL PUBLIC SERVICE
+181,Public Utility Centers,TCAP_TSC_MUC_SA1,-,GENERAL PUBLIC SERVICE
+181,Social Service Organizations,TCAP_TSC_MUC_SA1,A9,GENERAL PUBLIC SERVICE
+181,Pipelines & Power Transmission,TCAP_TSC_MUC_SA1,S,LINEAR PUBLIC FACILITIES
+181,Transit Stations & Terminals,TCAP_TSC_MUC_SA1,S,LINEAR PUBLIC FACILITIES
+181,Transportation Routes,TCAP_TSC_MUC_SA1,S,LINEAR PUBLIC FACILITIES
+182,Transmission & Receiving Facilities,TCAP_TSC_MUC_SA1,S,LINEAR PUBLIC FACILITIES
+182,Cross Country Ski Courses,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Day Use Areas,TCAP_TSC_MUC_SA1,A,RECREATION
+182,Group Facilities,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Outdoor Recreation Concessions,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Participant Sport Facilities,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Riding and Hiking Trails,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Rural Sports,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Snowmobile Courses,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Visitor Information Centers,TCAP_TSC_MUC_SA1,-,RECREATION
+182,Forest and Timber Resource Management,TCAP_TSC_MUC_SA1,A,RESOURCE MANAGEMENT
+182,Vegetation Resource Management,TCAP_TSC_MUC_SA1,A,RESOURCE MANAGEMENT
+182,Water Quality Improvements and Watershed,TCAP_TSC_MUC_SA1,A,RESOURCE MANAGEMENT
+182,Management Wildlife and Fisheries Resource Management,TCAP_TSC_MUC_SA1,A,RESOURCE MANAGEMENT
+182,Range Management,TCAP_TSC_MUC_SA1,A,RESOURCE MANAGEMENT
+182,Allowed in all areas of the Region,TCAP_TSC_MUC_SA1,A,OPEN SPACE

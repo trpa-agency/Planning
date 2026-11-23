@@ -1,0 +1,47 @@
+FIX_ID,APN,OBJECTID,FIELD,OLD_VALUE,NEW_VALUE,CONFIDENCE,REASON,SOURCE
+F30,023-221-028,152043,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-028,152043,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-058,152168,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-058,152168,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-053,152296,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-053,152296,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-052,152341,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-052,152341,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-035,152386,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-035,152386,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-020,152387,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-020,152387,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-050,152395,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-050,152395,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-046,152427,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-046,152427,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-023,152444,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-023,152444,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-045,152479,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-045,152479,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-013,152515,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-013,152515,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-024,152530,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-024,152530,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-017,152586,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-017,152586,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-012,152592,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-012,152592,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-018,152656,ZONING_ID,111_SA2,TVAP_TC_NP,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F30,023-221-018,152656,ZONING_DESCRIPTION,Tahoe Island Special Area #2,Tahoe Valley Area Plan - Town Center Neighborhood Professional,Likely,Parcel lies in the F26 overlap that Tahoe Valley keeps,District overlay after F26
+F31,032-141-003,154803,ZONING_ID,TVAP_TC_G,TVAP_TC_OS,Likely,Parcel is 100 percent inside TVAP_TC_OS,District overlay
+F31,032-141-003,154803,ZONING_DESCRIPTION,Tahoe Valley Area Plan - Town Center Gateway District,Tahoe Valley Area Plan - Open Space,Likely,Parcel is 100 percent inside TVAP_TC_OS,District overlay
+F31,032-192-005,154990,ZONING_ID,114_SA1,TVAP_TC_G,Likely,Parcel is 100 percent inside TVAP_TC_G,District overlay
+F31,032-192-005,154990,PLAN_ID,114,110,Likely,Parcel is 100 percent inside TVAP_TC_G,District overlay
+F31,032-192-005,154990,PLAN_NAME,Bonanza,TAHOE VALLEY AREA PLAN,Likely,Parcel is 100 percent inside TVAP_TC_G,District overlay
+F31,032-192-005,154990,ZONING_DESCRIPTION,Bonanza Special Area #1,Tahoe Valley Area Plan - Town Center Gateway District,Likely,Parcel is 100 percent inside TVAP_TC_G,District overlay
+F32,1318-09-810-113,133134,ZONING_ID,,067,Likely,Blank ZONING_ID; 71 percent inside 067,District overlay
+F32,1318-09-810-113,133134,ZONING_DESCRIPTION,,Marla Bay/Zephyr Heights,Likely,Blank ZONING_ID; 71 percent inside 067,District overlay
+F32,1319-19-717-015,136464,ZONING_ID,,082,Likely,Blank ZONING_ID; 54 percent inside 082,District overlay
+F32,1319-19-717-015,136464,PLAN_ID,,082,Likely,Blank ZONING_ID; 54 percent inside 082,District overlay
+F32,1319-19-717-015,136464,PLAN_NAME,,UPPER KINGSBURY,Likely,Blank ZONING_ID; 54 percent inside 082,District overlay
+F32,1319-19-717-015,136464,ZONING_DESCRIPTION,,Upper Kingsbury,Likely,Blank ZONING_ID; 54 percent inside 082,District overlay
+F33,025-360-019,146649,PLAN_ID,094,101,Certain,PLAN_ID disagrees with its own ZONING_ID 101,Parcel attributes
+F33,025-360-019,146649,PLAN_NAME,GLENWOOD,Bijou Meadows,Certain,PLAN_ID disagrees with its own ZONING_ID 101,Parcel attributes
+F33,031-103-002,147980,PLAN_ID,103,100,Certain,PLAN_ID disagrees with its own ZONING_ID 100,Parcel attributes
+F33,031-103-002,147980,PLAN_NAME,SIERRA TRACT COMMERCIAL,Truckee Marsh,Certain,PLAN_ID disagrees with its own ZONING_ID 100,Parcel attributes

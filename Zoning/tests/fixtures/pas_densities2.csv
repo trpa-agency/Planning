@@ -1,0 +1,226 @@
+PLAN_ID,use,qual,sa,density,unit,raw
+019,Summer Home,,,1.0,unit per parcel,Summer Home
+019,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+019,Group Facilities,,,25.0,persons per acre,Group facilities
+057,Employee Housing,,,5.0,units per State Park Lands,Employee Housing
+057,Group Facilities,,,25.0,persons per acre,Group Facilities
+057,Developed Campgrounds,,,8.0,units per acre,Developed Campgrounds
+058,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+059,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+060,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+060,Summer Home,,,1.0,unit per parcel,Summer Homes
+061,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+063,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+063,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwellings
+064,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+065,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+066,Employee Housing,,,15.0,units per acre,Employee Housing
+066,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+066,Bed and Breakfast Facilities,,,10.0,bedrooms per parcel,Bed and Breakfast Facilities
+066,"Hotel, Motel, and Other Transient Dwelling Units",,,20.0,units per acre,"Hotel, Motel and other Transient Units"
+066,Time Sharing,,,20.0,units per acre,Timeshares
+066,Resort,,,25.0,persons per acre,Resorts
+066,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+066,Group Facilities,,,25.0,persons per acre,Group Facilities
+066,Recreational Vehicle Parks,,,10.0,units per acre,Recreation Vehicle Park
+067,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+067,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre (Special Area #1),
+067,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre (Special Area #1),
+068,Single Family Dwelling,,,1.0,unit per parcel,Single Family dwelling
+068,Employee Housing,,,15.0,units per acre,Employee housing
+068,Summer Home,,,1.0,unit per parcel,Summer home
+068,"Hotel, Motel, and Other Transient Dwelling Units",less,,20.0,units per acre,
+068,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+068,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+068,Group Facilities,,,25.0,persons per acre,Rural Group Facilities
+069,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+070A,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+070A,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast Facilities
+070A,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre,
+070A,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+070A,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+070A,Group Facilities,,,25.0,persons per acre,Group Facilities
+070B,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+070B,Summer Home,,,1.0,unit per parcel,Summer Homes
+070B,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+070B,Group Facilities,,,25.0,persons per acre,Group Facilities
+072,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+072,Multiple Family Dwelling,,,8.0,units per acre,Multiple Family Dwelling
+072,Time Sharing (Residential Design),,,8.0,units per acre,Timeshare (residential design)
+073,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+074,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+074,Multiple Family Dwelling,,,10.0,units per acre,Multiple Family Dwellings
+077,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+077,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwellings
+077,Multi-Person Dwelling,,,25.0,persons per acre,Multi-person Dwellings
+077,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+078,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+078,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwellings
+079,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+080,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+080,Summer Home,,,1.0,unit per parcel,Summer Homes
+080,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+080,Recreational Vehicle Parks,,,10.0,units per acre,Recreation Vehicle Park
+080,Group Facilities,,,25.0,persons per acre,Group Facilities
+081,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+082,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+083,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+083,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwellings
+084,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+084,Bed and Breakfast Facilities,,,8.0,units per acre,Bed and Breakfast Facilities
+085,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+085,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+085,Residential Care,,,25.0,persons per acre,Residential Care
+088,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+088,Multiple Family Dwelling,,,8.0,units per acre,Multiple Family Dwellings
+089,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+089,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+089,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast
+089,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre,
+089,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+090,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+092,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+092,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+092,Multi-Person Dwelling,,,25.0,persons per acre,Multi-Person Dwellings
+093,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+093,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+093,Multi-Person Dwelling,,,25.0,persons per acre,Multi-person Dwellings
+094,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+094,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwellings
+094,Multiple Family Dwelling,,,11.0,units per acre,Multi-Family Dwellings
+095,Employee Housing,,,15.0,units per acre,Employee Housing
+095,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+095,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+095,Group Facilities,,,25.0,persons per acre,Group Facilities
+096,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+097,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+097,Multiple Family Dwelling,,,15.0,units per acre,Multi-Family Dwellings
+099,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+099,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+099,Multi-Person Dwelling,,,25.0,people per acre,Multi-Person Dwellings
+099,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre,
+099,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+099,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast Facilities
+100,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+101,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+101,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+102,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+102,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwellings
+103,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+103,Multiple Family Dwelling,,,15.0,units per acre,Multiple Family Dwelling
+103,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwelling
+103,Nursing and Personal Care,,,25.0,people per acre,Nursing and Personal Care
+103,Residential Care,,,25.0,people per acre,Residential Care
+103,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast
+103,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre,
+103,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+104,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+104,Multiple Family Dwelling,,,12.0,units per acre,Multiple Family Dwellings
+105,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+105,Multiple Family Dwelling,,,12.0,units per acre,Multiple Family Dwellings
+106,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+107,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+108,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+109,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+109,Recreational Vehicle Parks,,,10.0,units per acre,Recreational Vehicle Park
+109,Group Facilities,,,25.0,persons per acre,Group Facilities
+111,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwellings
+111,Multiple Family Dwelling,,,8.0,units per acre,Multiple Family Dwellings
+111,Nursing and Personal Care,,,25.0,persons per acre,Nursing and Personal Care
+111,Residential Care,,,25.0,persons per acre,Residential Care
+111,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre,
+111,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+111,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast
+112,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+112,Multiple Family Dwelling,,,8.0,units per acre,Multiple Family Dwellings
+112,Nursing and Personal Care,,,25.0,persons per acre,Nursing and Personal Care
+112,Residential Care,,,25.0,persons per acre,Residential Care
+112,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast Facilities
+114,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+114,Multiple Family Dwelling,,,10.0,units per acre,Multiple Family Dwellings
+114,Multiple Family Dwelling,,"1,2",15.0,units per acre,
+114,Multiple Family Dwelling,,3,8.0,units per acre,
+114,Nursing and Personal Care,,,25.0,persons per acre,Nursing and Personal Care
+114,Residential Care,,,25.0,persons per acre,Residential Care
+114,Mobile Home Dwelling,,,8.0,units per acre,Mobile Home Dwellings
+114,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast Facilities
+114,"Hotel, Motel, and Other Transient Dwelling Units",,,40.0,units per acre,"Hotel, Motel and Other Transient Dwellings"
+115,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+116,Employee Housing,,,15.0,units per acre,Employee Housing
+116,"Hotel, Motel, and Other Transient Dwelling Units",less,,40.0,units per acre,
+116,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+117,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+118,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+118,Summer Home,,,1.0,unit per parcel,Summer Home
+119,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+119,Summer Home,,,2.0,unit per parcel,Summer Home
+119,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+119,Group Facilities,,,25.0,persons per acre,Group Facilities
+120,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+122,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+123,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+124,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+126,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+127,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwellings
+127,Summer Home,,,1.0,unit per parcel,Summer Homes
+127,Employee Housing,,,15.0,units per acre,Employee Housing
+127,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+127,"Hotel, Motel, and Other Transient Dwelling Units",less,,20.0,units per acre,
+129,Employee Housing,,,25.0,units for USFS employee housing,Employee Housing
+129,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+129,Summer Home,,,1.0,unit per parcel or lease site,Summer Home
+129,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+129,Group Facilities,,,25.0,persons per acre,Group Facilities
+130,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+130,Summer Home,,,1.0,unit per parcel,Summer Homes
+130,Developed Campgrounds,,,8.0,sites per acre,Developed Campground
+131,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+132,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+133,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+134,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+135,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+137,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+138,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+140,Summer Home,,,1.0,unit per parcel or lease site,Summer Homes
+140,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+140,Group Facilities,,,25.0,persons per acre,Group Facilities
+141,Summer Home,,,1.0,unit per parcel or lease site,Summer Homes
+142,Summer Home,,,1.0,unit per parcel or lease site,Summer Homes
+142,"Hotel, Motel, and Other Transient Dwelling Units",,,15.0,units per acre,"Hotel, Motel and Other Transient Units"
+144A,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+144A,Group Facilities,,,25.0,persons per acre,Group Facilities
+144B,Summer Home,,,1.0,unit per lease site,Summer Homes
+144B,Employee Housing,,,4.0,units per the Angora Lake Resort,Employee Housing
+144B,"Hotel, Motel, and Other Transient Dwelling Units",,,15.0,units per acre,"Hotel, Motel, and Other Transient Dwellings"
+144B,Group Facilities,,,25.0,persons per acre,Group Facilities
+145,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+145,Summer Home,,,1.0,unit per lot or lease site,Summer Home
+146,Employee Housing,,,5.0,units per acre,Employee Housing
+146,Summer Home,,,1.0,unit per lot or lease site,Summer Home
+146,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+147,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+148,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+148,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+148,Group Facilities,,,25.0,persons per parcel,Group Facilities
+149,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+150,"Hotel, Motel, and Other Transient Dwelling Units",,,20.0,units per acre,"Hotels, Motels and Other"
+150,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+150,Group Facilities,,,25.0,persons per parcel,Group Facilities
+151,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+152,Summer Home,,,1.0,unit per parcel,Summer Homes
+152,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+153,Employee Housing,,,15.0,units per acre on state park,Employee Housing
+153,Developed Campgrounds,,,8.0,sites per acre,Developed Campgrounds
+153,Group Facilities,,,25.0,persons per acre,Group Facilities
+154,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+154,Multiple Family Dwelling,,,8.0,units per acre,Multiple Family Dwellings
+154,Multi-Person Dwelling,,,15.0,persons per acre,Multi-person Dwelling
+154,Bed and Breakfast Facilities,,,8.0,units per acre,Bed and Breakfast Facilities
+155,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
+155,Multiple Family Dwelling,,,8.0,units per acre,Multiple Family Dwelling
+155,Nursing and Personal Care,,,25.0,people per acre,Nursing and Personal Care
+155,Residential Care,,,25.0,people per acre,Residential Care
+155,Bed and Breakfast Facilities,,,10.0,units per acre,Bed and Breakfast Facilities
+155,"Hotel, Motel, and Other Transient Dwelling Units",less,,20.0,units per acre,
+155,"Hotel, Motel, and Other Transient Dwelling Units",more,,15.0,units per acre,
+175,Single Family Dwelling,,,1.0,unit per parcel,Single Family Dwelling
