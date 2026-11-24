@@ -13,4 +13,5 @@
 - Added `scripts/compare_snapshots.py`, which diffs two snapshots by GlobalID. Logged the mtb-edits findings in `docs/EDIT_REQUESTS.md`.
 - E03 now also deletes the 28 copied 035 use rows, keeping the originals, and stops unless the copy count matches `e03.expected_duplicates`.
 - Added F36 and `scripts/f36_delete_empty_use_rows.py`, which deletes the 59 fully blank use rows (Alyssa's 58 from the Nov. 20 append plus F22's 12762). It stops unless the count matches.
-- Pointed the config at the `SDE.mtb-edits` edit version. Version matching now handles OS-authenticated owners such as `"TAHOE\ABETTINGER"`.
+- Pointed the config at the `SDE.mtb-edits` edit version.
+- Ran E03, F35, and F36 in `SDE.mtb-edits` on the server. The snapshot afterward matched every expected count. Not reconciled yet. Version matching now handles OS-authenticated owners such as `"TAHOE\ABETTINGER"`.

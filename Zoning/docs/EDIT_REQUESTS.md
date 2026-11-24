@@ -10,7 +10,7 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 |---|---|---|
 | E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Ready. Split done in Alyssa's version; A04 covers Washoe; Carson City PAS lists to build |
 | E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
-| E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Ready. 842 is an accidental duplicate of 035 |
+| E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Done in `SDE.mtb-edits` 2026-11-23. Not yet reconciled |
 | E04 | Prefix Washoe County zoning IDs with WCTAP | Ready. Run last |
 
 ### Answers from Mason, 2026-11-23
@@ -125,6 +125,18 @@ Permissible Use (10,812 to 10,907):
 Special Designation (515 to 516): one row added in each of 034 and 054. OBJECTID 493 deleted, which was the F24 duplicate in 045, so that F24 row is already done.
 
 Effect on the fix package: Alyssa's version touches districts the package also edits: A01 in 034, 042, and 045_SA1, and A03 in 054. Some of these fixes may already be applied. A04's 055 and 056 rows now belong to WCTAP_055 and WCTAP_056. Rebuild the fix rows against the version before posting any of them.
+
+## Edits made in SDE.mtb-edits, 2026-11-23
+
+Run on the server; logs and before-state CSVs are in the server's `Zoning/outputs/`. Not yet reconciled into Alyssa's version.
+
+| Fix | Result |
+|---|---|
+| E03 | Deleted District 842. Deleted the 28 copied 035 use rows and wrote 035 back on the 28 originals and the 1 Special Designation row. |
+| F35 | Restored TVAP_TC_NP on Special Designation rows 145, 164, and 207. |
+| F36 | Deleted 59 fully blank use rows (10,879 to 10,820), including F22's 12762. |
+
+Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special designation rows, and no duplicate zoning IDs. Use rows with a null key are down from 91 to 32; A05 deletes those. No Special Designation rows have a null key. Fix package: 801 rows match. The 2 not found in the version are F24's 493 (deleted by Alyssa) and F22's 12762 (deleted by F36), so both fixes are done.
 
 ## Recommended order
 
