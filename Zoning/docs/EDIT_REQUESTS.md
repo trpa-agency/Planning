@@ -123,12 +123,14 @@ The rename goes last. Do every edit keyed on the old IDs first, then rename in o
 
 Every script that touches SDE runs on the server, from a clone of this repo. Code is written and tested locally against `data/test/zoning_test.gdb` (built by `tests/build_test_gdb.py`), pushed to `main`, then pulled on the server.
 
-1. In Pro, create the QA edit version as a Protected child of `Misc edits Nov 2026`, and a `.sde` connection file whose version is that edit version.
-2. In `config.yaml` on the server, set `sde.connection`, `sde.edit_version` (full name with owner prefix), and the owner prefix on the `protected_versions` entry for Alyssa's version. Confirm the `datasets` names in Catalog, including any feature dataset prefix, and fill in `local_plan_parcels`.
-3. Snapshot (read only): `python scripts/snapshot_version.py`. Review `outputs/snapshot_<time>/`, especially `watch_districts.csv` for how Alyssa keyed the 055 and 056 halves, `duplicate_zoning_ids.csv`, and `fix_id_check.csv`.
-4. E03 dry run: `python scripts/e03_delete_duplicate_district.py`. It confirms that 842 and 405 are the only 035 features, that 842 adds no area, and saves the related rows to `outputs/e03_<time>/related_rows_before.csv`.
-5. E03 write: set `run.write_to_db: true`, rerun, then set it back to `false`. The script refuses to write unless the connection is the edit version. Every check runs inside the edit session, and any failure discards the edit.
-6. Rerun the snapshot to confirm the state after the edit.
+1. Edit version: `SDE.mtb-edits`, Protected, a child of `"TAHOE\ABETTINGER"."Misc edits Nov 2026"` (created 2026-11-23).
+2. Connection: copy `F:\GIS\DB_CONNECT\Vector.sde` to `F:\GIS\DB_CONNECT\Vector_mtb-edits.sde`. In Pro, add the copy, right-click it, open **Connection Properties**, and set the transactional version to `mtb-edits`. Leave `Vector.sde` on DEFAULT. `config.yaml` already points at the copy.
+3. After each push: `git pull origin main` on the server branch (`mtb-arc11`).
+4. Snapshot (read only): `python Zoning/scripts/snapshot_version.py`. The log should say `Connected version: SDE.mtb-edits` with no warnings. Review `Zoning/outputs/snapshot_<time>/`: `watch_districts.csv` for how Alyssa keyed the 055 and 056 halves, `duplicate_zoning_ids.csv` for 035 on 405 and 842, and `fix_id_check.csv`.
+5. E03 dry run: `python Zoning/scripts/e03_delete_duplicate_district.py`. It confirms that 842 and 405 are the only 035 features, that 842 adds no area, and saves the related rows to `outputs/e03_<time>/related_rows_before.csv`.
+6. F35 dry run: `python Zoning/scripts/f35_restore_orphaned_designations.py`. It confirms the three rows still have a null key and the TVAP_TC_NP description, and that TVAP_TC_NP doesn't already have those designations.
+7. Writes: set `run.write_to_db: true`, run E03, then run F35, then set it back to `false`. Both scripts refuse to write unless the connection is `SDE.mtb-edits`. Every check runs inside the edit session, and any failure discards the edit. A rerun after a successful write stops at the guards.
+8. Rerun the snapshot to confirm: no duplicate 035, and Special Designation null keys go from 3 to 0.
 
 Use the Pro Python: `"C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe"`.
 

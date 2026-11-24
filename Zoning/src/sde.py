@@ -47,12 +47,17 @@ def dataset_path(config: dict, key: str) -> str | None:
     return path
 
 
+def _clean(name: str) -> str:
+    """Lowercase and drop quotes; OS-authenticated owners print as "DOMAIN\\USER"."""
+    return str(name).replace('"', "").strip().lower()
+
+
 def _matches(version: str, names) -> bool:
     """Match a version against names; a name without an owner prefix matches any owner."""
-    version = version.lower()
-    tail = version.split(".", 1)[-1]
+    version = _clean(version)
+    tail = version.rsplit(".", 1)[-1] if "." in version else version
     for name in names:
-        name = name.lower()
+        name = _clean(name)
         if version == name or ("." not in name and tail == name):
             return True
     return False
@@ -86,7 +91,7 @@ def check_version(config: dict, log: logging.Logger, for_write: bool) -> str | N
         log.warning("Connected to protected version %s; read only.", version)
     if _matches(version, protected) and for_write:
         raise GuardError(f"Refusing to write to protected version {version}.")
-    if version.lower() != expected.lower():
+    if not _matches(version, [expected]):
         message = f"Connected to {version}, not the QA edit version {expected}."
         if for_write:
             raise GuardError(message)

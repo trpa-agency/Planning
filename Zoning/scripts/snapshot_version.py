@@ -20,6 +20,7 @@ Read only. Run from the Zoning folder:
 from __future__ import annotations
 
 import csv
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -214,7 +215,7 @@ def main() -> int:
 
     snap_dir = io.resolve(config["paths"]["snapshots"])
     snap_dir.mkdir(parents=True, exist_ok=True)
-    label = (version or "local").replace(".", "_").replace(" ", "_")
+    label = re.sub(r"[^A-Za-z0-9_]+", "_", version or "local").strip("_")
     gdb_name = f"{label}_{stamp}.gdb"
     arcpy.management.CreateFileGDB(str(snap_dir), gdb_name)
     gdb = str(snap_dir / gdb_name)

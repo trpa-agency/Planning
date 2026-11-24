@@ -10,9 +10,10 @@ sde:
   # backslashes; double quotes treat backslashes as escapes.
   # For writes, this connection must point at the QA edit version. The snapshot logs
   # the connected version, so run it first to see the name.
-  connection: "F:/GIS/DB_CONNECT/Vector.sde"
-  # Full version name as shown in the Versions view, owner prefix included.
-  edit_version: "OWNER.Zoning_QA_Edits"
+  # Vector.sde points at DEFAULT. This copy points at the mtb-edits version.
+  connection: "F:/GIS/DB_CONNECT/Vector_mtb-edits.sde"
+  # Owner SDE, Protected, child of Alyssa's "Misc edits Nov 2026" (created 2026-11-23).
+  edit_version: "SDE.mtb-edits"
   # Writes are refused when the connection points at any of these. A name without an
   # owner prefix matches that version under any owner.
   protected_versions:
@@ -57,3 +58,14 @@ e03:
   keep_objectid: 405
   # Abort if the duplicate covers more than this many acres outside the kept shape.
   max_extra_acres: 0.01
+
+f35:
+  # Restore ZONING_ID on Special Designation rows orphaned by a TVAP_TC_NP shape edit.
+  # Found in the DEFAULT snapshot of 2026-11-23; see docs/EDIT_REQUESTS.md.
+  table: special_designation
+  zoning_id: TVAP_TC_NP
+  zoning_description: "Tahoe Valley Area Plan - Town Center Neighborhood Professional"
+  rows:
+    - {objectid: 145, globalid: "{BEE7739F-C287-42CB-9915-6A06B4E8C029}"}
+    - {objectid: 164, globalid: "{F0ED7835-9BB0-4646-AF0F-D3BC30EAD9C2}"}
+    - {objectid: 207, globalid: "{C173A649-23D3-4B22-9F36-C771EB51207B}"}
