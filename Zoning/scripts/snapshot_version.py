@@ -175,6 +175,11 @@ def fix_id_check(config: dict, snap: dict[str, str], log) -> list[dict]:
                 table = default_table or TABLE_NAMES.get(str(row.get("TABLE", "")).strip().lower())
                 guid = sde.norm_guid(row.get("GlobalID"))
                 oid = str(row.get("OBJECTID", "")).strip()
+                # Some fix files store OBJECTIDs as floats, for example "4256.0".
+                try:
+                    oid = str(int(float(oid)))
+                except ValueError:
+                    pass
                 if table is None or not guid:
                     status, found_oid = "not checkable", ""
                 elif guid not in lookup[table]:
