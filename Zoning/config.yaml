@@ -58,6 +58,22 @@ e03:
   keep_objectid: 405
   # Abort if the duplicate covers more than this many acres outside the kept shape.
   max_extra_acres: 0.01
+  # Copying 405 to make 842 also copied its 28 use rows (all keyed 035, created
+  # 2026-11-20 23:51:47). Delete the copies and keep the originals: within each set of
+  # rows with identical content, the lowest OBJECTID is kept. The script stops if the
+  # number of copies differs from this count.
+  dedupe_tables: [permissible_uses]
+  dedupe_fields:
+    permissible_uses: [Category, Subcategory, Use_Type, Use_Status, Density, Unit, Notes]
+  expected_duplicates:
+    permissible_uses: 28
+
+f36:
+  # Delete use rows where every field below is blank. In mtb-edits that is 58 rows added
+  # on 2026-11-20 plus OBJECTID 12762 from DEFAULT (fix F22), 59 in all.
+  table: permissible_uses
+  fields: [Zoning_ID, Category, Subcategory, Use_Type, Use_Status, Density, Unit, Notes]
+  expected_count: 59
 
 f35:
   # Restore ZONING_ID on Special Designation rows orphaned by a TVAP_TC_NP shape edit.
