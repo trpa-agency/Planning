@@ -8,7 +8,7 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 
 | ID | Request | Status |
 |---|---|---|
-| E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Washoe lists posted with the table fixes (A04). Carson City package `packages/e01_carson_pas` built and tested; not yet posted |
+| E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Done in `SDE.mtb-edits` 2026-11-24. Washoe lists via A04; Carson City lists via `packages/e01_carson_pas`. Not yet reconciled |
 | E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
 | E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Done in `SDE.mtb-edits` 2026-11-23. Not yet reconciled |
 | E04 | Prefix Washoe County zoning IDs with WCTAP | Ready. Run last |
@@ -149,6 +149,8 @@ Run on the server; logs and before-state CSVs are in the server's `Zoning/output
 | Table fixes | 23:48. Posted the rebuilt package (rebuild 23:44): 95 updates, 687 deletes (655 use, 32 special designation), and 806 inserts, covering F01 to F24 and A01 to A06 less what was already done. PermissibleUses 10,820 to 10,971 and Special_Designation 516 to 484, with no null keys and no duplicate district and use pairs. Confirmed by a rebuild at 23:52: all 1,592 table fix rows read done; left are the A03 054 conflict (Alyssa's row stands), F25 to F29 pending, and F30 to F33 dropped. |
 
 Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special designation rows, and no duplicate zoning IDs. Use rows with a null key are down from 91 to 32; A05 deletes those. No Special Designation rows have a null key. Fix package: 801 rows match. The 2 not found in the version are F24's 493 (deleted by Alyssa) and F22's 12762 (deleted by F36), so both fixes are done.
+
+E01 Carson City, posted 2026-11-24 00:09: 2 PLAN_TYPE updates, 63 use rows (055 and 056), and 2 special designation copies (WCTAP_055 and WCTAP_056). PermissibleUses 10,971 to 11,034 and Special_Designation 484 to 486, with no null keys and no duplicate district and use pairs.
 
 ## Fix package rebuilt against SDE.mtb-edits, 2026-11-23 (23:28)
 
