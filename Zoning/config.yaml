@@ -24,8 +24,8 @@ sde:
 # geodatabase root (standalone tables cannot live in a feature dataset).
 datasets:
   district: SDE.Planning/SDE.District
-  permissible_uses: SDE.Planning/SDE.PermissibleUses
-  special_designation: SDE.Planning/SDE.Special_Designation
+  permissible_uses: SDE.PermissibleUses          # confirmed at root 2026-11-23
+  special_designation: SDE.Special_Designation   # assumed at root, like PermissibleUses
   parcel: SDE.Parcels/SDE.Parcel_Master
   local_plan_parcels: null           # Local Plan parcel feature class; fill in once known
 

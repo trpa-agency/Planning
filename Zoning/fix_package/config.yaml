@@ -10,8 +10,8 @@ project:
 sde:
   workspace: "F:/GIS/DB_CONNECT/Vector.sde"
   district: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Planning/SDE.District"
-  permissible_uses: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Planning/SDE.PermissibleUses"
-  special_designation: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Planning/SDE.Special_Designation"
+  permissible_uses: "F:/GIS/DB_CONNECT/Vector.sde/SDE.PermissibleUses"
+  special_designation: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Special_Designation"
   parcel: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Parcels/SDE.Parcel_Master"
 
 fixes:
