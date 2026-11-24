@@ -6,7 +6,7 @@ State on 2026-11-24: all edits are in `SDE.mtb-edits`. Done there: E01, E03, and
 
 ## Now
 
-1. **Decide what this public repo should show.** `trpa-agency/Planning` is public. The `Zoning` docs and config name the server connection folder, version owners, and staff. They hold no credentials. Options: leave it as is, move server paths into the gitignored `config.server.yaml`, or move `Zoning` to a private repo. Ask Claude to do whichever you pick.
+1. ~~Decide what this public repo should show.~~ Decided 2026-11-24: leave it as is. `trpa-agency/Planning` is public, and the `Zoning` docs and config name the server connection folder, version owners, and staff. They hold no credentials, and none ever go in the repo.
 2. **Reconcile and post `mtb-edits` into `Misc edits Nov 2026`** in Pro. Use the Versioning tab: reconcile by attribute, in favor of the target version, aborting on conflicts the first time. Then post.
 3. **Verify the post.** Make `Vector_misc.sde` pointing at Alyssa's version and a `config.server.yaml` that uses it, then snapshot both versions and compare. Ask Claude: "verify the reconcile". The compare should show no differences beyond anything Alyssa edited after Nov. 23.
 4. **Send Alyssa the review note:** [REVIEW_2026-11-24.md](REVIEW_2026-11-24.md).
