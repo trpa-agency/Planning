@@ -11,7 +11,7 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 | E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Done in `SDE.mtb-edits` 2026-11-24. Washoe lists via A04; Carson City lists via `packages/e01_carson_pas`. Not yet reconciled |
 | E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
 | E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Done in `SDE.mtb-edits` 2026-11-23. Not yet reconciled |
-| E04 | Prefix Washoe County zoning IDs with WCTAP | Script `scripts/e04_prefix_wctap.py` built and tested; not yet run. Run last |
+| E04 | Prefix Washoe County zoning IDs with WCTAP | Done in `SDE.mtb-edits` 2026-11-24: 36 districts, 1,340 use rows, and 66 special designation rows. Parcels follow on the next ETL run. Not yet reconciled |
 
 ### Answers from Mason, 2026-11-23
 
@@ -156,7 +156,22 @@ Run on the server; logs and before-state CSVs are in the server's `Zoning/output
 
 Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special designation rows, and no duplicate zoning IDs. Use rows with a null key are down from 91 to 32; A05 deletes those. No Special Designation rows have a null key. Fix package: 801 rows match. The 2 not found in the version are F24's 493 (deleted by Alyssa) and F22's 12762 (deleted by F36), so both fixes are done.
 
+E04, run 2026-11-24 00:23: renamed 36 WCTAP districts (019 through 054_SA1) to `WCTAP_<id>`, with 1,340 use rows and 66 special designation rows rekeyed by GlobalID. Totals are unchanged and there are no null keys. WCTAP_055 and WCTAP_056 were already prefixed; the Carson City 055 and 056 carry their own PLAN_IDs and were not candidates. The rebuild script keys on the old IDs, so it no longer applies to the 2026-11-20 package, which is fully posted.
+
+After posting to DEFAULT: run the parcel ETL so `SDE.Parcel_Master` (also published as LocalPlan/MapServer/0) picks up the new IDs. Until then, Washoe parcels carry the old IDs and parcel-based use lookups return nothing for them. Retest the LongRange and Permitting zoning apps after the ETL.
+
 E01 Carson City, posted 2026-11-24 00:09: 2 PLAN_TYPE updates, 63 use rows (055 and 056), and 2 special designation copies (WCTAP_055 and WCTAP_056). PermissibleUses 10,971 to 11,034 and Special_Designation 484 to 486, with no null keys and no duplicate district and use pairs.
+
+## District geometry (F25 to F29, F34), built 2026-11-24
+
+`scripts/fix_district_geometry.py` computes the fixes from the version's current shapes instead of loading the 2026-11-20 replacement shapes. It can't undo a later edit, and it follows the E04 rename (030 and 040 are WCTAP_030 and WCTAP_040).
+
+- F25 dropped. Esri Check Geometry (ESRI method) finds no problem with the three shapes. They fail only the OGC method: they are self-touching rings, which ArcGIS allows. [Certain]
+- F26 to F28: each overlap is clipped off the losing district, and parts under 1 square meter are dropped. The expected overlaps are 6.4386, 0.5213, and 0.0117 acres.
+- F29: the hole under parcel 032-141-018 (1.0451 acres) is found by differencing nearby districts and merged into TVAP_TC_G.
+- F34: stored ACRES is planar area in EPSG 26910; 255 of 281 districts match to 0.01 acres. The rest drifted after shape edits, for example PCAP_RES_CHAMBERS stored at 372.48 but measuring 409.78. The script resets ACRES where it is off by more than 0.001 acres: 81 districts in the DEFAULT state, 28 of them by more than 0.01.
+- Guards: each district exists once; each overlap and the fill are within 0.05 acres of expected; after writing, each pair overlaps by less than 1 square meter, the fill overlaps no other district, and the parcel is covered. A fix already in place is skipped, so a rerun changes nothing.
+- Tested on a copy of the public districts: the computed shapes match the 2026-11-20 replacement shapes in the delivered zip with 0.000 square meters of difference. Write, verify, and rerun all behaved.
 
 ## Fix package rebuilt against SDE.mtb-edits, 2026-11-23 (23:28)
 

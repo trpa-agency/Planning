@@ -14,7 +14,9 @@ Paths moved from the handoff bundle (section 14):
 - `snapshot_2026-11-20/` is now `data/raw/snapshot_2026-11-20/` (gitignored).
 - `prototype/` and `fix_package/` sit at the folder root, unchanged.
 
-Active work: staff edit requests are tracked in `docs/EDIT_REQUESTS.md` (E-series IDs). Read it before any SDE edit. It sets the order: the WCTAP zoning ID rename (E04) runs last, because every fix in the package uses the old IDs.
+Start here: `docs/NEXT_STEPS.md` is the current to-do list, in order. Staff edit requests are tracked in `docs/EDIT_REQUESTS.md` (E-series IDs), and `docs/REVIEW_2026-11-24.md` is the plain-language note for Alyssa.
+
+Active work: Read it before any SDE edit. It sets the order: the WCTAP zoning ID rename (E04) runs last, because every fix in the package uses the old IDs.
 
 SDE edit workflow: edits are made from a clone of this repo on the server, in a named version, alongside Alyssa's edit version. Confirm whether the data is traditionally versioned or branch versioned before you create versions. Branch versioning allows only one level of versions under DEFAULT. Details are in `docs/EDIT_REQUESTS.md`.
 
