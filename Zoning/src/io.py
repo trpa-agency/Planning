@@ -44,17 +44,21 @@ def timestamp() -> str:
 def get_logger(name: str, config: dict, stamp: str) -> logging.Logger:
     log_dir = resolve(config["paths"]["logs"])
     log_dir.mkdir(parents=True, exist_ok=True)
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    logger.handlers.clear()
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s", "%Y-%m-%d %H:%M:%S")
-    for handler in (
+    handlers = [
         logging.StreamHandler(sys.stdout),
         logging.FileHandler(log_dir / f"{name}_{stamp}.log", encoding="utf-8"),
-    ):
+    ]
+    for handler in handlers:
         handler.setFormatter(fmt)
-        logger.addHandler(handler)
-    return logger
+    # The script logger and the shared helper logger write to the same places.
+    for logger_name in (name, "sde"):
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(logging.INFO)
+        logger.handlers.clear()
+        for handler in handlers:
+            logger.addHandler(handler)
+    return logging.getLogger(name)
 
 
 def run_folder(config: dict, name: str, stamp: str) -> Path:

@@ -6,24 +6,27 @@ project:
   owner: Mason Bindl
 
 sde:
-  # .sde connection file whose transactional version is the QA edit version.
-  # Create it in Pro: New Database Connection, then set Version to the QA edit version.
-  connection: "C:/path/to/zoning_qa_edits.sde"
-  # Full version names as shown in the Versions view, owner prefix included.
+  # .sde connection file on the server. Use forward slashes, or single quotes with
+  # backslashes; double quotes treat backslashes as escapes.
+  # For writes, this connection must point at the QA edit version. The snapshot logs
+  # the connected version, so run it first to see the name.
+  connection: "F:/GIS/DB_CONNECT/Vector.sde"
+  # Full version name as shown in the Versions view, owner prefix included.
   edit_version: "OWNER.Zoning_QA_Edits"
-  # Writes are refused when the connection points at any of these.
+  # Writes are refused when the connection points at any of these. A name without an
+  # owner prefix matches that version under any owner.
   protected_versions:
-    - "sde.DEFAULT"
-    - "dbo.DEFAULT"
-    - "OWNER.Misc edits Nov 2026"
+    - "DEFAULT"
+    - "Misc edits Nov 2026"
 
-# Dataset paths relative to the connection. Prefix a feature dataset if there is one,
-# for example "SDE.Zoning/SDE.District".
+# Dataset paths relative to the connection, with a feature dataset prefix where there
+# is one. If a prefixed path does not exist, the scripts look for the name at the
+# geodatabase root (standalone tables cannot live in a feature dataset).
 datasets:
-  district: SDE.District
-  permissible_uses: SDE.PermissibleUses
-  special_designation: SDE.Special_Designation
-  parcel: SDE.Parcel                 # name assumed; confirm in Catalog
+  district: SDE.Planning/SDE.District
+  permissible_uses: SDE.Planning/SDE.PermissibleUses
+  special_designation: SDE.Planning/SDE.Special_Designation
+  parcel: SDE.Parcels/SDE.Parcel_Master
   local_plan_parcels: null           # Local Plan parcel feature class; fill in once known
 
 # Key field name per dataset. Permissible Use spells it differently.

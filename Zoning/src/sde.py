@@ -20,11 +20,42 @@ def workspace(config: dict) -> str:
     return config["sde"]["connection"]
 
 
+_RESOLVED: dict[tuple[str, str], str] = {}
+
+
 def dataset_path(config: dict, key: str) -> str | None:
+    """Return the full path to a configured dataset.
+
+    A name with a feature dataset prefix that does not exist falls back to the bare name
+    at the workspace root, since standalone tables cannot live in a feature dataset.
+    """
     name = config["datasets"].get(key)
     if not name:
         return None
-    return os.path.join(workspace(config), *name.split("/"))
+    ws = workspace(config)
+    cache_key = (ws, name)
+    if cache_key in _RESOLVED:
+        return _RESOLVED[cache_key]
+    parts = [p for p in name.replace("\\", "/").split("/") if p]
+    path = os.path.join(ws, *parts)
+    if len(parts) > 1 and not arcpy.Exists(path):
+        root = os.path.join(ws, parts[-1])
+        if arcpy.Exists(root):
+            logging.getLogger("sde").info("%s not found; using %s", path, root)
+            path = root
+    _RESOLVED[cache_key] = path
+    return path
+
+
+def _matches(version: str, names) -> bool:
+    """Match a version against names; a name without an owner prefix matches any owner."""
+    version = version.lower()
+    tail = version.split(".", 1)[-1]
+    for name in names:
+        name = name.lower()
+        if version == name or ("." not in name and tail == name):
+            return True
+    return False
 
 
 def connected_version(ws: str) -> str | None:
@@ -49,9 +80,11 @@ def check_version(config: dict, log: logging.Logger, for_write: bool) -> str | N
         log.info("Workspace %s is not an enterprise geodatabase; version check skipped.", ws)
         return None
     expected = config["sde"]["edit_version"]
-    protected = {v.lower() for v in config["sde"].get("protected_versions", [])}
+    protected = config["sde"].get("protected_versions", [])
     log.info("Connected version: %s (expected %s)", version, expected)
-    if version.lower() in protected and for_write:
+    if _matches(version, protected):
+        log.warning("Connected to protected version %s; read only.", version)
+    if _matches(version, protected) and for_write:
         raise GuardError(f"Refusing to write to protected version {version}.")
     if version.lower() != expected.lower():
         message = f"Connected to {version}, not the QA edit version {expected}."

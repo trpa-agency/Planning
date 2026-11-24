@@ -1,16 +1,18 @@
+# Reference copy from the 2026-11-20 fix package. The scripts in Zoning/scripts read
+# Zoning/config.yaml, not this file.
 project:
   name: zoning-qa-fixes
-  owner: mason.bindl@trpa.gov
+  owner: mbindl@trpa.gov
   built: 2026-11-20
 
-# SDE targets. Point these at your own .sde connection file before running any script.
-# No credentials go here; the .sde connection file holds them.
+# SDE targets on the server. No credentials go here; the .sde connection file holds them.
+# Forward slashes: inside double quotes, YAML reads backslashes as escape characters.
 sde:
-  workspace: "C:/path/to/your/connection.sde"
-  district: "C:/path/to/your/connection.sde/SDE.District"
-  permissible_uses: "C:/path/to/your/connection.sde/SDE.PermissibleUses"
-  special_designation: "C:/path/to/your/connection.sde/SDE.Special_Designation"
-  parcel: "C:/path/to/your/connection.sde/SDE.Parcel"
+  workspace: "F:/GIS/DB_CONNECT/Vector.sde"
+  district: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Planning/SDE.District"
+  permissible_uses: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Planning/SDE.PermissibleUses"
+  special_designation: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Planning/SDE.Special_Designation"
+  parcel: "F:/GIS/DB_CONNECT/Vector.sde/SDE.Parcels/SDE.Parcel_Master"
 
 fixes:
   gdb: data/Zoning_QA_Fixes_2026-11-20.gdb
