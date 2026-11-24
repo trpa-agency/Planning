@@ -163,6 +163,14 @@ Every script that touches SDE runs on the server, from a clone of this repo. Cod
 8. Writes: set `run.write_to_db: true`, run E03, F35, and F36, then set it back to `false`. Both scripts refuse to write unless the connection is `SDE.mtb-edits`. Every check runs inside the edit session, and any failure discards the edit. A rerun after a successful write stops at the guards.
 9. Rerun the snapshot to confirm: no duplicate 035, use rows with a null key go from 91 to 32 (DEFAULT's 33 minus F22's empty row; A05 deletes the rest), and Special Designation null keys go from 3 to 0.
 
+Rebuild the fix package against the version before posting any of it (read only):
+
+```
+python Zoning/scripts/rebuild_fixes.py --default Zoning/data/snapshots/sde_DEFAULT_20261123_205432.gdb
+```
+
+It marks every fix row as pending, done, conflict, missing, or no_district, moves the A04 rows for 055 and 056 to WCTAP_055 and WCTAP_056, and writes `outputs/rebuild_<time>/`: `fix_status.csv`, `review.csv` (rows to settle by hand), `extra_rows_in_replaced_districts.csv`, and `rebuilt/` (only the pending rows, in the package's own columns). `--default` adds the District geometry check. Against the unchanged 2026-11-20 state it reproduces the package exactly: 1,537 pending, and 10,812 use rows to 10,900 (10,963 less the 63 A04 rows whose districts do not exist in DEFAULT).
+
 Use the Pro Python: `"C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe"`.
 
 Local test results, 2026-11-23: deleting the duplicate in a simple relationship nulled the key on all 28 use rows and the 1 Special Designation row, and the script wrote all 29 back. The guard stopped the script on a wrong OBJECTID and on a rerun after the delete.

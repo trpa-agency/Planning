@@ -68,6 +68,14 @@ e03:
   expected_duplicates:
     permissible_uses: 28
 
+rebuild:
+  # Insert rows to move to a new ZONING_ID before checking, by fix ID.
+  # Alyssa split 055 and 056; the Washoe code tables (A04) belong to the Washoe halves.
+  rekey:
+    A04: {"055": "WCTAP_055", "056": "WCTAP_056"}
+  # Copied through unchanged; these are decisions, not edits.
+  passthrough: [pending_rulings.csv, area_pending_rulings.csv, pending_split_parcels.csv]
+
 f36:
   # Delete use rows where every field below is blank. In mtb-edits that is 58 rows added
   # on 2026-11-20 plus OBJECTID 12762 from DEFAULT (fix F22), 59 in all.
