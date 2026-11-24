@@ -1,7 +1,9 @@
 """Snapshot the QA edit version before any edits.
 
 Exports District, PermissibleUses, Special_Designation, and the parcel layers to a
-timestamped file geodatabase (GlobalIDs preserved), then writes review CSVs:
+timestamped file geodatabase. GlobalIDs are preserved; the export renumbers OBJECTIDs,
+so each copy carries the original in SRC_OBJECTID. Review CSVs read the source
+datasets directly, so every OBJECTID they report is the real one:
 
 - counts.csv               row counts per dataset
 - watch_districts.csv      District rows matching snapshot.watch_zoning_ids, with acres
@@ -48,10 +50,35 @@ TABLE_NAMES = {
 }
 
 
-def export(config: dict, gdb: str, log) -> dict[str, str]:
-    """Export each configured dataset into the snapshot geodatabase."""
+def add_source_oids(source: str, target: str, log) -> None:
+    """Record each row's source OBJECTID in the copy.
+
+    Exporting to a file geodatabase renumbers OBJECTIDs, so the copy carries the
+    original in SRC_OBJECTID, matched on the preserved GlobalID.
+    """
+    if not any(f.type == "GlobalID" for f in arcpy.ListFields(source)):
+        log.warning("%s has no GlobalID field; SRC_OBJECTID not written.", source)
+        return
+    by_guid = {sde.norm_guid(g): oid for oid, g in arcpy.da.SearchCursor(source, ["OID@", "GlobalID"])}
+    arcpy.management.AddField(target, "SRC_OBJECTID", "LONG")
+    missing = 0
+    with arcpy.da.UpdateCursor(target, ["GlobalID", "SRC_OBJECTID"]) as cursor:
+        for guid, _ in cursor:
+            oid = by_guid.get(sde.norm_guid(guid))
+            missing += oid is None
+            cursor.updateRow([guid, oid])
+    if missing:
+        log.warning("%s: %s rows in the copy had no matching source GlobalID.", target, missing)
+
+
+def export(config: dict, gdb: str, log) -> tuple[dict[str, str], dict[str, str]]:
+    """Export each configured dataset into the snapshot geodatabase.
+
+    Returns the source paths and the copy paths. Review CSVs read the sources, so the
+    OBJECTIDs they report are the real ones.
+    """
     arcpy.env.preserveGlobalIds = True
-    exported = {}
+    sources, exported = {}, {}
     for key in config["datasets"]:
         source = sde.dataset_path(config, key)
         if source is None:
@@ -67,9 +94,10 @@ def export(config: dict, gdb: str, log) -> dict[str, str]:
             arcpy.conversion.ExportTable(source, target)
         else:
             arcpy.conversion.ExportFeatures(source, target)
-        exported[key] = target
+        add_source_oids(source, target, log)
+        sources[key], exported[key] = source, target
         log.info("Exported %s: %s rows", key, sde.count(target))
-    return exported
+    return sources, exported
 
 
 def watch_where(config: dict) -> str:
@@ -188,7 +216,8 @@ def main() -> int:
     log.info("Snapshot geodatabase: %s", gdb)
 
     try:
-        snap = export(config, gdb, log)
+        # Review CSVs read the source datasets, not the copies, so OBJECTIDs are real.
+        snap, _copies = export(config, gdb, log)
     except sde.GuardError as err:
         log.error(str(err))
         return 1
@@ -207,7 +236,8 @@ def main() -> int:
 
     nulls = null_keys(config, snap)
     sde.write_csv(out / "null_keys.csv", nulls, ["TABLE", "OBJECTID", "GlobalID"])
-    log.info("Related rows with a null or blank key: %s", len(nulls))
+    for table, n in sorted(Counter(r["TABLE"] for r in nulls).items()):
+        log.info("Related rows with a null or blank key, %s: %s", table, n)
 
     checks = fix_id_check(config, snap, log)
     sde.write_csv(out / "fix_id_check.csv", checks)
