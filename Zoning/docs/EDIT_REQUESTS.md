@@ -138,6 +138,34 @@ Run on the server; logs and before-state CSVs are in the server's `Zoning/output
 
 Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special designation rows, and no duplicate zoning IDs. Use rows with a null key are down from 91 to 32; A05 deletes those. No Special Designation rows have a null key. Fix package: 801 rows match. The 2 not found in the version are F24's 493 (deleted by Alyssa) and F22's 12762 (deleted by F36), so both fixes are done.
 
+## Fix package rebuilt against SDE.mtb-edits, 2026-11-23 (23:28)
+
+1,641 rows pending, 4 done, 1 conflict, and nothing missing. After posting, PermissibleUses goes from 10,820 to 10,971 and Special_Designation from 516 to 484.
+
+- A01: 2 done. Alyssa set the same Use_Status in 034 and 042. [Likely]
+- A03: 1 conflict, resolved in favor of Alyssa's row. 054 Employee Housing already exists in her version with the same status, plus a density of 15 units per acre; the A03 insert carried no density, because area plan densities were not checked in the QA pass. Her row stands, and the rebuilt package leaves the insert out.
+- F22 and F24 (493): done, deleted by F36 and by Alyssa.
+- A04: all 158 pending, with 055 and 056 rekeyed to WCTAP_055 and WCTAP_056.
+- F25 to F29: pending; the targeted district shapes are unchanged from DEFAULT.
+- F30 to F33: pending; `SDE.Parcel_Master` has ZONING_ID, ZONING_DESCRIPTION, PLAN_ID, and PLAN_NAME, and every old value still matches.
+- No use rows sit in A05 districts outside A05.
+
+Decided 2026-11-23: the parcel ETL sets the Parcel_Master zoning fields from District, so F30 to F33 are dropped (`rebuild.drop` in `config.yaml`). The ETL carries the district fixes through to parcels.
+
+Still open: F25 to F29 need the replacement shapes from the fix geodatabase in the delivered zip, which is not in the repo.
+
+### Posting the table fixes
+
+`scripts/post_table_fixes.py` applies the rebuilt updates, deletes, and inserts to PermissibleUses and Special_Designation in one edit session. Order: updates, then deletes, then inserts. Before anything is written, it checks every target by GlobalID and every old value, and stops unless the projected counts equal `post_tables.expected_counts` (10,971 and 484). It also stops if any row would be left with a null key. It verifies the final counts and null keys inside the session before saving.
+
+1. Rebuild fresh, so the package matches the version as it is now:
+   `python Zoning/scripts/rebuild_fixes.py --default Zoning/data/snapshots/sde_DEFAULT_20261123_205432.gdb`
+2. Dry run: `python Zoning/scripts/post_table_fixes.py --rebuilt Zoning/outputs/rebuild_<time>/rebuilt`
+3. Write: set `run.write_to_db: true`, rerun step 2, then `git checkout -- Zoning/config.yaml`.
+4. Confirm: rerun the rebuild. Every table fix should read done, and only F25 to F29 should stay pending.
+
+Tested on the 2026-11-20 state: 97 updates, 689 deletes, and 744 inserts posted. The result was 10,900 and 482 rows with no null keys and no duplicate district and use pairs. A second run stopped without writing, and the rebuild afterward read every table fix as done.
+
 ## Recommended order
 
 1. Create the QA edit version as a Protected child of `Misc edits Nov 2026`.

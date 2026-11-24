@@ -65,6 +65,8 @@ def main() -> int:
         "district": "District", "permissible_uses": "PermissibleUses",
         "special_designation": "Special_Designation", "parcel": None, "local_plan_parcels": None,
     }
+    # The fixed server targets do not apply to the 2026-11-20 state; use computed counts only.
+    config.setdefault("post_tables", {})["expected_counts"] = None
     for key in ("snapshots", "outputs", "logs"):
         config["paths"][key] = f"data/test/{key}"
     (ROOT / "tests" / "snapshot_test_config.yaml").write_text(

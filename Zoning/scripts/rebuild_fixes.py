@@ -13,6 +13,7 @@ Statuses:
 - missing      the target row of an update no longer exists; review
 - no_district  an insert targets a ZONING_ID with no District feature; review
 - not_checkable the target dataset or field is not configured
+- dropped      left out on purpose (rebuild.drop in config.yaml, with the reason)
 
 Outputs, under outputs/rebuild_<time>/:
 - fix_status.csv         every fix row with its status, current value, and note
@@ -39,6 +40,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import arcpy  # noqa: E402
 
 from src import io, sde  # noqa: E402
+from src.values import norm, same, table_of, use_key  # noqa: E402
 
 PU_FIELDS = ["Zoning_ID", "Category", "Subcategory", "Use_Type", "Use_Status", "Density", "Unit", "Notes"]
 INSERT_COMPARE = ["Category", "Use_Status", "Density", "Unit"]
@@ -57,48 +59,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-# ---------- value helpers ----------
-
-NUMERIC_FIELDS = {"density"}
-
-
-def norm(value, numeric: bool = False):
-    """Normalize for comparison.
-
-    Blank is None. Text ignores case and collapses whitespace, including line breaks.
-    Only numeric fields compare as numbers; zoning IDs must stay text ("45" is not "045").
-    """
-    if value is None:
-        return None
-    text = " ".join(str(value).split())
-    if text == "":
-        return None
-    if numeric:
-        try:
-            number = float(text)
-            return int(number) if number.is_integer() else number
-        except ValueError:
-            pass
-    return text.casefold()
-
-
-def same(a, b, field: str = "") -> bool:
-    numeric = field.casefold() in NUMERIC_FIELDS
-    return norm(a, numeric) == norm(b, numeric)
-
-
-def use_key(value) -> str:
-    return " ".join(str(value or "").casefold().split())
-
-
-def table_of(row: dict, default: str) -> str:
-    name = str(row.get("TABLE", "")).replace("_", "").casefold()
-    if name.startswith("special"):
-        return "special_designation"
-    if name.startswith("permissible"):
-        return "permissible_uses"
-    return default
-
+# ---------- file helpers ----------
 
 def read_csv(path: Path) -> tuple[list[str], list[dict]]:
     with path.open(encoding="utf-8") as handle:
@@ -283,14 +244,20 @@ def check_parcels(rows: list[dict], config: dict, file: str, log) -> list[dict]:
     return results
 
 
-def extra_rows_in_replaced(a05: list[dict], pu: dict) -> list[dict]:
-    """Use rows in A05's districts that A05 does not delete (would sit beside the A06 inserts)."""
+def extra_rows_in_replaced(a05: list[dict], a06: list[dict], pu: dict) -> list[dict]:
+    """Use rows in A05's districts that neither A05 deletes nor A06 inserts.
+
+    These would sit beside the replacement table. Rows matching an A06 insert are the
+    replacement itself (after posting), so they are not flagged.
+    """
     districts = {r["Zoning_ID"] for r in a05 if r.get("Zoning_ID")}
     listed = {sde.norm_guid(r["GlobalID"]) for r in a05}
+    replacement = {(r["Zoning_ID"], use_key(r["Use_Type"])) for r in a06}
     return [
         {"GlobalID": guid, **row}
         for guid, row in pu.items()
         if row.get("Zoning_ID") in districts and guid not in listed
+        and (row.get("Zoning_ID"), use_key(row.get("Use_Type"))) not in replacement
     ]
 
 
@@ -340,8 +307,16 @@ def main() -> int:
         results += check_inserts(files[name][1], tables["permissible_uses"], pending_deletes, district_ids, rekey, name)
     for name in DISTRICT_FILES:
         results += check_districts(files[name][1], version_districts, default_districts, name)
+
+    # Dropped fix IDs: checked and reported, but never written to the rebuilt package.
+    dropped = rebuild_cfg.get("drop", {}) or {}
+    drop_note = lambda r: f"Dropped: {dropped[r['FIX_ID']]}"  # noqa: E731
     for name in PARCEL_FILES:
         results += check_parcels(files[name][1], config, name, log)
+    for r in results:
+        if r.get("FIX_ID") in dropped and r["STATUS"] != "done":
+            r["NOTE"] = (drop_note(r) + " " + r.get("NOTE", "")).strip()
+            r["STATUS"] = "dropped"
 
     out = io.run_folder(config, "rebuild", stamp)
     rebuilt = out / "rebuilt"
@@ -367,7 +342,8 @@ def main() -> int:
             write_rows(rebuilt / name, columns, files[name][1])
 
     a05 = [r for r in files["area_pu_deletes.csv"][1] if r["FIX_ID"] == "A05"]
-    extra = extra_rows_in_replaced(a05, tables["permissible_uses"])
+    a06 = [r for r in files["area_pu_inserts.csv"][1] if r["FIX_ID"] == "A06"]
+    extra = extra_rows_in_replaced(a05, a06, tables["permissible_uses"])
     write_rows(out / "extra_rows_in_replaced_districts.csv", ["GlobalID", *PU_FIELDS], extra)
     if extra:
         log.warning("%s use rows sit in A05 districts but are not in A05; they would remain beside the A06 inserts.", len(extra))
