@@ -11,7 +11,7 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 | E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Done in `SDE.mtb-edits` 2026-11-24. Washoe lists via A04; Carson City lists via `packages/e01_carson_pas`. Not yet reconciled |
 | E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
 | E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Done in `SDE.mtb-edits` 2026-11-23. Not yet reconciled |
-| E04 | Prefix Washoe County zoning IDs with WCTAP | Ready. Run last |
+| E04 | Prefix Washoe County zoning IDs with WCTAP | Script `scripts/e04_prefix_wctap.py` built and tested; not yet run. Run last |
 
 ### Answers from Mason, 2026-11-23
 
@@ -108,6 +108,12 @@ ZONING_ID is the join key for everything, so the rename touches more than the Di
 | 055 and 056 Carson City halves | Keep their current IDs (E01) |
 
 The rename goes last. Do every edit keyed on the old IDs first, then rename in one pass.
+
+Script (2026-11-24): `python Zoning/scripts/e04_prefix_wctap.py`. It renames every District with PLAN_ID WCTAP that isn't already prefixed, except the Carson City 055 and 056 (`e04.exclude`), and stops unless that's 36 (`e04.expected_count`). The dry run lists every old and new ID. In one session it renames District, then rekeys every related use and special designation row by GlobalID, recorded beforehand. It stops if a new ID already exists, if any old ID remains, if the rows per new ID differ from before, or if totals or null keys change. Parcel_Master is left to the parcel ETL. The Local Plan layer is renamed only if added to `e04.also_update`.
+
+Tested on the test geodatabase with simple relationship classes: 36 districts, 120 use rows, and 9 special designation rows renamed; 055 and 056 unchanged; the wrong count guard and the rerun guard both stopped. Changing a District key there left all 92 related rows on the old key, so a hand rename in Pro orphans the use table.
+
+Open: the Local Plan layer (LocalPlan/MapServer/0) carries ZONING_ID. Is it maintained by the parcel ETL like Parcel_Master? If not, add its dataset to `datasets.local_plan_parcels` and `e04.also_update`.
 
 ## Findings from the DEFAULT snapshot, 2026-11-23
 

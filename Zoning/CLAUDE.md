@@ -18,7 +18,7 @@ Active work: staff edit requests are tracked in `docs/EDIT_REQUESTS.md` (E-serie
 
 SDE edit workflow: edits are made from a clone of this repo on the server, in a named version, alongside Alyssa's edit version. Confirm whether the data is traditionally versioned or branch versioned before you create versions. Branch versioning allows only one level of versions under DEFAULT. Details are in `docs/EDIT_REQUESTS.md`.
 
-Relationship behavior: District relates to PermissibleUses and Special_Designation through simple, not composite, relationships keyed on ZONING_ID. Deleting a District feature nulls the key on its related rows; it does not delete them. Two District features that share a ZONING_ID share the same related rows. Snapshot related rows by GlobalID before any District delete or key change.
+Relationship behavior: District relates to PermissibleUses and Special_Designation through simple, not composite, relationships keyed on ZONING_ID. Deleting a District feature nulls the key on its related rows; it does not delete them (confirmed in SDE by E03). Changing a District ZONING_ID does nothing to the related rows: they keep the old key and become orphans (tested in a file geodatabase; [Likely] the same in SDE). Two District features that share a ZONING_ID share the same related rows. Snapshot related rows by GlobalID before any District delete or key change, and rekey related rows explicitly, as `scripts/e04_prefix_wctap.py` does.
 
 ## 1. What this repo is for
 
