@@ -108,6 +108,24 @@ The rename goes last. Do every edit keyed on the old IDs first, then rename in o
   - 164 `{F0ED7835-9BB0-4646-AF0F-D3BC30EAD9C2}`
   - 207 `{C173A649-23D3-4B22-9F36-C771EB51207B}`
 
+## Findings from the mtb-edits snapshot, 2026-11-23
+
+`compare_snapshots.py` compared DEFAULT (20:54) with `SDE.mtb-edits` (21:50), which inherits Alyssa's `Misc edits Nov 2026`. Every added row was created by the `SDE` login on 2026-11-20 between 23:51 and 23:58 (times as recorded by editor tracking).
+
+District (281 to 284):
+- 055 kept its ID and took the Carson City shape; PLAN_ID changed from WCTAP to 055. New WCTAP_055 added.
+- 056 was renamed WCTAP_056 and reshaped. New 056 added for the Carson City side.
+- 842 added as a copy of 035.
+
+Permissible Use (10,812 to 10,907):
+- 28 rows keyed 035 were added at 23:51:47, copies of 405's table made with 842. 035 now has 56 rows. E03 deletes the copies and keeps the originals (lowest OBJECTID in each identical pair), and stops if the count is not exactly 28.
+- 58 rows were added with a null key: 56 at 23:57:59 and 1 each at 23:51:04 and 23:51:08. None of their use types appear in the 035 list, so they are not 035 copies. Probably an append where `Zoning_ID` did not map. [Guessing] Open: identify the intended district.
+- Other edits by Alyssa: new rows in 045 (2), 048 (6), and 054 (2); one 045 row deleted; field changes on 36 rows (27 Notes in 042; Density in 045 and 045_SA1; Use_Status in 034 and 042; Use_Type, Unit, Density, and Notes in 048).
+
+Special Designation (515 to 516): one row added in each of 034 and 054. OBJECTID 493 deleted, which was the F24 duplicate in 045, so that F24 row is already done.
+
+Effect on the fix package: Alyssa's version touches districts the package also edits: A01 in 034, 042, and 045_SA1, and A03 in 054. Some of these fixes may already be applied. A04's 055 and 056 rows now belong to WCTAP_055 and WCTAP_056. Rebuild the fix rows against the version before posting any of them.
+
 ## Recommended order
 
 1. Create the QA edit version as a Protected child of `Misc edits Nov 2026`.

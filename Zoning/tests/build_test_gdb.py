@@ -72,7 +72,15 @@ def main() -> int:
     keep_oid = [r[0] for r in arcpy.da.SearchCursor(district, ["OID@"], "ZONING_ID = '035'") if r[0] != dup_oid][0]
     arcpy.management.AddGlobalIDs(district)
 
-    pu = build_table("PermissibleUses", 6, "Zoning_ID", ["Category", "Use_Type", "Use_Status"])
+    pu_fields = ["Category", "Subcategory", "Use_Type", "Use_Status", "Density", "Unit", "Notes"]
+    pu = build_table("PermissibleUses", 6, "Zoning_ID", pu_fields)
+    # Mimic Alyssa's version: copying 405 to make 842 also copied the 035 use rows.
+    cols = ["Zoning_ID", *pu_fields]
+    originals = [row for row in arcpy.da.SearchCursor(pu, cols, "Zoning_ID = '035'")]
+    with arcpy.da.InsertCursor(pu, cols) as cursor:
+        for row in originals:
+            cursor.insertRow(row)
+    print(f"Planted {len(originals)} copied 035 use rows")
     # Include the live null-key rows that F35 restores, plus TVAP_TC_C as a sibling.
     sd = build_table(
         "Special_Designation", 7, "ZONING_ID", ["ZONING_DESCRIPTION", "SPECIAL_DESIGNATION"],

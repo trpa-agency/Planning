@@ -10,4 +10,6 @@
 - Added `tests/build_test_gdb.py`, a local test geodatabase with simple relationship classes and a planted duplicate shape.
 - Ran the first DEFAULT snapshot on the server. It matches the 2026-11-20 counts, and all 803 checkable fix package rows match SDE. Fixed two snapshot bugs: OBJECTIDs read from the renumbered copy, and float OBJECTIDs in the fix CSVs.
 - Added F35 and `scripts/f35_restore_orphaned_designations.py`, which restores ZONING_ID TVAP_TC_NP on Special Designation rows 145, 164, and 207. Dry run by default.
+- Added `scripts/compare_snapshots.py`, which diffs two snapshots by GlobalID. Logged the mtb-edits findings in `docs/EDIT_REQUESTS.md`.
+- E03 now also deletes the 28 copied 035 use rows, keeping the originals, and stops unless the copy count matches `e03.expected_duplicates`.
 - Pointed the config at the `SDE.mtb-edits` edit version. Version matching now handles OS-authenticated owners such as `"TAHOE\ABETTINGER"`.

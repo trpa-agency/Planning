@@ -2,23 +2,28 @@
 
 District relates to PermissibleUses and Special_Designation through simple relationships
 keyed on ZONING_ID. Deleting a District feature nulls the key on related rows, and both
-035 shapes share those rows. This script:
+035 shapes share those rows. Copying 405 to make 842 also copied its use rows, so 035
+carries each use twice. This script:
 
 1. Checks the connection is the QA edit version (writes only).
 2. Confirms exactly two District features carry the ZONING_ID: the one to delete and the
    one to keep, and that the duplicate covers no meaningful area outside the kept shape.
-3. Saves the GlobalIDs of every related row to related_rows_before.csv.
-4. With run.write_to_db true: deletes the duplicate, writes the ZONING_ID back on the saved
-   rows by GlobalID, and verifies counts inside the edit session. Any failed check raises,
-   which aborts the edit session and saves nothing.
+3. Reads every related row. In each table listed in e03.dedupe_tables, rows with identical
+   content (e03.dedupe_fields) are copies: the lowest OBJECTID is kept and the rest are
+   marked for deletion. Stops if the number of copies differs from e03.expected_duplicates.
+4. Saves every related row and its action (keep or delete) to related_rows_before.csv.
+5. With run.write_to_db true, in one edit session: deletes the duplicate District feature,
+   deletes the copied rows, writes the ZONING_ID back on the kept rows by GlobalID, and
+   verifies. Any failed check raises, which aborts the edit session and saves nothing.
 
-Dry run by default. Run from the Zoning folder:
-    python scripts/e03_delete_duplicate_district.py [--config config.yaml]
+Dry run by default. Run from any folder:
+    python Zoning/scripts/e03_delete_duplicate_district.py [--config config.yaml]
 """
 
 from __future__ import annotations
 
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -32,6 +37,15 @@ RELATED = ("permissible_uses", "special_designation")
 
 def null_key_where(field: str) -> str:
     return f"{field} IS NULL OR {field} = '' OR {field} = ' '"
+
+
+def norm(value):
+    if value is None:
+        return None
+    if isinstance(value, str):
+        value = value.strip()
+        return value or None
+    return value
 
 
 def check_districts(config: dict, log) -> None:
@@ -65,13 +79,45 @@ def check_districts(config: dict, log) -> None:
 
 
 def related_rows(config: dict) -> list[dict]:
-    zid = config["e03"]["zoning_id"]
+    """Every row keyed to the ZONING_ID, with content fields for the dedupe tables."""
+    e03 = config["e03"]
+    zid = e03["zoning_id"]
     records = []
     for table in RELATED:
         field = config["keys"][table]
-        for row in sde.rows(sde.dataset_path(config, table), ["OID@", "GlobalID"], f"{field} = {sde.sql_text(zid)}"):
-            records.append({"TABLE": table, "OBJECTID": row["OID@"], "GlobalID": sde.norm_guid(row["GlobalID"])})
+        content = e03.get("dedupe_fields", {}).get(table, []) if table in e03.get("dedupe_tables", []) else []
+        for row in sde.rows(sde.dataset_path(config, table), ["OID@", "GlobalID", *content], f"{field} = {sde.sql_text(zid)}"):
+            records.append({
+                "TABLE": table,
+                "OBJECTID": row["OID@"],
+                "GlobalID": sde.norm_guid(row["GlobalID"]),
+                "CONTENT": tuple(norm(row[f]) for f in content),
+                "ACTION": "keep",
+                **{f: row[f] for f in content},
+            })
     return records
+
+
+def mark_duplicates(config: dict, saved: list[dict], log) -> None:
+    """Mark copies for deletion: within identical content, keep the lowest OBJECTID."""
+    e03 = config["e03"]
+    for table in e03.get("dedupe_tables", []):
+        groups = defaultdict(list)
+        for record in saved:
+            if record["TABLE"] == table:
+                groups[record["CONTENT"]].append(record)
+        copies = 0
+        for members in groups.values():
+            members.sort(key=lambda r: r["OBJECTID"])
+            for record in members[1:]:
+                record["ACTION"] = "delete"
+                record["KEEPS"] = members[0]["OBJECTID"]
+                copies += 1
+        expected = e03.get("expected_duplicates", {}).get(table)
+        log.info("%s: %s rows keyed %s, %s distinct, %s copies to delete",
+                 table, sum(len(m) for m in groups.values()), e03["zoning_id"], len(groups), copies)
+        if expected is not None and copies != expected:
+            raise sde.GuardError(f"{table}: found {copies} copies, expected {expected}. Review before deleting.")
 
 
 def null_counts(config: dict) -> dict[str, int]:
@@ -79,7 +125,7 @@ def null_counts(config: dict) -> dict[str, int]:
 
 
 def apply(config: dict, saved: list[dict], nulls_before: dict[str, int], log) -> None:
-    """Delete the duplicate, restore keys, and verify, all in one edit session."""
+    """Delete the duplicate shape and copied rows, restore keys, and verify, in one edit session."""
     e03 = config["e03"]
     zid = e03["zoning_id"]
     district = sde.dataset_path(config, "district")
@@ -100,27 +146,36 @@ def apply(config: dict, saved: list[dict], nulls_before: dict[str, int], log) ->
 
         for table in RELATED:
             field = config["keys"][table]
-            guids = [r["GlobalID"] for r in saved if r["TABLE"] == table]
             path = sde.dataset_path(config, table)
+            keep = [r["GlobalID"] for r in saved if r["TABLE"] == table and r["ACTION"] == "keep"]
+            drop = [r["GlobalID"] for r in saved if r["TABLE"] == table and r["ACTION"] == "delete"]
+
+            removed = 0
+            if drop:
+                with arcpy.da.UpdateCursor(path, ["GlobalID"], sde.sql_in("GlobalID", drop)) as cursor:
+                    for _ in cursor:
+                        cursor.deleteRow()
+                        removed += 1
+            if removed != len(drop):
+                raise sde.GuardError(f"{table}: deleted {removed} copies, expected {len(drop)}.")
+
             restored = 0
-            with arcpy.da.UpdateCursor(path, ["GlobalID", field], sde.sql_in("GlobalID", guids)) as cursor:
+            with arcpy.da.UpdateCursor(path, ["GlobalID", field], sde.sql_in("GlobalID", keep)) as cursor:
                 for guid, value in cursor:
                     if value != zid:
                         cursor.updateRow([guid, zid])
                         restored += 1
-            log.info("%s: %s rows saved, %s keys written back", table, len(guids), restored)
+            log.info("%s: %s copies deleted, %s rows kept, %s keys written back", table, removed, len(keep), restored)
 
             after = {sde.norm_guid(r["GlobalID"]) for r in sde.rows(path, ["GlobalID"], f"{field} = {sde.sql_text(zid)}")}
-            if after != set(guids):
+            if after != set(keep):
                 raise sde.GuardError(
-                    f"{table}: rows keyed {zid} after the edit do not match the saved rows "
-                    f"({len(after)} after, {len(guids)} saved)."
+                    f"{table}: rows keyed {zid} after the edit do not match the kept rows "
+                    f"({len(after)} after, {len(keep)} kept)."
                 )
             nulls_after = sde.count(path, null_key_where(field))
             if nulls_after != nulls_before[table]:
-                raise sde.GuardError(
-                    f"{table}: null keys went from {nulls_before[table]} to {nulls_after}."
-                )
+                raise sde.GuardError(f"{table}: null keys went from {nulls_before[table]} to {nulls_after}.")
 
         remaining = [r["OID@"] for r in sde.rows(district, ["OID@"], f"{key} = {sde.sql_text(zid)}")]
         if remaining != [e03["keep_objectid"]]:
@@ -142,11 +197,17 @@ def main() -> int:
         check_districts(config, log)
 
         saved = related_rows(config)
+        mark_duplicates(config, saved, log)
         out = io.run_folder(config, "e03", stamp)
-        sde.write_csv(out / "related_rows_before.csv", saved, ["TABLE", "OBJECTID", "GlobalID"])
+        content_fields = sorted({f for t in config["e03"].get("dedupe_fields", {}).values() for f in t})
+        sde.write_csv(
+            out / "related_rows_before.csv", saved,
+            ["TABLE", "OBJECTID", "GlobalID", "ACTION", "KEEPS", *content_fields],
+        )
         for table in RELATED:
-            log.info("%s rows keyed %s: %s", table, config["e03"]["zoning_id"],
-                     sum(1 for r in saved if r["TABLE"] == table))
+            log.info("%s rows keyed %s: %s keep, %s delete", table, config["e03"]["zoning_id"],
+                     sum(1 for r in saved if r["TABLE"] == table and r["ACTION"] == "keep"),
+                     sum(1 for r in saved if r["TABLE"] == table and r["ACTION"] == "delete"))
         nulls_before = null_counts(config)
         log.info("Null keys before: %s", nulls_before)
         log.info("Saved related rows: %s", out / "related_rows_before.csv")
