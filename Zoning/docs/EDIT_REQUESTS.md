@@ -8,7 +8,7 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 
 | ID | Request | Status |
 |---|---|---|
-| E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Ready. Split done in Alyssa's version; A04 covers Washoe; Carson City PAS lists to build |
+| E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Washoe lists posted with the table fixes (A04). Carson City package `packages/e01_carson_pas` built and tested; not yet posted |
 | E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
 | E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Done in `SDE.mtb-edits` 2026-11-23. Not yet reconciled |
 | E04 | Prefix Washoe County zoning IDs with WCTAP | Ready. Run last |
@@ -34,7 +34,18 @@ What Alyssa's list adds:
 - The Washoe portions become WCTAP_055 and WCTAP_056 and take the A04 rows, rekeyed.
 - The Carson City portions keep 055 and 056 and need use lists from the Plan Area Statements. Carson City has no area plan, so the PAS still governs there. [Likely] The PAS PDFs exist at `.../documents/archive/2/055.pdf` and `.../056.pdf`, but the prototype PAS pass did not parse them, because District folds both into WCTAP. Those are new parser runs.
 
-Open points:
+Built 2026-11-24 (`packages/e01_carson_pas`; rows and page citations in `data/reference/e01_carson_pas_rows.csv`):
+
+- 055 Carson City: 39 use rows from PAS 055 East Shore, p. 3, with densities from p. 4. These are single family dwelling and summer homes at 1 unit per parcel, employee housing at 5 (stored as "units per State Park Lands", following 057), developed campgrounds at 8 sites per acre, and group facilities at 25 persons per acre.
+- 056 Carson City: 24 use rows from PAS 056 Marlette Lake, p. 2, with summer homes at 1 unit per parcel from p. 3.
+- Shorezone uses are left out, as in every other PAS district in the service. Combined phrases are expanded to the service's uses, for example structural and nonstructural fish and wildlife habitat management to four uses.
+- Cross-check: the same 63 uses as A04's Washoe code lists for 055 and 056, with matching statuses except 055 Single Family Dwelling. The PAS says Special Use and the Washoe code says Allowed. Each governs its own side of the county line, so both stand. [Certain]
+- Special Designation: copies of 461 (055, TDR receiving area for MFRU, limited to employee housing) and 462 (056, None) go to WCTAP_055 and WCTAP_056 as Area Plan. PLAN_TYPE on 461 and 462 changes from Area Plan to Plan Area Statement. That change is inferred from Alyssa's PLAN_ID change on 055 and is easy to drop. [Likely]
+- Targets: 10,971 to 11,034 use rows and 484 to 486 special designation rows (`package.yaml`).
+
+Post it with `python Zoning/scripts/post_table_fixes.py --rebuilt Zoning/packages/e01_carson_pas`, dry run first.
+
+Open points, kept for the record:
 
 - Which line to split on. `Boundaries/MapServer/10` Jurisdictions Combined looks like generalized Census county lines (section 3). Splitting zoning on a generalized line moves real parcels to the wrong side. Prefer the county line from parcel fabric or the official Carson City and Washoe boundary.
 - Special Designation has one row each for 055 and 056. Both halves probably need a copy.

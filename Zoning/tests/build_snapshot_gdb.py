@@ -56,7 +56,7 @@ def main() -> int:
     build("PermissibleUses", records("permissible_use.json"),
           ["Zoning_ID", "Category", "Subcategory", "Use_Type", "Use_Status", "Density", "Unit", "Notes"], False)
     build("Special_Designation", records("special_designation.json"),
-          ["ZONING_ID", "ZONING_DESCRIPTION", "SPECIAL_DESIGNATION"], False)
+          ["ZONING_ID", "ZONING_DESCRIPTION", "PLAN_TYPE", "SPECIAL_DESIGNATION", "NOTES"], False)
 
     config = yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
     config["sde"]["connection"] = str(GDB).replace("\\", "/")

@@ -1,0 +1,7 @@
+# E01: use lists for the Carson City halves of 055 and 056, and special designation
+# copies for the Washoe halves. Built 2026-11-23 from PAS 055 (pp. 3 to 4) and PAS 056
+# (pp. 2 to 3); rows and citations in data/reference/e01_carson_pas_rows.csv.
+name: e01_carson_pas
+expected_counts:
+  permissible_uses: 11034    # 10,971 after the table fixes, plus 63
+  special_designation: 486   # 484 after the table fixes, plus 2
