@@ -135,6 +135,7 @@ Run on the server; logs and before-state CSVs are in the server's `Zoning/output
 | E03 | Deleted District 842. Deleted the 28 copied 035 use rows and wrote 035 back on the 28 originals and the 1 Special Designation row. |
 | F35 | Restored TVAP_TC_NP on Special Designation rows 145, 164, and 207. |
 | F36 | Deleted 59 fully blank use rows (10,879 to 10,820), including F22's 12762. |
+| Table fixes | 23:48. Posted the rebuilt package (rebuild 23:44): 95 updates, 687 deletes (655 use, 32 special designation), and 806 inserts, covering F01 to F24 and A01 to A06 less what was already done. PermissibleUses 10,820 to 10,971 and Special_Designation 516 to 484, with no null keys and no duplicate district and use pairs. |
 
 Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special designation rows, and no duplicate zoning IDs. Use rows with a null key are down from 91 to 32; A05 deletes those. No Special Designation rows have a null key. Fix package: 801 rows match. The 2 not found in the version are F24's 493 (deleted by Alyssa) and F22's 12762 (deleted by F36), so both fixes are done.
 
