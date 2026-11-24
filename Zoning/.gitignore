@@ -7,3 +7,4 @@ logs/
 *.gdb/
 *.sde
 tests/test_config.yaml
+config.server.yaml
