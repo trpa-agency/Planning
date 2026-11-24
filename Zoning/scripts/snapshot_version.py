@@ -20,6 +20,7 @@ Read only. Run from the Zoning folder:
 from __future__ import annotations
 
 import csv
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -175,6 +176,11 @@ def fix_id_check(config: dict, snap: dict[str, str], log) -> list[dict]:
                 table = default_table or TABLE_NAMES.get(str(row.get("TABLE", "")).strip().lower())
                 guid = sde.norm_guid(row.get("GlobalID"))
                 oid = str(row.get("OBJECTID", "")).strip()
+                # Some fix files store OBJECTIDs as floats, for example "4256.0".
+                try:
+                    oid = str(int(float(oid)))
+                except ValueError:
+                    pass
                 if table is None or not guid:
                     status, found_oid = "not checkable", ""
                 elif guid not in lookup[table]:
@@ -209,7 +215,7 @@ def main() -> int:
 
     snap_dir = io.resolve(config["paths"]["snapshots"])
     snap_dir.mkdir(parents=True, exist_ok=True)
-    label = (version or "local").replace(".", "_").replace(" ", "_")
+    label = re.sub(r"[^A-Za-z0-9_]+", "_", version or "local").strip("_")
     gdb_name = f"{label}_{stamp}.gdb"
     arcpy.management.CreateFileGDB(str(snap_dir), gdb_name)
     gdb = str(snap_dir / gdb_name)

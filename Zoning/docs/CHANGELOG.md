@@ -8,3 +8,6 @@
 - Added `scripts/snapshot_version.py`, a read-only snapshot of the QA edit version with review CSVs and a check of the fix package IDs.
 - Added `scripts/e03_delete_duplicate_district.py`, which deletes duplicate District 842 and restores the 035 related keys by GlobalID. Dry run by default.
 - Added `tests/build_test_gdb.py`, a local test geodatabase with simple relationship classes and a planted duplicate shape.
+- Ran the first DEFAULT snapshot on the server. It matches the 2026-11-20 counts, and all 803 checkable fix package rows match SDE. Fixed two snapshot bugs: OBJECTIDs read from the renumbered copy, and float OBJECTIDs in the fix CSVs.
+- Added F35 and `scripts/f35_restore_orphaned_designations.py`, which restores ZONING_ID TVAP_TC_NP on Special Designation rows 145, 164, and 207. Dry run by default.
+- Pointed the config at the `SDE.mtb-edits` edit version. Version matching now handles OS-authenticated owners such as `"TAHOE\ABETTINGER"`.
