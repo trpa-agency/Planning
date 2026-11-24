@@ -1,0 +1,3 @@
+FIX_ID,TABLE,OBJECTID,GlobalID,Zoning_ID,Use_Type,FIELD,OLD_VALUE,NEW_VALUE,CONFIDENCE,SOURCE,REASON
+E01,Special_Designation,461,{D21866F1-5678-4CC4-AA6F-9198EE9A4E0B},055,,PLAN_TYPE,Area Plan,Plan Area Statement,Likely,District 055 PLAN_ID changed from WCTAP to 055 in Misc edits Nov 2026,"The Carson City half of 055 is governed by PAS 055, not the Washoe area plan."
+E01,Special_Designation,462,{174C0431-F9B3-41AE-B31B-39AD0F9F9E96},056,,PLAN_TYPE,Area Plan,Plan Area Statement,Likely,District 056 PLAN_ID changed from WCTAP to 056 in Misc edits Nov 2026,"The Carson City half of 056 is governed by PAS 056, not the Washoe area plan."

@@ -83,11 +83,12 @@ rebuild:
     F33: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
 
 post_tables:
-  # Optional fixed targets, checked on top of the counts computed from the rebuilt package.
-  # From the 2026-11-23 rebuild against SDE.mtb-edits.
+  # Optional fixed targets, checked on top of the counts computed from a package.
+  # A package's own package.yaml overrides these. Set per run; the 2026-11-23 fix
+  # package posted at 10,971 and 484.
   expected_counts:
-    permissible_uses: 10971
-    special_designation: 484
+    permissible_uses: null
+    special_designation: null
 
 f36:
   # Delete use rows where every field below is blank. In mtb-edits that is 58 rows added
