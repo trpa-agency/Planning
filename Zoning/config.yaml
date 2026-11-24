@@ -68,6 +68,13 @@ e03:
   expected_duplicates:
     permissible_uses: 28
 
+f36:
+  # Delete use rows where every field below is blank. In mtb-edits that is 58 rows added
+  # on 2026-11-20 plus OBJECTID 12762 from DEFAULT (fix F22), 59 in all.
+  table: permissible_uses
+  fields: [Zoning_ID, Category, Subcategory, Use_Type, Use_Status, Density, Unit, Notes]
+  expected_count: 59
+
 f35:
   # Restore ZONING_ID on Special Designation rows orphaned by a TVAP_TC_NP shape edit.
   # Found in the DEFAULT snapshot of 2026-11-23; see docs/EDIT_REQUESTS.md.
