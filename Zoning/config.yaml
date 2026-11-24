@@ -81,6 +81,7 @@ rebuild:
     F31: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
     F32: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
     F33: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
+    F25: "Esri Check Geometry finds no problem; the shapes fail only OGC rules (self-touching rings, allowed in ArcGIS). Checked 2026-11-24"
 
 post_tables:
   # Optional fixed targets, checked on top of the counts computed from a package.
@@ -89,6 +90,24 @@ post_tables:
   expected_counts:
     permissible_uses: null
     special_designation: null
+
+geometry:
+  # F26 to F28: clip each overlap off the district that loses it. Expected overlap
+  # areas are from the 2026-11-20 QA pass. 030 and 040 are WCTAP_030 and WCTAP_040 after E04.
+  clips:
+    - {fix: F26, lose: 111_SA2, keep: TVAP_TC_NP, expect_acres: 6.439}
+    - {fix: F27, lose: WCTAP_030, keep: WCTAP_040, expect_acres: 0.521}
+    - {fix: F28, lose: "114", keep: 114_SA1, expect_acres: 0.012}
+  # F29: fill the coverage hole under this parcel into the named district.
+  fill: {fix: F29, apn: 032-141-018, district: TVAP_TC_G, expect_acres: 1.045}
+  # A computed area may differ from the expected one by this much before the script stops.
+  tolerance_acres: 0.05
+  # Polygon parts smaller than this are dropped from a clipped shape (slivers).
+  min_part_sq_m: 1.0
+  # F34: recalculate ACRES (planar, EPSG 26910) after the shape edits, on every district
+  # whose stored value is off by more than acres_threshold. Smaller differences are rounding.
+  recalc_acres: true
+  acres_threshold: 0.001
 
 f36:
   # Delete use rows where every field below is blank. In mtb-edits that is 58 rows added

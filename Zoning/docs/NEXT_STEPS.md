@@ -25,7 +25,11 @@ State on 2026-11-24: E01, E03, and E04, every table fix from the 2026-11-20 pack
 
 ## Remaining fixes
 
-11. **District shapes (F25 to F29, then F34 acres).** These are three invalid shapes, overlaps at 111_SA2 and TVAP_TC_NP, 030 and 040, and 114 and 114_SA1, and the 1 acre hole in Tahoe Valley. They need `TRPA_Zoning_QA_Fixes_2026-11-20.zip`, which holds the replacement shapes geodatabase. Find it, put it in `Zoning/data/`, and ask Claude to build a geometry posting script with the same guards.
+11. **District shapes: run `scripts/fix_district_geometry.py` in `mtb-edits`.** Built 2026-11-24; no zip needed. It computes F26 to F29 from the version's current shapes and recalculates ACRES (F34). Its shapes match the 2026-11-20 replacement shapes exactly. F25 is dropped because Esri Check Geometry finds nothing wrong with those shapes. Steps:
+    1. Dry run: `python Zoning/scripts/fix_district_geometry.py`. Expect F26 -6.4386, F27 -0.5213, F28 -0.0117, and F29 +1.0451 acres, and F34 on about 81 districts.
+    2. Open `Zoning/outputs/geometry_<time>/proposed.gdb` in Pro and look at the new shapes, removed overlaps, and hole fill.
+    3. Write: set `write_to_db: true`, rerun, and restore the config.
+    4. Snapshot, then reconcile and post into Alyssa's version again.
 12. **Open planner decisions** R01 to R17 (in `CLAUDE.md` section 8, and in `fix_package/csv/pending_rulings.csv` and `area_pending_rulings.csv`). R18 is settled by the 055 and 056 split. Each answer becomes a small package.
 13. **South Shore Area Plan** (179 rows) needs Douglas County Code Chapter 20.703. **PCAP_REC_HOMEWOOD** needs the Homewood Mountain Resort Master Plan. Get the documents; Claude parses and compares them.
 

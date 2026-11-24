@@ -8,4 +8,5 @@ logs/
 *.sde
 tests/test_config.yaml
 tests/snapshot_test_config.yaml
+tests/geometry_test_config.yaml
 config.server.yaml

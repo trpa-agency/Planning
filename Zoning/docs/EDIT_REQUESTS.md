@@ -162,6 +162,17 @@ After posting to DEFAULT: run the parcel ETL so `SDE.Parcel_Master` (also publis
 
 E01 Carson City, posted 2026-11-24 00:09: 2 PLAN_TYPE updates, 63 use rows (055 and 056), and 2 special designation copies (WCTAP_055 and WCTAP_056). PermissibleUses 10,971 to 11,034 and Special_Designation 484 to 486, with no null keys and no duplicate district and use pairs.
 
+## District geometry (F25 to F29, F34), built 2026-11-24
+
+`scripts/fix_district_geometry.py` computes the fixes from the version's current shapes instead of loading the 2026-11-20 replacement shapes. It can't undo a later edit, and it follows the E04 rename (030 and 040 are WCTAP_030 and WCTAP_040).
+
+- F25 dropped. Esri Check Geometry (ESRI method) finds no problem with the three shapes. They fail only the OGC method: they are self-touching rings, which ArcGIS allows. [Certain]
+- F26 to F28: each overlap is clipped off the losing district, and parts under 1 square meter are dropped. The expected overlaps are 6.4386, 0.5213, and 0.0117 acres.
+- F29: the hole under parcel 032-141-018 (1.0451 acres) is found by differencing nearby districts and merged into TVAP_TC_G.
+- F34: stored ACRES is planar area in EPSG 26910; 255 of 281 districts match to 0.01 acres. The rest drifted after shape edits, for example PCAP_RES_CHAMBERS stored at 372.48 but measuring 409.78. The script resets ACRES where it is off by more than 0.001 acres: 81 districts in the DEFAULT state, 28 of them by more than 0.01.
+- Guards: each district exists once; each overlap and the fill are within 0.05 acres of expected; after writing, each pair overlaps by less than 1 square meter, the fill overlaps no other district, and the parcel is covered. A fix already in place is skipped, so a rerun changes nothing.
+- Tested on a copy of the public districts: the computed shapes match the 2026-11-20 replacement shapes in the delivered zip with 0.000 square meters of difference. Write, verify, and rerun all behaved.
+
 ## Fix package rebuilt against SDE.mtb-edits, 2026-11-23 (23:28)
 
 1,641 rows pending, 4 done, 1 conflict, and nothing missing. After posting, PermissibleUses goes from 10,820 to 10,971 and Special_Designation from 516 to 484.

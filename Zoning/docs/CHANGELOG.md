@@ -18,6 +18,7 @@
 - Dropped F30 to F33 because the parcel ETL sets the Parcel_Master zoning fields. Added `rebuild.drop` and the "dropped" status.
 - Added `scripts/post_table_fixes.py`, which posts the rebuilt table fixes in one edit session with count, old value, and null key guards. Moved the shared comparison helpers to `src/values.py`.
 - Ran E03, F35, and F36 in `SDE.mtb-edits` on the server.
+- Added `scripts/fix_district_geometry.py` for F26 to F29 and F34, which computes the fixes from current shapes and writes proposed shapes for review. Matches the 2026-11-20 replacement shapes exactly. Dropped F25 because the shapes are valid by Esri rules.
 - Ran E04 in `SDE.mtb-edits` (2026-11-24): 36 districts, 1,340 use rows, and 66 special designation rows renamed to WCTAP_.
 - Added `scripts/e04_prefix_wctap.py` for the WCTAP_ rename, which renames District and rekeys related rows by GlobalID in one session. Found that changing a District key leaves related rows on the old key.
 - Posted E01 in `SDE.mtb-edits` (2026-11-24): use rows for the Carson City halves of 055 and 056, plus special designation copies for the Washoe halves, to 11,034 and 486 rows.
