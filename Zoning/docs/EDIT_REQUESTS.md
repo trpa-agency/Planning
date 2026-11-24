@@ -8,10 +8,18 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 
 | ID | Request | Status |
 |---|---|---|
-| E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Mostly built (A04); Carson City lists not built |
-| E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | Blocked: no non-Town Center area on the current boundary |
-| E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Method below; needs confirmation of 842's ZONING_ID |
-| E04 | Prefix Washoe County zoning IDs with WCTAP | Scoped; run last |
+| E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Ready. Split done in Alyssa's version; A04 covers Washoe; Carson City PAS lists to build |
+| E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
+| E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Ready. 842 is an accidental duplicate of 035 |
+| E04 | Prefix Washoe County zoning IDs with WCTAP | Ready. Run last |
+
+### Answers from Mason, 2026-11-23
+
+- E02: 045 looks entirely inside the Town Center. Left for Mason to raise with Alyssa; no scripts until then.
+- E03: OBJECTID 842 carries ZONING_ID 035. It is an accidental duplicate shape of OBJECTID 405.
+- E01: Alyssa already split 055 and 056 along the county line in `Misc edits Nov 2026`. Both halves of each district get a copy of its Special Designation row.
+- E04: The prefix is `WCTAP_` plus the current ID, and 019 Martis Peak gets it too. Only five things read ZONING_ID: District, PermissibleUses, Special_Designation, the Parcel layer, and the Local Plan layer. The web apps need only a retest.
+- Versioning: see the Versioning section.
 
 ### E01: Use lists for the empty Washoe and Carson City districts
 
@@ -46,7 +54,11 @@ The problem: on the published Town Center layer (`Boundaries/MapServer/1`, Incli
 
 The 0.06 acres is a sliver, not a district. The Parcel layer agrees: all 325 parcels in 045 and its special areas carry the Incline Village Commercial Town Center.
 
-Question for Alyssa: which boundary defines "outside the Town Center"? Possibilities are an amended Town Center line from the Washoe area plan, a different district (for example 046 or 047), or a Town Center layer that needs its own update. The split can't be drawn until that's settled. Once it is, the edit is a polygon split, a new ZONING_ID, a copy of the 045 use rows to the new ID, and a density change on one Multiple Family Dwelling row. Density is an Integer field, so 25 and 15 store fine.
+Resolved 2026-11-23: no split. 045 is entirely inside the Town Center.
+
+Open point: if Alyssa's rule is 25 units per acre inside the Town Center, then all of 045 should be at 25, not the 15 the service carries today. Check the Washoe County Development Code Article 220 entry for Incline Village Commercial before changing anything. Area plan densities were never checked in the first QA pass. If the code says 25, the fix is a density update on the 045 Multiple Family Dwelling row, and on 045_SA1 if its own table says the same.
+
+Original question, kept for the record: which boundary defines "outside the Town Center"? Possibilities are an amended Town Center line from the Washoe area plan, a different district (for example 046 or 047), or a Town Center layer that needs its own update. The split can't be drawn until that's settled. Once it is, the edit is a polygon split, a new ZONING_ID, a copy of the 045 use rows to the new ID, and a density change on one Multiple Family Dwelling row. Density is an Integer field, so 25 and 15 store fine.
 
 ### E03: Delete OBJECTID 842 and keep the 405 use table
 
@@ -88,17 +100,35 @@ The rename goes last. Do every edit keyed on the old IDs first, then rename in o
 
 ## Recommended order
 
-1. Confirm the SDE versioning model (see below) and set up the edit versions.
-2. E03: delete 842 with the key restore.
-3. Post the 2026-11-20 fix package, or the parts of it staff accept, on the old IDs.
-4. E01: split 055 and 056 at the county line and add the Carson City PAS lists.
-5. E02: once the boundary question is settled.
-6. E04: the WCTAP rename across District, both tables, and parcels.
-7. Rerun the QA against the edited version before reconcile and post.
+1. Create the QA edit version as a Protected child of `Misc edits Nov 2026`.
+2. Snapshot the edit version to a local file geodatabase. Record how Alyssa keyed the 055 and 056 halves, and check the fix package OBJECTIDs and GlobalIDs against the version.
+3. E03: delete 842 with the key restore.
+4. Post the 2026-11-20 fix package, or the parts of it staff accept, on the old IDs.
+5. E01: rekey the A04 055 and 056 rows to the Washoe halves, insert the Carson City PAS lists, and copy the Special Designation rows to both halves.
+6. E02: on hold until Alyssa answers.
+7. E04: rename to `WCTAP_` across District, PermissibleUses, Special_Designation, the Parcel layer, and the Local Plan layer. Include 019. Leave the Carson City halves of 055 and 056 unchanged.
+8. Rerun the QA against the edit version. Then reconcile into Alyssa's version and retest the LongRange and Permitting apps after she posts.
+
+## Running the scripts on the server
+
+Every script that touches SDE runs on the server, from a clone of this repo. Code is written and tested locally against `data/test/zoning_test.gdb` (built by `tests/build_test_gdb.py`), pushed to `main`, then pulled on the server.
+
+1. In Pro, create the QA edit version as a Protected child of `Misc edits Nov 2026`, and a `.sde` connection file whose version is that edit version.
+2. In `config.yaml` on the server, set `sde.connection`, `sde.edit_version` (full name with owner prefix), and the owner prefix on the `protected_versions` entry for Alyssa's version. Confirm the `datasets` names in Catalog, including any feature dataset prefix, and fill in `local_plan_parcels`.
+3. Snapshot (read only): `python scripts/snapshot_version.py`. Review `outputs/snapshot_<time>/`, especially `watch_districts.csv` for how Alyssa keyed the 055 and 056 halves, `duplicate_zoning_ids.csv`, and `fix_id_check.csv`.
+4. E03 dry run: `python scripts/e03_delete_duplicate_district.py`. It confirms that 842 and 405 are the only 035 features, that 842 adds no area, and saves the related rows to `outputs/e03_<time>/related_rows_before.csv`.
+5. E03 write: set `run.write_to_db: true`, rerun, then set it back to `false`. The script refuses to write unless the connection is the edit version. Every check runs inside the edit session, and any failure discards the edit.
+6. Rerun the snapshot to confirm the state after the edit.
+
+Use the Pro Python: `"C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe"`.
+
+Local test results, 2026-11-23: deleting the duplicate in a simple relationship nulled the key on all 28 use rows and the 1 Special Designation row, and the script wrote all 29 back. The guard stopped the script on a wrong OBJECTID and on a rerun after the delete.
 
 ## Versioning
 
-The service reports `isDataVersioned: true`. The map service doesn't say whether it's traditional or branch versioning. Check in ArcGIS Pro under the dataset's properties.
+Confirmed 2026-11-23: traditional versioning. Alyssa's version is `Misc edits Nov 2026`, a child of DEFAULT, with Public access. Our edit version is a child of hers. Edits reconcile into her version, and she posts to DEFAULT.
+
+Because her version is Public, anyone can edit it directly. Make all QA edits in our child version, never in hers.
 
 - Traditional versioning: a child version under Alyssa's version works. Our edits reconcile into hers, and hers into DEFAULT.
 - Branch versioning: every named version must be a direct child of DEFAULT. A version under Alyssa's version isn't possible. Edits also have to go through a feature service with version management, not a direct `.sde` connection. Use two sibling versions under DEFAULT, keep the edits apart by request, and reconcile hers first.
