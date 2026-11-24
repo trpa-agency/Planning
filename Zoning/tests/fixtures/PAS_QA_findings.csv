@@ -1,0 +1,43 @@
+check,class,ZONING_ID,PLAN_ID,use_normalized,service_use_type,issue,pdf_status,svc_status,pdf_text,note,svc_density,svc_unit,pdf_density,pdf_unit
+use list,Needs ruling,073,073,Multiple Family Dwelling,Multiple Family Dwelling,status mismatch,Allowed,See note,multiple family dwellings,"PDF: Allowed only on lots designated multi-density on the subdivision map. Service stores ""See note"". Recommend Allowed with the condition in Notes",,,,
+use list,Needs ruling,089_SA1,089,Eating and Drinking Places,Eating and Drinking Places,"in service, not in PDF",,Special Use,,"SA1 (Recreation) list names only single family dwelling and does not say ""plus the General List""; service applies general list plus SFD. Needs a planner ruling",,,,
+use list,Needs ruling,089_SA1,089,Vehicle Storage and Parking,Vehicle Storage and Parking,"in service, not in PDF",,Special Use,,Same as above,,,,
+use list,PDF defect,079,079,Single Family Dwelling,Single Family Dwelling,"in service, not in PDF",,Allowed,,PDF lists single family dwelling with no (A) or (S); service Allowed is a reasonable reading,,,,
+use list,PDF defect,118,118,Transportation Routes,Transportation Routes,"in service, not in PDF",,Special Use,,PDF lists transportation routes with no (A) or (S); service Special Use matches the rest of the list,,,,
+density,Service error,099_SA1,099,,Multi-Person Dwelling,density value mismatch,,,,Multi-family and multi-person density and units are swapped,15.0,units per acre,25.0,people per acre
+density,Service error,099_SA1,099,,Bed and Breakfast Facilities,"density in PDF, missing in service",,,,,,,10.0,units per acre
+density,Service error,099_SA1,099,,Multiple Family Dwelling,density value mismatch,,,,Multi-family and multi-person density and units are swapped,25.0,people per acre,15.0,units per acre
+density,Service error,114_SA1,114,,Bed and Breakfast Facilities,"density in PDF, missing in service",,,,,,,10.0,units per acre
+density,Service error,114_SA3,114,,Local Public Health and Safety Facilities,"density in service, none in PDF",,,,No density for this use in the PDF; 8 units per acre matches mobile home dwellings and looks misplaced,8.0,units per acre,,
+density,Service error,116,116,,Employee Housing,"density in PDF, missing in service",,,,,,,15.0,units per acre
+density,Service error,154,154,,Single Family Dwelling,unit mismatch,,,,,1.0,units per acre,1.0,unit per parcel
+density,Service error,154_MF,154,,Single Family Dwelling,unit mismatch,,,,,1.0,units per acre,1.0,unit per parcel
+density,Service error,155,155,,Nursing and Personal Care,unit mismatch,,,,,25.0,units per acre,25.0,people per acre
+density,Service error,155,155,,Residential Care,unit mismatch,,,,,25.0,units per acre,25.0,people per acre
+use list,Service error,057,057,Selection Cut,Selection Cut,status mismatch,Special Use,Allowed,selection cut,,,,,
+use list,Service error,057,057,Special Cut,Special Cut,status mismatch,Allowed,Special Use,special cut,,,,,
+use list,Service error,058_SA1,058,Fuel and Ice Dealers,Fuel and Ice Dealers,"in service, not in PDF",,Allowed,,,,,,
+use list,Service error,058_SA1,058,Fuels Treatment Management,,missing from service,Allowed,,fuels treatment/management,,,,,
+use list,Service error,100,100,Reforestation,Reforestation,"in service, not in PDF",,Allowed,,,,,,
+use list,Service error,103,103,Time Sharing (Hotel/Motel Design),,missing from service,Special Use,,timeshare (hotel/motel design),,,,,
+use list,Service error,111_SA1,111,Nursing and Personal Care,Nursing and Personal Care,"in service, not in PDF",,Special Use,,,,,,
+use list,Service error,111_SA1,111,Residential Care,Residential Care,"in service, not in PDF",,Special Use,,,,,,
+use list,Service error,111_SA1,111,Schools - Kindergarten Through Secondary,Schools - Kindergarten Through Secondary,status mismatch,Allowed,Special Use,schools-kindergarten through secondary,,,,,
+use list,Service error,111_SA2,111,Multiple Family Dwelling,Multiple Family Dwelling,status mismatch,Allowed,Special Use,Multiple family dwellings,,,,,
+use list,Service error,111_SA2,111,Schools - Kindergarten Through Secondary,Schools - Kindergarten Through Secondary,status mismatch,Allowed,Special Use,schools-kindergarten through secondary,,,,,
+use list,Service error,112,112,Downhill Ski Facilities,,missing from service,Allowed,,skiing facilities,,,,,
+use list,Service error,112,112,Schools - Kindergarten Through Secondary,Schools - Kindergarten Through Secondary,status mismatch,Allowed,Special Use,schools - kindergarten through secondary,,,,,
+use list,Service error,112,112,,,"in service, not in PDF",,Allowed,,Use_Type is null; PDF has skiing facilities (A) here,,,,
+use list,Service error,112_SA1,112,Schools - Kindergarten Through Secondary,Schools - Kindergarten Through Secondary,status mismatch,Allowed,Special Use,schools - kindergarten through secondary,,,,,
+use list,Service error,112_SA2,112,Schools - Kindergarten Through Secondary,Schools - Kindergarten Through Secondary,status mismatch,Allowed,Special Use,schools - kindergarten through secondary,,,,,
+use list,Service error,127,127,Transmission and Receiving Facilities,,missing from service,Special Use,,transmissions and receiving facilities,,,,,
+use list,Service error,128,128,Transmission and Receiving Facilities,,missing from service,Special Use,,transmission and receiving facilities,,,,,
+use list,Service error,146,146,Cultural Facilities,,missing from service,Special Use,,Cultural facilities,,,,,
+use list,Service error,149,149,Thinning,,missing from service,Allowed,,thinning,,,,,
+use list,Service error,151,151,Local Post Office,,missing from service,Special Use,,local post offices,,,,,
+use list,Service error,151,151,Thinning,,missing from service,Allowed,,thinning,,,,,
+use list,Service error,154,154,Local Post Office,,missing from service,Special Use,,local post offices,,,,,
+use list,Service error,154,154,Multi-Person Dwelling,,missing from service,Special Use,,multi-person dwellings,,,,,
+use list,Service error,154,154,Multiple Family Dwelling,,missing from service,Allowed,,multiple family dwellings,,,,,
+use list,Service error,154_MF,154,Local Post Office,,missing from service,Special Use,,local post offices,,,,,
+use list,Service error,155,155,Multiple Family Dwelling,Multi-Family Dwelling,status mismatch,Special Use,Allowed,multiple family dwelling,,,,,

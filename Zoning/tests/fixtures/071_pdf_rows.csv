@@ -1,0 +1,157 @@
+page,zone,category,label,raw,basis
+,071_SA1,Residential,Employee housing,S,listed
+,071_SA1,Residential,multiple family dwelling,S,listed
+,071_SA1,Residential,nursing and personal care,S,listed
+,071_SA1,Residential,residential care,S,listed
+,071_SA1,Tourist Accommodation,Bed and breakfast facilities,A,listed
+,071_SA1,Tourist Accommodation,"hotel, motel, and other transient dwelling units",S,listed
+,071_SA1,Tourist Accommodation,time sharing (hotel/motel design),S,listed
+,071_SA1,Tourist Accommodation,time sharing (residential design),S,listed
+,071_SA1,Commercial,Building materials and hardware,S,listed
+,071_SA1,Commercial,eating and drinking places,A,listed
+,071_SA1,Commercial,food and beverage retail sales,A,listed
+,071_SA1,Commercial,"furniture, home furnishings and equipment",A,listed
+,071_SA1,Commercial,general merchandise stores,A,listed
+,071_SA1,Commercial,mail order and vending,A,listed
+,071_SA1,Commercial,nursery,S,listed
+,071_SA1,Commercial,outdoor retail sales,S,listed
+,071_SA1,Commercial,service stations,A,listed
+,071_SA1,Commercial,Amusements and recreation services,A,listed
+,071_SA1,Commercial,privately owned assembly and entertainment,S,listed
+,071_SA1,Commercial,outdoor amusements,S,listed
+,071_SA1,Commercial,Animal husbandry services,S,listed
+,071_SA1,Commercial,auto repair and service,S,listed
+,071_SA1,Commercial,broadcasting studios,A,listed
+,071_SA1,Commercial,business support services,S,listed
+,071_SA1,Commercial,financial services,A,listed
+,071_SA1,Commercial,health care services,A,listed
+,071_SA1,Commercial,personal services,A,listed
+,071_SA1,Commercial,professional offices,A,listed
+,071_SA1,Commercial,repair services,S,listed
+,071_SA1,Commercial,schools – business and vocational,A,listed
+,071_SA1,Commercial,secondary storage,S,listed
+,071_SA1,Commercial,Small scale manufacturing,S,listed
+,071_SA1,Commercial,Vehicle storage and parking,S,listed
+,071_SA1,Commercial,warehousing,S,listed
+,071_SA1,Commercial,wholesale and distribution,S,listed
+,071_SA1,Public Service,Churches,A,listed
+,071_SA1,Public Service,collection stations,S,listed
+,071_SA1,Public Service,cultural facilities,A,listed
+,071_SA1,Public Service,day care centers/pre-schools,A,listed
+,071_SA1,Public Service,government offices,A,listed
+,071_SA1,Public Service,local assembly and entertainment,S,listed
+,071_SA1,Public Service,local post office,A,listed
+,071_SA1,Public Service,local public health and safety facilities,A,listed
+,071_SA1,Public Service,membership organizations,A,listed
+,071_SA1,Public Service,publicly owned assembly and entertainment,S,listed
+,071_SA1,Public Service,regional public health and safety facilities,S,listed
+,071_SA1,Public Service,schools - college,S,listed
+,071_SA1,Public Service,schools - kindergarten through secondary,S,listed
+,071_SA1,Public Service,social service organizations,A,listed
+,071_SA1,Public Service,threshold-related research facilities,S,listed
+,071_SA1,Public Service,Pipelines and power transmission,S,listed
+,071_SA1,Public Service,transit stations and terminals,A,listed
+,071_SA1,Public Service,transportation routes,S,listed
+,071_SA1,Public Service,transmission and receiving facilities,S,listed
+,071_SA1,Recreation,Day use areas,A,listed
+,071_SA1,Recreation,cross country ski courses,S,listed
+,071_SA1,Recreation,outdoor recreation concessions,S,listed
+,071_SA1,Recreation,participant sports facilities,S,listed
+,071_SA1,Recreation,recreation centers,S,listed
+,071_SA1,Recreation,riding and hiking trails,A,listed
+,071_SA1,Recreation,visitor information centers,A,listed
+,071_SA1,Resource Management,Reforestation,A,listed
+,071_SA1,Resource Management,sanitation salvage cut,A,listed
+,071_SA1,Resource Management,thinning,A,listed
+,071_SA1,Resource Management,timber stand improvement,A,listed
+,071_SA1,Resource Management,Early successional stage vegetation management,A,listed
+,071_SA1,Resource Management,nonstructural fish habitat management,A,listed
+,071_SA1,Resource Management,nonstructural wildlife habitat management,A,listed
+,071_SA1,Resource Management,structural fish habitat management,A,listed
+,071_SA1,Resource Management,structural wildlife habitat management,A,listed
+,071_SA1,Resource Management,Allowed in all areas of the region,A,listed
+,071_SA1,Resource Management,Fire detection and suppression,A,listed
+,071_SA1,Resource Management,fuels treatment/management,A,listed
+,071_SA1,Resource Management,insect and disease suppression,A,listed
+,071_SA1,Resource Management,sensitive plant management,A,listed
+,071_SA1,Resource Management,uncommon plant community management,A,listed
+,071_SA1,Resource Management,Erosion control,A,listed
+,071_SA1,Resource Management,runoff control,A,listed
+,071_SA1,Resource Management,stream environment zone restoration,A,listed
+,071_SA2,Residential,Employee housing,S,listed
+,071_SA2,Residential,multiple family dwelling,S,listed
+,071_SA2,Residential,multi-person dwelling,S,listed
+,071_SA2,Residential,nursing and personal care,S,listed
+,071_SA2,Residential,residential care,S,listed
+,071_SA2,Residential,single family dwelling,A,listed
+,071_SA2,Tourist Accommodation,Bed and breakfast facilities,A,listed
+,071_SA2,Tourist Accommodation,"hotel, motel, and other transient dwelling units",S,listed
+,071_SA2,Tourist Accommodation,time sharing (hotel/motel design),S,listed
+,071_SA2,Tourist Accommodation,time sharing (residential design),S,listed
+,071_SA2,Commercial,Building materials and hardware,S,listed
+,071_SA2,Commercial,eating and drinking places,A,listed
+,071_SA2,Commercial,food and beverage retail sales,A,listed
+,071_SA2,Commercial,"furniture, home furnishings and equipment",A,listed
+,071_SA2,Commercial,general merchandise stores,A,listed
+,071_SA2,Commercial,mail order and vending,A,listed
+,071_SA2,Commercial,nursery,S,listed
+,071_SA2,Commercial,Amusements and recreation services,S,listed
+,071_SA2,Commercial,privately owned assembly and entertainment,S,listed
+,071_SA2,Commercial,Animal husbandry services,S,listed
+,071_SA2,Commercial,broadcasting studios,A,listed
+,071_SA2,Commercial,business support services,A,listed
+,071_SA2,Commercial,financial services,A,listed
+,071_SA2,Commercial,health care services,A,listed
+,071_SA2,Commercial,personal services,A,listed
+,071_SA2,Commercial,professional offices,A,listed
+,071_SA2,Commercial,repair services,S,listed
+,071_SA2,Commercial,schools - business and vocational,A,listed
+,071_SA2,Commercial,secondary storage,S,listed
+,071_SA2,Commercial,Small scale manufacturing,S,listed
+,071_SA2,Commercial,Vehicle storage and parking,S,listed
+,071_SA2,Commercial,warehousing,S,listed
+,071_SA2,Public Service,Churches,A,listed
+,071_SA2,Public Service,collection stations,S,listed
+,071_SA2,Public Service,cultural facilities,A,listed
+,071_SA2,Public Service,day care centers/pre-schools,A,listed
+,071_SA2,Public Service,government offices,A,listed
+,071_SA2,Public Service,local assembly and entertainment,S,listed
+,071_SA2,Public Service,local post office,A,listed
+,071_SA2,Public Service,local public health and safety facilities,S,listed
+,071_SA2,Public Service,membership organizations,A,listed
+,071_SA2,Public Service,regional public health and safety facilities,S,listed
+,071_SA2,Public Service,schools - kindergarten through secondary,S,listed
+,071_SA2,Public Service,social service organizations,A,listed
+,071_SA2,Public Service,threshold- related research facilities,S,listed
+,071_SA2,Public Service,Pipelines and power transmission,S,listed
+,071_SA2,Public Service,transit stations and terminals,A,listed
+,071_SA2,Public Service,transportation routes,S,listed
+,071_SA2,Public Service,transmission and receiving facilities,S,listed
+,071_SA2,Recreation,Day use areas,A,listed
+,071_SA2,Recreation,cross country ski courses,S,listed
+,071_SA2,Recreation,group facilities,S,listed
+,071_SA2,Recreation,outdoor recreation concessions,S,listed
+,071_SA2,Recreation,participant sports facilities,S,listed
+,071_SA2,Recreation,recreation centers,S,listed
+,071_SA2,Recreation,recreational vehicle parks,S,listed
+,071_SA2,Recreation,riding and hiking trails,A,listed
+,071_SA2,Recreation,rural sports,S,listed
+,071_SA2,Recreation,visitor information centers,A,listed
+,071_SA2,Resource Management,Reforestation,A,same as Special Area #1
+,071_SA2,Resource Management,sanitation salvage cut,A,same as Special Area #1
+,071_SA2,Resource Management,thinning,A,same as Special Area #1
+,071_SA2,Resource Management,timber stand improvement,A,same as Special Area #1
+,071_SA2,Resource Management,Early successional stage vegetation management,A,same as Special Area #1
+,071_SA2,Resource Management,nonstructural fish habitat management,A,same as Special Area #1
+,071_SA2,Resource Management,nonstructural wildlife habitat management,A,same as Special Area #1
+,071_SA2,Resource Management,structural fish habitat management,A,same as Special Area #1
+,071_SA2,Resource Management,structural wildlife habitat management,A,same as Special Area #1
+,071_SA2,Resource Management,Allowed in all areas of the region,A,same as Special Area #1
+,071_SA2,Resource Management,Fire detection and suppression,A,same as Special Area #1
+,071_SA2,Resource Management,fuels treatment/management,A,same as Special Area #1
+,071_SA2,Resource Management,insect and disease suppression,A,same as Special Area #1
+,071_SA2,Resource Management,sensitive plant management,A,same as Special Area #1
+,071_SA2,Resource Management,uncommon plant community management,A,same as Special Area #1
+,071_SA2,Resource Management,Erosion control,A,same as Special Area #1
+,071_SA2,Resource Management,runoff control,A,same as Special Area #1
+,071_SA2,Resource Management,stream environment zone restoration,A,same as Special Area #1

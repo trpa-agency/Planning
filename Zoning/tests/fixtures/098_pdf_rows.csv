@@ -1,0 +1,481 @@
+page,label,zone,raw
+25,Domestic animal raising,098_SA1,
+25,Domestic animal raising,098_SA2,
+25,Domestic animal raising,098_SA3,
+25,Domestic animal raising,098_SA4,
+25,Employee housing,098_SA1,S1
+25,Employee housing,098_SA2,S1
+25,Employee housing,098_SA3,
+25,Employee housing,098_SA4,S1
+25,Mobile home dwelling,098_SA1,
+25,Mobile home dwelling,098_SA2,
+25,Mobile home dwelling,098_SA3,
+25,Mobile home dwelling,098_SA4,
+25,Multiple family dwelling,098_SA1,S
+25,Multiple family dwelling,098_SA2,S
+25,Multiple family dwelling,098_SA3,
+25,Multiple family dwelling,098_SA4,A1/5
+25,Multi-person dwelling,098_SA1,S
+25,Multi-person dwelling,098_SA2,
+25,Multi-person dwelling,098_SA3,
+25,Multi-person dwelling,098_SA4,
+25,Nursing & personal care,098_SA1,
+25,Nursing & personal care,098_SA2,
+25,Nursing & personal care,098_SA3,
+25,Nursing & personal care,098_SA4,
+25,Residential care,098_SA1,
+25,Residential care,098_SA2,
+25,Residential care,098_SA3,
+25,Residential care,098_SA4,A1/5
+25,Single family dwelling,098_SA1,S
+25,Single family dwelling,098_SA2,S
+25,Single family dwelling,098_SA3,
+25,Single family dwelling,098_SA4,
+25,Summer home,098_SA1,
+25,Summer home,098_SA2,
+25,Summer home,098_SA3,
+25,Summer home,098_SA4,
+25,Bed & breakfast facilities,098_SA1,A1
+25,Bed & breakfast facilities,098_SA2,S
+25,Bed & breakfast facilities,098_SA3,
+25,Bed & breakfast facilities,098_SA4,
+25,"Hotel, motel, other transient dwellings",098_SA1,A1
+25,"Hotel, motel, other transient dwellings",098_SA2,S
+25,"Hotel, motel, other transient dwellings",098_SA3,
+25,"Hotel, motel, other transient dwellings",098_SA4,
+25,Time Share (hotel/ motel design),098_SA1,
+25,Time Share (hotel/ motel design),098_SA2,
+25,Time Share (hotel/ motel design),098_SA3,
+25,Time Share (hotel/ motel design),098_SA4,
+25,Time Sharing Residential Design,098_SA1,S8
+25,Time Sharing Residential Design,098_SA2,
+25,Time Sharing Residential Design,098_SA3,
+25,Time Sharing Residential Design,098_SA4,
+25,"Auto, mobile home and vehicle dealers",098_SA1,
+25,"Auto, mobile home and vehicle dealers",098_SA2,
+25,"Auto, mobile home and vehicle dealers",098_SA3,
+25,"Auto, mobile home and vehicle dealers",098_SA4,
+25,Bldg materials & hardware,098_SA1,S4
+25,Bldg materials & hardware,098_SA2,S4
+25,Bldg materials & hardware,098_SA3,S6
+25,Bldg materials & hardware,098_SA4,
+25,General merchandise,098_SA1,A1
+25,General merchandise,098_SA2,A1
+25,General merchandise,098_SA3,A1
+25,General merchandise,098_SA4,
+25,Mail order and vending,098_SA1,A1
+25,Mail order and vending,098_SA2,A1
+25,Mail order and vending,098_SA3,
+25,Mail order and vending,098_SA4,
+25,Nursery,098_SA1,S
+25,Nursery,098_SA2,
+25,Nursery,098_SA3,S6
+25,Nursery,098_SA4,
+25,Outdoor retail sales,098_SA1,S
+25,Outdoor retail sales,098_SA2,S
+25,Outdoor retail sales,098_SA3,S
+25,Outdoor retail sales,098_SA4,
+25,Eating & drinking places,098_SA1,A1
+25,Eating & drinking places,098_SA2,A1
+25,Eating & drinking places,098_SA3,A1
+25,Eating & drinking places,098_SA4,A1/5
+25,"Food & bvrg, retail sales",098_SA1,A1
+25,"Food & bvrg, retail sales",098_SA2,A2
+25,"Food & bvrg, retail sales",098_SA3,A1
+25,"Food & bvrg, retail sales",098_SA4,A1/5
+25,"Furniture, home furnishings & equipment",098_SA1,A1
+25,"Furniture, home furnishings & equipment",098_SA2,A1
+25,"Furniture, home furnishings & equipment",098_SA3,A1
+25,"Furniture, home furnishings & equipment",098_SA4,
+25,Service stations,098_SA1,S2
+25,Service stations,098_SA2,S2
+25,Service stations,098_SA3,S2
+25,Service stations,098_SA4,
+25,Amusement & recreation services,098_SA1,A1
+25,Amusement & recreation services,098_SA2,A1
+25,Amusement & recreation services,098_SA3,A1
+25,Amusement & recreation services,098_SA4,
+25,Privately owned assembly,098_SA1,S
+25,Privately owned assembly,098_SA2,S
+25,Privately owned assembly,098_SA3,S
+25,Privately owned assembly,098_SA4,S/5
+25,Special event area,098_SA1,
+25,Special event area,098_SA2,
+25,Special event area,098_SA3,
+25,Special event area,098_SA4,A1/5
+25,Outdoor amusements,098_SA1,S
+25,Outdoor amusements,098_SA2,S
+25,Outdoor amusements,098_SA3,S
+25,Outdoor amusements,098_SA4,
+26,Animal husbandry services,098_SA1,A1
+26,Animal husbandry services,098_SA2,A1
+26,Animal husbandry services,098_SA3,A1
+26,Animal husbandry services,098_SA4,
+26,Auto repair and service,098_SA1,
+26,Auto repair and service,098_SA2,
+26,Auto repair and service,098_SA3,
+26,Auto repair and service,098_SA4,
+26,Broadcasting studios,098_SA1,A1
+26,Broadcasting studios,098_SA2,A1
+26,Broadcasting studios,098_SA3,A1
+26,Broadcasting studios,098_SA4,
+26,Business support services,098_SA1,A1
+26,Business support services,098_SA2,A1
+26,Business support services,098_SA3,A1
+26,Business support services,098_SA4,A1/5
+26,Contract Construction Srvs,098_SA1,
+26,Contract Construction Srvs,098_SA2,
+26,Contract Construction Srvs,098_SA3,
+26,Contract Construction Srvs,098_SA4,
+26,Health care services,098_SA1,A1
+26,Health care services,098_SA2,A1
+26,Health care services,098_SA3,A1
+26,Health care services,098_SA4,
+26,Laundries & dry cIng plant,098_SA1,
+26,Laundries & dry cIng plant,098_SA2,
+26,Laundries & dry cIng plant,098_SA3,
+26,Laundries & dry cIng plant,098_SA4,
+26,Personal services,098_SA1,Al
+26,Personal services,098_SA2,Al
+26,Personal services,098_SA3,Al
+26,Personal services,098_SA4,
+26,Professional offices,098_SA1,A1
+26,Professional offices,098_SA2,A1
+26,Professional offices,098_SA3,A1
+26,Professional offices,098_SA4,A1
+26,Repair services,098_SA1,S4
+26,Repair services,098_SA2,S4
+26,Repair services,098_SA3,S4
+26,Repair services,098_SA4,
+26,Sales Lots,098_SA1,
+26,Sales Lots,098_SA2,
+26,Sales Lots,098_SA3,
+26,Sales Lots,098_SA4,
+26,Schls - Business/Vocation,098_SA1,A1
+26,Schls - Business/Vocation,098_SA2,A1
+26,Schls - Business/Vocation,098_SA3,A1
+26,Schls - Business/Vocation,098_SA4,A1/5
+26,Secondary Storage,098_SA1,
+26,Secondary Storage,098_SA2,
+26,Secondary Storage,098_SA3,
+26,Secondary Storage,098_SA4,
+26,Batch plants,098_SA1,
+26,Batch plants,098_SA2,
+26,Batch plants,098_SA3,
+26,Batch plants,098_SA4,
+26,Food and kindred products,098_SA1,
+26,Food and kindred products,098_SA2,
+26,Food and kindred products,098_SA3,
+26,Food and kindred products,098_SA4,
+26,Fuel and ice dealers,098_SA1,
+26,Fuel and ice dealers,098_SA2,
+26,Fuel and ice dealers,098_SA3,
+26,Fuel and ice dealers,098_SA4,
+26,Industrial services,098_SA1,
+26,Industrial services,098_SA2,
+26,Industrial services,098_SA3,
+26,Industrial services,098_SA4,
+26,Printing and publishing,098_SA1,S
+26,Printing and publishing,098_SA2,S
+26,Printing and publishing,098_SA3,S
+26,Printing and publishing,098_SA4,
+26,Recycling and scrap,098_SA1,
+26,Recycling and scrap,098_SA2,
+26,Recycling and scrap,098_SA3,
+26,Recycling and scrap,098_SA4,
+26,Small scale manufacturing,098_SA1,
+26,Small scale manufacturing,098_SA2,
+26,Small scale manufacturing,098_SA3,
+26,Small scale manufacturing,098_SA4,
+26,Storage yards,098_SA1,
+26,Storage yards,098_SA2,
+26,Storage yards,098_SA3,
+26,Storage yards,098_SA4,
+26,Vehicle & freight terminals,098_SA1,
+26,Vehicle & freight terminals,098_SA2,
+26,Vehicle & freight terminals,098_SA3,
+26,Vehicle & freight terminals,098_SA4,
+26,Vehicle storage & parking,098_SA1,S
+26,Vehicle storage & parking,098_SA2,S
+26,Vehicle storage & parking,098_SA3,S
+26,Vehicle storage & parking,098_SA4,
+26,Warehousing,098_SA1,
+26,Warehousing,098_SA2,
+26,Warehousing,098_SA3,
+26,Warehousing,098_SA4,
+26,Wholesale and distribution,098_SA1,
+26,Wholesale and distribution,098_SA2,
+26,Wholesale and distribution,098_SA3,
+26,Wholesale and distribution,098_SA4,
+26,"Airfields, landing strips & heliports (new non- emergency sites prhbtd)",098_SA1,
+26,"Airfields, landing strips & heliports (new non- emergency sites prhbtd)",098_SA2,
+26,"Airfields, landing strips & heliports (new non- emergency sites prhbtd)",098_SA3,
+26,"Airfields, landing strips & heliports (new non- emergency sites prhbtd)",098_SA4,
+26,Cemeteries,098_SA1,
+26,Cemeteries,098_SA2,
+26,Cemeteries,098_SA3,
+26,Cemeteries,098_SA4,S
+26,Churches,098_SA1,A1
+26,Churches,098_SA2,A1
+26,Churches,098_SA3,A1
+26,Churches,098_SA4,A1
+26,Collection stations,098_SA1,S
+26,Collection stations,098_SA2,S
+26,Collection stations,098_SA3,S
+26,Collection stations,098_SA4,S
+26,Cultural facilities,098_SA1,A1
+26,Cultural facilities,098_SA2,A1
+26,Cultural facilities,098_SA3,A1
+26,Cultural facilities,098_SA4,A1
+26,Daycare centers,098_SA1,A1
+26,Daycare centers,098_SA2,A1
+26,Daycare centers,098_SA3,A1
+26,Daycare centers,098_SA4,A1
+26,Government offices,098_SA1,S3
+26,Government offices,098_SA2,S3
+26,Government offices,098_SA3,S3
+26,Government offices,098_SA4,Al/5
+26,Hospitals,098_SA1,
+26,Hospitals,098_SA2,
+26,Hospitals,098_SA3,
+26,Hospitals,098_SA4,
+26,Local assembly and entertainment,098_SA1,S
+26,Local assembly and entertainment,098_SA2,A1
+26,Local assembly and entertainment,098_SA3,S
+26,Local assembly and entertainment,098_SA4,S5
+26,Local post office,098_SA1,S
+26,Local post office,098_SA2,S
+26,Local post office,098_SA3,A1
+26,Local post office,098_SA4,S5
+26,Local public health and safety facilities,098_SA1,S
+26,Local public health and safety facilities,098_SA2,S
+26,Local public health and safety facilities,098_SA3,S6
+26,Local public health and safety facilities,098_SA4,A1/5
+27,Power generating,098_SA1,
+27,Power generating,098_SA2,
+27,Power generating,098_SA3,
+27,Power generating,098_SA4,
+27,Public owned assembly & entertainment,098_SA1,
+27,Public owned assembly & entertainment,098_SA2,
+27,Public owned assembly & entertainment,098_SA3,A1/5
+27,Public owned assembly & entertainment,098_SA4,A1/5
+27,Public utility centers,098_SA1,
+27,Public utility centers,098_SA2,
+27,Public utility centers,098_SA3,
+27,Public utility centers,098_SA4,S
+27,Regional public health and safety facilities,098_SA1,
+27,Regional public health and safety facilities,098_SA2,
+27,Regional public health and safety facilities,098_SA3,
+27,Regional public health and safety facilities,098_SA4,S5
+27,Schools - college,098_SA1,
+27,Schools - college,098_SA2,
+27,Schools - college,098_SA3,A1
+27,Schools - college,098_SA4,A1
+27,Schools - kindergarten through secondary,098_SA1,
+27,Schools - kindergarten through secondary,098_SA2,
+27,Schools - kindergarten through secondary,098_SA3,A1
+27,Schools - kindergarten through secondary,098_SA4,A1
+27,Schools - Preschool,098_SA1,A1
+27,Schools - Preschool,098_SA2,A1
+27,Schools - Preschool,098_SA3,A1
+27,Schools - Preschool,098_SA4,A1
+27,Social Service Organ.,098_SA1,S3
+27,Social Service Organ.,098_SA2,S3
+27,Social Service Organ.,098_SA3,S3
+27,Social Service Organ.,098_SA4,A1
+27,Pipelines & power transmission,098_SA1,S
+27,Pipelines & power transmission,098_SA2,S
+27,Pipelines & power transmission,098_SA3,S
+27,Pipelines & power transmission,098_SA4,S
+27,Transit stations & terminals,098_SA1,S
+27,Transit stations & terminals,098_SA2,S
+27,Transit stations & terminals,098_SA3,S
+27,Transit stations & terminals,098_SA4,S
+27,Transportation routes,098_SA1,S
+27,Transportation routes,098_SA2,S
+27,Transportation routes,098_SA3,S
+27,Transportation routes,098_SA4,S
+27,Transmission & receiving,098_SA1,S
+27,Transmission & receiving,098_SA2,S
+27,Transmission & receiving,098_SA3,S
+27,Transmission & receiving,098_SA4,S
+27,Threshold-related research facilities,098_SA1,S
+27,Threshold-related research facilities,098_SA2,S
+27,Threshold-related research facilities,098_SA3,S
+27,Threshold-related research facilities,098_SA4,S
+27,Beach recreation,098_SA1,A1
+27,Beach recreation,098_SA2,A1
+27,Beach recreation,098_SA3,
+27,Beach recreation,098_SA4,A1
+27,Boat launching facilities,098_SA1,
+27,Boat launching facilities,098_SA2,A1
+27,Boat launching facilities,098_SA3,
+27,Boat launching facilities,098_SA4,A1
+27,Cross country ski courses,098_SA1,
+27,Cross country ski courses,098_SA2,
+27,Cross country ski courses,098_SA3,
+27,Cross country ski courses,098_SA4,A1
+27,Day use areas,098_SA1,A1
+27,Day use areas,098_SA2,A1
+27,Day use areas,098_SA3,A1
+27,Day use areas,098_SA4,A1
+27,Developed campgrounds,098_SA1,
+27,Developed campgrounds,098_SA2,
+27,Developed campgrounds,098_SA3,
+27,Developed campgrounds,098_SA4,A1
+27,Downhill ski facilities,098_SA1,
+27,Downhill ski facilities,098_SA2,
+27,Downhill ski facilities,098_SA3,
+27,Downhill ski facilities,098_SA4,
+27,Golf courses,098_SA1,
+27,Golf courses,098_SA2,
+27,Golf courses,098_SA3,
+27,Golf courses,098_SA4,S5
+27,Group facilities,098_SA1,
+27,Group facilities,098_SA2,
+27,Group facilities,098_SA3,
+27,Group facilities,098_SA4,S5
+27,Marinas,098_SA1,S
+27,Marinas,098_SA2,
+27,Marinas,098_SA3,
+27,Marinas,098_SA4,
+27,Off-road vehicle courses,098_SA1,
+27,Off-road vehicle courses,098_SA2,
+27,Off-road vehicle courses,098_SA3,
+27,Off-road vehicle courses,098_SA4,
+27,Outdoor Recreation Concessions,098_SA1,S
+27,Outdoor Recreation Concessions,098_SA2,A3
+27,Outdoor Recreation Concessions,098_SA3,S
+27,Outdoor Recreation Concessions,098_SA4,S
+27,Participant sports facilities,098_SA1,
+27,Participant sports facilities,098_SA2,
+27,Participant sports facilities,098_SA3,
+27,Participant sports facilities,098_SA4,S
+27,Recreation centers,098_SA1,
+27,Recreation centers,098_SA2,
+27,Recreation centers,098_SA3,
+27,Recreation centers,098_SA4,A1
+27,Recreational vehicle parks,098_SA1,
+27,Recreational vehicle parks,098_SA2,
+27,Recreational vehicle parks,098_SA3,
+27,Recreational vehicle parks,098_SA4,
+27,Riding and hiking trails,098_SA1,
+27,Riding and hiking trails,098_SA2,
+27,Riding and hiking trails,098_SA3,
+27,Riding and hiking trails,098_SA4,
+27,Rural sports,098_SA1,
+27,Rural sports,098_SA2,
+27,Rural sports,098_SA3,
+27,Rural sports,098_SA4,
+27,Snowmobile courses,098_SA1,
+27,Snowmobile courses,098_SA2,
+27,Snowmobile courses,098_SA3,
+27,Snowmobile courses,098_SA4,
+27,Sport assembly,098_SA1,
+27,Sport assembly,098_SA2,
+27,Sport assembly,098_SA3,
+27,Sport assembly,098_SA4,
+27,Undeveloped campgrounds,098_SA1,
+27,Undeveloped campgrounds,098_SA2,
+27,Undeveloped campgrounds,098_SA3,
+27,Undeveloped campgrounds,098_SA4,
+27,Visitor information centers,098_SA1,A1
+27,Visitor information centers,098_SA2,A1
+27,Visitor information centers,098_SA3,A1
+27,Visitor information centers,098_SA4,A1
+28,Reforestation,098_SA1,A
+28,Reforestation,098_SA2,A
+28,Reforestation,098_SA3,A
+28,Reforestation,098_SA4,A
+28,Regeneration harvest,098_SA1,
+28,Regeneration harvest,098_SA2,
+28,Regeneration harvest,098_SA3,
+28,Regeneration harvest,098_SA4,
+28,Sanitation salvage cut,098_SA1,A
+28,Sanitation salvage cut,098_SA2,A
+28,Sanitation salvage cut,098_SA3,A
+28,Sanitation salvage cut,098_SA4,A
+28,Selection cut,098_SA1,A
+28,Selection cut,098_SA2,A
+28,Selection cut,098_SA3,A
+28,Selection cut,098_SA4,A
+28,Special cut,098_SA1,A
+28,Special cut,098_SA2,A
+28,Special cut,098_SA3,A
+28,Special cut,098_SA4,A
+28,Thinning,098_SA1,A
+28,Thinning,098_SA2,A
+28,Thinning,098_SA3,A
+28,Thinning,098_SA4,A
+28,Timber stand improvement,098_SA1,A
+28,Timber stand improvement,098_SA2,A
+28,Timber stand improvement,098_SA3,A
+28,Timber stand improvement,098_SA4,A
+28,Tree farms,098_SA1,
+28,Tree farms,098_SA2,
+28,Tree farms,098_SA3,
+28,Tree farms,098_SA4,
+28,Early successional vegetation management,098_SA1,A
+28,Early successional vegetation management,098_SA2,A
+28,Early successional vegetation management,098_SA3,A
+28,Early successional vegetation management,098_SA4,A
+28,Nonstructural fish habitat management,098_SA1,
+28,Nonstructural fish habitat management,098_SA2,
+28,Nonstructural fish habitat management,098_SA3,
+28,Nonstructural fish habitat management,098_SA4,
+28,Farm/ranch structures,098_SA1,
+28,Farm/ranch structures,098_SA2,
+28,Farm/ranch structures,098_SA3,
+28,Farm/ranch structures,098_SA4,
+28,Grazing,098_SA1,
+28,Grazing,098_SA2,
+28,Grazing,098_SA3,
+28,Grazing,098_SA4,
+28,Range Pasture Mgmt,098_SA1,
+28,Range Pasture Mgmt,098_SA2,
+28,Range Pasture Mgmt,098_SA3,
+28,Range Pasture Mgmt,098_SA4,
+28,Range improvement,098_SA1,
+28,Range improvement,098_SA2,
+28,Range improvement,098_SA3,
+28,Range improvement,098_SA4,
+28,Allowed in all areas,098_SA1,A
+28,Allowed in all areas,098_SA2,A
+28,Allowed in all areas,098_SA3,A
+28,Allowed in all areas,098_SA4,A
+28,Fire Detection and suppression,098_SA1,A
+28,Fire Detection and suppression,098_SA2,A
+28,Fire Detection and suppression,098_SA3,A
+28,Fire Detection and suppression,098_SA4,A
+28,Fuels treatment/ management,098_SA1,
+28,Fuels treatment/ management,098_SA2,
+28,Fuels treatment/ management,098_SA3,
+28,Fuels treatment/ management,098_SA4,
+28,Insect and disease suppression,098_SA1,S
+28,Insect and disease suppression,098_SA2,S
+28,Insect and disease suppression,098_SA3,S
+28,Insect and disease suppression,098_SA4,S
+28,Prescribed fire/burning management,098_SA1,
+28,Prescribed fire/burning management,098_SA2,
+28,Prescribed fire/burning management,098_SA3,
+28,Prescribed fire/burning management,098_SA4,
+28,Sensitive plant management,098_SA1,A1
+28,Sensitive plant management,098_SA2,A1
+28,Sensitive plant management,098_SA3,A1
+28,Sensitive plant management,098_SA4,A1
+28,Uncommon plant community management,098_SA1,A
+28,Uncommon plant community management,098_SA2,A
+28,Uncommon plant community management,098_SA3,A
+28,Uncommon plant community management,098_SA4,A
+28,Erosion control,098_SA1,A1
+28,Erosion control,098_SA2,A1
+28,Erosion control,098_SA3,A1
+28,Erosion control,098_SA4,A1
+28,Runoff control,098_SA1,A1
+28,Runoff control,098_SA2,A1
+28,Runoff control,098_SA3,A1
+28,Runoff control,098_SA4,A1
+28,Stream environment zone restoration,098_SA1,
+28,Stream environment zone restoration,098_SA2,A1
+28,Stream environment zone restoration,098_SA3,A1
+28,Stream environment zone restoration,098_SA4,A1

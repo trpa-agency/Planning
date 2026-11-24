@@ -1,0 +1,406 @@
+page,label,zone,raw,heading
+25,"TABLE 2-1: PERMITTED, USE Residential Employee Housing",MAP_1,CUP(3),
+25,"TABLE 2-1: PERMITTED, USE Residential Employee Housing",MAP_2,—,
+25,"TABLE 2-1: PERMITTED, USE Residential Employee Housing",MAP_3,CUP,
+25,"TABLE 2-1: PERMITTED, USE Residential Employee Housing",MAP_4,CUP,
+25,"TABLE 2-1: PERMITTED, USE Residential Employee Housing",MAP_5,—,
+25,Multiple Family Dwelling,MAP_1,P(6),
+25,Multiple Family Dwelling,MAP_2,—,
+25,Multiple Family Dwelling,MAP_3,P,
+25,Multiple Family Dwelling,MAP_4,—,
+25,Multiple Family Dwelling,MAP_5,—,
+25,"Multiple Person Dwelling (i.e., dormitories, etc.)",MAP_1,CUP,
+25,"Multiple Person Dwelling (i.e., dormitories, etc.)",MAP_2,—,
+25,"Multiple Person Dwelling (i.e., dormitories, etc.)",MAP_3,—,
+25,"Multiple Person Dwelling (i.e., dormitories, etc.)",MAP_4,—,
+25,"Multiple Person Dwelling (i.e., dormitories, etc.)",MAP_5,—,
+25,Nursing and Personal Care,MAP_1,CUP,
+25,Nursing and Personal Care,MAP_2,—,
+25,Nursing and Personal Care,MAP_3,—,
+25,Nursing and Personal Care,MAP_4,—,
+25,Nursing and Personal Care,MAP_5,—,
+25,Single Family Dwelling,MAP_1,P(4)(6),
+25,Single Family Dwelling,MAP_2,—,
+25,Single Family Dwelling,MAP_3,P,
+25,Single Family Dwelling,MAP_4,—,
+25,Single Family Dwelling,MAP_5,—,
+25,Tourist Accommodation Time-share units,MAP_1,—,
+25,Tourist Accommodation Time-share units,MAP_2,—,
+25,Tourist Accommodation Time-share units,MAP_3,—,
+25,Tourist Accommodation Time-share units,MAP_4,—,
+25,Tourist Accommodation Time-share units,MAP_5,—,
+25,Bed and Breakfast Facilities,MAP_1,P,
+25,Bed and Breakfast Facilities,MAP_2,—,
+25,Bed and Breakfast Facilities,MAP_3,P,
+25,Bed and Breakfast Facilities,MAP_4,—,
+25,Bed and Breakfast Facilities,MAP_5,—,
+25,Hotels/Motels,MAP_1,CUP,
+25,Hotels/Motels,MAP_2,—,
+25,Hotels/Motels,MAP_3,CUP(7),
+25,Hotels/Motels,MAP_4,—,
+25,Hotels/Motels,MAP_5,—,
+25,Commercial (Retail) Auto/Mobile Homes/Vehicle Dealers,MAP_1,—,
+25,Commercial (Retail) Auto/Mobile Homes/Vehicle Dealers,MAP_2,CUP,
+25,Commercial (Retail) Auto/Mobile Homes/Vehicle Dealers,MAP_3,—,
+25,Commercial (Retail) Auto/Mobile Homes/Vehicle Dealers,MAP_4,—,
+25,Commercial (Retail) Auto/Mobile Homes/Vehicle Dealers,MAP_5,—,
+25,Building Materials/Hardware,MAP_1,P,
+25,Building Materials/Hardware,MAP_2,P,
+25,Building Materials/Hardware,MAP_3,—,
+25,Building Materials/Hardware,MAP_4,—,
+25,Building Materials/Hardware,MAP_5,—,
+25,Eating and Drinking Places,MAP_1,P,
+25,Eating and Drinking Places,MAP_2,P,
+25,Eating and Drinking Places,MAP_3,—,
+25,Eating and Drinking Places,MAP_4,—,
+25,Eating and Drinking Places,MAP_5,—,
+25,Food and Beverage Sales,MAP_1,P,
+25,Food and Beverage Sales,MAP_2,P,
+25,Food and Beverage Sales,MAP_3,—,
+25,Food and Beverage Sales,MAP_4,—,
+25,Food and Beverage Sales,MAP_5,—,
+25,Furniture/Home Furnishings/Equipment,MAP_1,P,
+25,Furniture/Home Furnishings/Equipment,MAP_2,P,
+25,Furniture/Home Furnishings/Equipment,MAP_3,—,
+25,Furniture/Home Furnishings/Equipment,MAP_4,—,
+25,Furniture/Home Furnishings/Equipment,MAP_5,—,
+25,General Merchandise Stores,MAP_1,P,
+25,General Merchandise Stores,MAP_2,P,
+25,General Merchandise Stores,MAP_3,—,
+25,General Merchandise Stores,MAP_4,—,
+25,General Merchandise Stores,MAP_5,—,
+25,Mail Order and Vending,MAP_1,P,
+25,Mail Order and Vending,MAP_2,P,
+25,Mail Order and Vending,MAP_3,—,
+25,Mail Order and Vending,MAP_4,—,
+25,Mail Order and Vending,MAP_5,—,
+25,Nursery,MAP_1,P,
+25,Nursery,MAP_2,P,
+25,Nursery,MAP_3,—,
+25,Nursery,MAP_4,CUP,
+25,Nursery,MAP_5,—,
+25,Outdoor Retail Sales,MAP_1,CUP,
+25,Outdoor Retail Sales,MAP_2,CUP,
+25,Outdoor Retail Sales,MAP_3,—,
+25,Outdoor Retail Sales,MAP_4,—,
+25,Outdoor Retail Sales,MAP_5,—,
+25,Service Stations,MAP_1,CUP,
+25,Service Stations,MAP_2,CUP,
+25,Service Stations,MAP_3,—,
+25,Service Stations,MAP_4,—,
+25,Service Stations,MAP_5,—,
+25,Amusements and Recreation Services,MAP_1,P,
+25,Amusements and Recreation Services,MAP_2,—,
+25,Amusements and Recreation Services,MAP_3,—,
+25,Amusements and Recreation Services,MAP_4,CUP,
+25,Amusements and Recreation Services,MAP_5,—,
+25,Privately Owned Assembly and Entertainment,MAP_1,CUP,
+25,Privately Owned Assembly and Entertainment,MAP_2,—,
+25,Privately Owned Assembly and Entertainment,MAP_3,—,
+25,Privately Owned Assembly and Entertainment,MAP_4,—,
+25,Privately Owned Assembly and Entertainment,MAP_5,—,
+25,Outdoor Amusements,MAP_1,CUP,
+25,Outdoor Amusements,MAP_2,—,
+25,Outdoor Amusements,MAP_3,—,
+25,Outdoor Amusements,MAP_4,CUP,
+25,Outdoor Amusements,MAP_5,—,
+25,Animal Husbandry Services,MAP_1,CUP,
+25,Animal Husbandry Services,MAP_2,P,
+25,Animal Husbandry Services,MAP_3,—,
+25,Animal Husbandry Services,MAP_4,—,
+25,Animal Husbandry Services,MAP_5,—,
+25,Broadcasting Studios,MAP_1,P,
+25,Broadcasting Studios,MAP_2,P,
+25,Broadcasting Studios,MAP_3,—,
+25,Broadcasting Studios,MAP_4,—,
+25,Broadcasting Studios,MAP_5,—,
+25,Business Support Services,MAP_1,P,
+25,Business Support Services,MAP_2,P,
+25,Business Support Services,MAP_3,—,
+25,Business Support Services,MAP_4,—,
+25,Business Support Services,MAP_5,—,
+25,Contract Construction Services,MAP_1,CUP,
+25,Contract Construction Services,MAP_2,P,
+25,Contract Construction Services,MAP_3,—,
+25,Contract Construction Services,MAP_4,—,
+25,Contract Construction Services,MAP_5,—,
+25,Financial Services,MAP_1,P,
+25,Financial Services,MAP_2,P,
+25,Financial Services,MAP_3,—,
+25,Financial Services,MAP_4,—,
+25,Financial Services,MAP_5,—,
+25,Health Care Services,MAP_1,P,
+25,Health Care Services,MAP_2,P,
+25,Health Care Services,MAP_3,—,
+25,Health Care Services,MAP_4,—,
+25,Health Care Services,MAP_5,—,
+25,Personal Services,MAP_1,P,
+25,Personal Services,MAP_2,P,
+25,Personal Services,MAP_3,—,
+25,Personal Services,MAP_4,—,
+25,Personal Services,MAP_5,—,
+25,Professional Offices,MAP_1,P,
+25,Professional Offices,MAP_2,P,
+25,Professional Offices,MAP_3,—,
+25,Professional Offices,MAP_4,—,
+25,Professional Offices,MAP_5,—,
+25,Repair Services,MAP_1,CUP,
+25,Repair Services,MAP_2,P,
+25,Repair Services,MAP_3,—,
+25,Repair Services,MAP_4,—,
+25,Repair Services,MAP_5,—,
+25,Schools-Business and Vocational,MAP_1,CUP,
+25,Schools-Business and Vocational,MAP_2,—,
+25,Schools-Business and Vocational,MAP_3,—,
+25,Schools-Business and Vocational,MAP_4,—,
+25,Schools-Business and Vocational,MAP_5,—,
+25,Sales Lots,MAP_1,—,
+25,Sales Lots,MAP_2,CUP,
+25,Sales Lots,MAP_3,—,
+25,Sales Lots,MAP_4,—,
+25,Sales Lots,MAP_5,—,
+25,Secondary Storage,MAP_1,CUP(1),
+25,Secondary Storage,MAP_2,CUP,
+25,Secondary Storage,MAP_3,—,
+25,Secondary Storage,MAP_4,—,
+25,Secondary Storage,MAP_5,—,
+25,Auto Repair and Service,MAP_1,CUP,
+25,Auto Repair and Service,MAP_2,P,
+25,Auto Repair and Service,MAP_3,—,
+25,Auto Repair and Service,MAP_4,—,
+25,Auto Repair and Service,MAP_5,—,
+26,Laundries and Dry Cleaning,MAP_1,CUP,USE
+26,Laundries and Dry Cleaning,MAP_2,CUP,USE
+26,Laundries and Dry Cleaning,MAP_3,—,USE
+26,Laundries and Dry Cleaning,MAP_4,—,USE
+26,Laundries and Dry Cleaning,MAP_5,—,USE
+26,Food and Kindred Products,MAP_1,CUP(6),USE
+26,Food and Kindred Products,MAP_2,P,USE
+26,Food and Kindred Products,MAP_3,—,USE
+26,Food and Kindred Products,MAP_4,—,USE
+26,Food and Kindred Products,MAP_5,—,USE
+26,Fuel and Ice Dealers,MAP_1,—,USE
+26,Fuel and Ice Dealers,MAP_2,P,USE
+26,Fuel and Ice Dealers,MAP_3,—,USE
+26,Fuel and Ice Dealers,MAP_4,—,USE
+26,Fuel and Ice Dealers,MAP_5,—,USE
+26,Industrial Services,MAP_1,—,USE
+26,Industrial Services,MAP_2,CUP,USE
+26,Industrial Services,MAP_3,—,USE
+26,Industrial Services,MAP_4,—,USE
+26,Industrial Services,MAP_5,—,USE
+26,Printing and Publishing,MAP_1,CUP(6),USE
+26,Printing and Publishing,MAP_2,P,USE
+26,Printing and Publishing,MAP_3,—,USE
+26,Printing and Publishing,MAP_4,—,USE
+26,Printing and Publishing,MAP_5,—,USE
+26,Recycling and Scrap,MAP_1,—,USE
+26,Recycling and Scrap,MAP_2,CUP,USE
+26,Recycling and Scrap,MAP_3,—,USE
+26,Recycling and Scrap,MAP_4,—,USE
+26,Recycling and Scrap,MAP_5,—,USE
+26,Small Scale Manufacturing,MAP_1,CUP(6),USE
+26,Small Scale Manufacturing,MAP_2,CUP,USE
+26,Small Scale Manufacturing,MAP_3,—,USE
+26,Small Scale Manufacturing,MAP_4,—,USE
+26,Small Scale Manufacturing,MAP_5,—,USE
+26,Storage Yards,MAP_1,—,USE
+26,Storage Yards,MAP_2,CUP,USE
+26,Storage Yards,MAP_3,—,USE
+26,Storage Yards,MAP_4,—,USE
+26,Storage Yards,MAP_5,—,USE
+26,Vehicle/Freight Terminals,MAP_1,—,USE
+26,Vehicle/Freight Terminals,MAP_2,CUP,USE
+26,Vehicle/Freight Terminals,MAP_3,—,USE
+26,Vehicle/Freight Terminals,MAP_4,—,USE
+26,Vehicle/Freight Terminals,MAP_5,—,USE
+26,Vehicle Storage and Parking,MAP_1,CUP(6),USE
+26,Vehicle Storage and Parking,MAP_2,P,USE
+26,Vehicle Storage and Parking,MAP_3,—,USE
+26,Vehicle Storage and Parking,MAP_4,—,USE
+26,Vehicle Storage and Parking,MAP_5,—,USE
+26,Warehousing,MAP_1,CUP(6),USE
+26,Warehousing,MAP_2,P,USE
+26,Warehousing,MAP_3,—,USE
+26,Warehousing,MAP_4,—,USE
+26,Warehousing,MAP_5,—,USE
+26,Wholesale and Distribution,MAP_1,CUP(6),USE
+26,Wholesale and Distribution,MAP_2,P,USE
+26,Wholesale and Distribution,MAP_3,—,USE
+26,Wholesale and Distribution,MAP_4,—,USE
+26,Wholesale and Distribution,MAP_5,—,USE
+26,Churches,MAP_1,P,USE
+26,Churches,MAP_2,—,USE
+26,Churches,MAP_3,CUP,USE
+26,Churches,MAP_4,—,USE
+26,Churches,MAP_5,—,USE
+26,Collections Stations,MAP_1,CUP(6),USE
+26,Collections Stations,MAP_2,P,USE
+26,Collections Stations,MAP_3,—,USE
+26,Collections Stations,MAP_4,—,USE
+26,Collections Stations,MAP_5,—,USE
+26,Child Day Care Facilities and Preschools,MAP_1,P,USE
+26,Child Day Care Facilities and Preschools,MAP_2,CUP,USE
+26,Child Day Care Facilities and Preschools,MAP_3,CUP,USE
+26,Child Day Care Facilities and Preschools,MAP_4,CUP,USE
+26,Child Day Care Facilities and Preschools,MAP_5,—,USE
+26,Government Offices,MAP_1,P,USE
+26,Government Offices,MAP_2,CUP,USE
+26,Government Offices,MAP_3,CUP,USE
+26,Government Offices,MAP_4,—,USE
+26,Government Offices,MAP_5,—,USE
+26,Hospitals,MAP_1,CUP,USE
+26,Hospitals,MAP_2,—,USE
+26,Hospitals,MAP_3,—,USE
+26,Hospitals,MAP_4,—,USE
+26,Hospitals,MAP_5,—,USE
+26,Local Assembly and Entertainment,MAP_1,P,USE
+26,Local Assembly and Entertainment,MAP_2,CUP,USE
+26,Local Assembly and Entertainment,MAP_3,CUP,USE
+26,Local Assembly and Entertainment,MAP_4,P,USE
+26,Local Assembly and Entertainment,MAP_5,—,USE
+26,Local Post Office,MAP_1,P,USE
+26,Local Post Office,MAP_2,—,USE
+26,Local Post Office,MAP_3,—,USE
+26,Local Post Office,MAP_4,—,USE
+26,Local Post Office,MAP_5,—,USE
+26,Local Public Health and Safety Facilities,MAP_1,P,USE
+26,Local Public Health and Safety Facilities,MAP_2,P,USE
+26,Local Public Health and Safety Facilities,MAP_3,CUP,USE
+26,Local Public Health and Safety Facilities,MAP_4,CUP,USE
+26,Local Public Health and Safety Facilities,MAP_5,CUP,USE
+26,Membership Organizations,MAP_1,P,USE
+26,Membership Organizations,MAP_2,—,USE
+26,Membership Organizations,MAP_3,—,USE
+26,Membership Organizations,MAP_4,—,USE
+26,Membership Organizations,MAP_5,—,USE
+26,Publicly Owned Assembly and Entertainment,MAP_1,CUP,USE
+26,Publicly Owned Assembly and Entertainment,MAP_2,—,USE
+26,Publicly Owned Assembly and Entertainment,MAP_3,—,USE
+26,Publicly Owned Assembly and Entertainment,MAP_4,CUP,USE
+26,Publicly Owned Assembly and Entertainment,MAP_5,—,USE
+26,Public Utility Centers,MAP_1,CUP(6),USE
+26,Public Utility Centers,MAP_2,CUP,USE
+26,Public Utility Centers,MAP_3,—,USE
+26,Public Utility Centers,MAP_4,CUP,USE
+26,Public Utility Centers,MAP_5,CUP,USE
+26,Regional Public Health and Safety Facilities,MAP_1,CUP,USE
+26,Regional Public Health and Safety Facilities,MAP_2,CUP,USE
+26,Regional Public Health and Safety Facilities,MAP_3,—,USE
+26,Regional Public Health and Safety Facilities,MAP_4,—,USE
+26,Regional Public Health and Safety Facilities,MAP_5,—,USE
+26,Social Service Organizations,MAP_1,P,USE
+26,Social Service Organizations,MAP_2,CUP,USE
+26,Social Service Organizations,MAP_3,CUP,USE
+26,Social Service Organizations,MAP_4,—,USE
+26,Social Service Organizations,MAP_5,—,USE
+26,Schools (K-12),MAP_1,CUP,USE
+26,Schools (K-12),MAP_2,—,USE
+26,Schools (K-12),MAP_3,—,USE
+26,Schools (K-12),MAP_4,—,USE
+26,Schools (K-12),MAP_5,—,USE
+26,Cultural Facilities,MAP_1,P,USE
+26,Cultural Facilities,MAP_2,CUP,USE
+26,Cultural Facilities,MAP_3,P,USE
+26,Cultural Facilities,MAP_4,P,USE
+26,Cultural Facilities,MAP_5,—,USE
+26,Schools/Colleges,MAP_1,CUP,USE
+26,Schools/Colleges,MAP_2,—,USE
+26,Schools/Colleges,MAP_3,—,USE
+26,Schools/Colleges,MAP_4,—,USE
+26,Schools/Colleges,MAP_5,—,USE
+26,Public Service (Linear Pipelines and Power Transmission,MAP_1,CUP,USE
+26,Public Service (Linear Pipelines and Power Transmission,MAP_2,CUP,USE
+26,Public Service (Linear Pipelines and Power Transmission,MAP_3,CUP,USE
+26,Public Service (Linear Pipelines and Power Transmission,MAP_4,CUP,USE
+26,Public Service (Linear Pipelines and Power Transmission,MAP_5,CUP,USE
+26,Transit Stations and Terminals,MAP_1,P,USE
+26,Transit Stations and Terminals,MAP_2,P,USE
+26,Transit Stations and Terminals,MAP_3,CUP,USE
+26,Transit Stations and Terminals,MAP_4,CUP,USE
+26,Transit Stations and Terminals,MAP_5,CUP,USE
+26,Transportation Routes,MAP_1,CUP(5),USE
+26,Transportation Routes,MAP_2,CUP(5),USE
+26,Transportation Routes,MAP_3,CUP(5),USE
+26,Transportation Routes,MAP_4,CUP(5),USE
+26,Transportation Routes,MAP_5,CUP(5),USE
+26,Transmission and Receiving Facilities,MAP_1,CUP,USE
+26,Transmission and Receiving Facilities,MAP_2,CUP,USE
+26,Transmission and Receiving Facilities,MAP_3,CUP,USE
+26,Transmission and Receiving Facilities,MAP_4,CUP,USE
+26,Transmission and Receiving Facilities,MAP_5,CUP,USE
+26,Recreation Cross Country Ski Courses,MAP_1,P,USE
+26,Recreation Cross Country Ski Courses,MAP_2,P,USE
+26,Recreation Cross Country Ski Courses,MAP_3,P,USE
+26,Recreation Cross Country Ski Courses,MAP_4,P,USE
+26,Recreation Cross Country Ski Courses,MAP_5,P,USE
+26,Day Use Areas,MAP_1,P,USE
+26,Day Use Areas,MAP_2,—,USE
+26,Day Use Areas,MAP_3,P,USE
+26,Day Use Areas,MAP_4,P,USE
+26,Day Use Areas,MAP_5,P,USE
+26,Golf Courses,MAP_1,—,USE
+26,Golf Courses,MAP_2,—,USE
+26,Golf Courses,MAP_3,—,USE
+26,Golf Courses,MAP_4,CUP,USE
+26,Golf Courses,MAP_5,—,USE
+26,Group Facilities,MAP_1,CUP,USE
+26,Group Facilities,MAP_2,—,USE
+26,Group Facilities,MAP_3,CUP,USE
+26,Group Facilities,MAP_4,P,USE
+26,Group Facilities,MAP_5,—,USE
+27,Outdoor Recreation Concessions,MAP_1,P,USE
+27,Outdoor Recreation Concessions,MAP_2,CUP,USE
+27,Outdoor Recreation Concessions,MAP_3,CUP,USE
+27,Outdoor Recreation Concessions,MAP_4,P,USE
+27,Outdoor Recreation Concessions,MAP_5,—,USE
+27,Participant Sport Facilities,MAP_1,CUP,USE
+27,Participant Sport Facilities,MAP_2,CUP,USE
+27,Participant Sport Facilities,MAP_3,—,USE
+27,Participant Sport Facilities,MAP_4,P,USE
+27,Participant Sport Facilities,MAP_5,—,USE
+27,Recreation Centers,MAP_1,P,USE
+27,Recreation Centers,MAP_2,—,USE
+27,Recreation Centers,MAP_3,CUP,USE
+27,Recreation Centers,MAP_4,CUP,USE
+27,Recreation Centers,MAP_5,—,USE
+27,Riding and Hiking Trails,MAP_1,P,USE
+27,Riding and Hiking Trails,MAP_2,P,USE
+27,Riding and Hiking Trails,MAP_3,P,USE
+27,Riding and Hiking Trails,MAP_4,P,USE
+27,Riding and Hiking Trails,MAP_5,P,USE
+27,Rural Sports,MAP_1,—,USE
+27,Rural Sports,MAP_2,CUP,USE
+27,Rural Sports,MAP_3,CUP,USE
+27,Rural Sports,MAP_4,P,USE
+27,Rural Sports,MAP_5,CUP,USE
+27,Snowmobile Courses,MAP_1,—,USE
+27,Snowmobile Courses,MAP_2,—,USE
+27,Snowmobile Courses,MAP_3,—,USE
+27,Snowmobile Courses,MAP_4,CUP,USE
+27,Snowmobile Courses,MAP_5,—,USE
+27,Sport Assembly,MAP_1,CUP,USE
+27,Sport Assembly,MAP_2,—,USE
+27,Sport Assembly,MAP_3,—,USE
+27,Sport Assembly,MAP_4,—,USE
+27,Sport Assembly,MAP_5,—,USE
+27,Visitor Information Center,MAP_1,P,USE
+27,Visitor Information Center,MAP_2,—,USE
+27,Visitor Information Center,MAP_3,CUP,USE
+27,Visitor Information Center,MAP_4,P,USE
+27,Visitor Information Center,MAP_5,—,USE
+27,Developed Campgrounds,MAP_1,—,USE
+27,Developed Campgrounds,MAP_2,—,USE
+27,Developed Campgrounds,MAP_3,—,USE
+27,Developed Campgrounds,MAP_4,P,USE
+27,Developed Campgrounds,MAP_5,CUP,USE
+27,Undeveloped Campgrounds,MAP_1,—,USE
+27,Undeveloped Campgrounds,MAP_2,—,USE
+27,Undeveloped Campgrounds,MAP_3,—,USE
+27,Undeveloped Campgrounds,MAP_4,P,USE
+27,Undeveloped Campgrounds,MAP_5,CUP,USE
+27,Recreational Vehicle Parks,MAP_1,—,USE
+27,Recreational Vehicle Parks,MAP_2,—,USE
+27,Recreational Vehicle Parks,MAP_3,—,USE
+27,Recreational Vehicle Parks,MAP_4,CUP,USE
+27,Recreational Vehicle Parks,MAP_5,—,USE
