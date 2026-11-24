@@ -30,7 +30,7 @@ State on 2026-11-24: E01, E03, and E04, every table fix from the 2026-11-20 pack
     2. Open `Zoning/outputs/geometry_<time>/proposed.gdb` in Pro and look at the new shapes, removed overlaps, and hole fill.
     3. Write: set `write_to_db: true`, rerun, and restore the config.
     4. Snapshot, then reconcile and post into Alyssa's version again.
-12. **Open planner decisions** R01 to R17 (in `CLAUDE.md` section 8, and in `fix_package/csv/pending_rulings.csv` and `area_pending_rulings.csv`). R18 is settled by the 055 and 056 split. Each answer becomes a small package.
+12. **Open planner decisions** R01 to R17. Added to the review note for Alyssa on 2026-11-24, with suggested answers where we have one. They are (in `CLAUDE.md` section 8, and in `fix_package/csv/pending_rulings.csv` and `area_pending_rulings.csv`). R18 is settled by the 055 and 056 split. Each answer becomes a small package.
 13. **South Shore Area Plan** (179 rows) needs Douglas County Code Chapter 20.703. **PCAP_REC_HOMEWOOD** needs the Homewood Mountain Resort Master Plan. Get the documents; Claude parses and compares them.
 
 ## Pipeline work (from CLAUDE.md section 11)
