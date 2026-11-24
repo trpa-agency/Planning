@@ -10,7 +10,7 @@ Live service checks below ran on 2026-11-23 against `Zoning/MapServer`, `Boundar
 |---|---|---|
 | E01 | Add use lists for 056, WCTAP_056, 055, WCTAP_055, 032B, and 035_SA1 | Ready. Split done in Alyssa's version; A04 covers Washoe; Carson City PAS lists to build |
 | E02 | Split 045 Incline Village Commercial into Town Center and non-Town Center districts | On hold for Alyssa: what she meant, given 045 is entirely inside the Town Center |
-| E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Ready. 842 is an accidental duplicate of 035 |
+| E03 | Delete Crystal Bay Condominiums OBJECTID 842 without losing the use table for OBJECTID 405 | Done in `SDE.mtb-edits` 2026-11-23. Not yet reconciled |
 | E04 | Prefix Washoe County zoning IDs with WCTAP | Ready. Run last |
 
 ### Answers from Mason, 2026-11-23
@@ -126,6 +126,18 @@ Special Designation (515 to 516): one row added in each of 034 and 054. OBJECTID
 
 Effect on the fix package: Alyssa's version touches districts the package also edits: A01 in 034, 042, and 045_SA1, and A03 in 054. Some of these fixes may already be applied. A04's 055 and 056 rows now belong to WCTAP_055 and WCTAP_056. Rebuild the fix rows against the version before posting any of them.
 
+## Edits made in SDE.mtb-edits, 2026-11-23
+
+Run on the server; logs and before-state CSVs are in the server's `Zoning/outputs/`. Not yet reconciled into Alyssa's version.
+
+| Fix | Result |
+|---|---|
+| E03 | Deleted District 842. Deleted the 28 copied 035 use rows and wrote 035 back on the 28 originals and the 1 Special Designation row. |
+| F35 | Restored TVAP_TC_NP on Special Designation rows 145, 164, and 207. |
+| F36 | Deleted 59 fully blank use rows (10,879 to 10,820), including F22's 12762. |
+
+Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special designation rows, and no duplicate zoning IDs. Use rows with a null key are down from 91 to 32; A05 deletes those. No Special Designation rows have a null key. Fix package: 801 rows match. The 2 not found in the version are F24's 493 (deleted by Alyssa) and F22's 12762 (deleted by F36), so both fixes are done.
+
 ## Recommended order
 
 1. Create the QA edit version as a Protected child of `Misc edits Nov 2026`.
@@ -150,6 +162,14 @@ Every script that touches SDE runs on the server, from a clone of this repo. Cod
 7. F36 dry run: `python Zoning/scripts/f36_delete_empty_use_rows.py`. It should find 59 rows where every field is blank.
 8. Writes: set `run.write_to_db: true`, run E03, F35, and F36, then set it back to `false`. Both scripts refuse to write unless the connection is `SDE.mtb-edits`. Every check runs inside the edit session, and any failure discards the edit. A rerun after a successful write stops at the guards.
 9. Rerun the snapshot to confirm: no duplicate 035, use rows with a null key go from 91 to 32 (DEFAULT's 33 minus F22's empty row; A05 deletes the rest), and Special Designation null keys go from 3 to 0.
+
+Rebuild the fix package against the version before posting any of it (read only):
+
+```
+python Zoning/scripts/rebuild_fixes.py --default Zoning/data/snapshots/sde_DEFAULT_20261123_205432.gdb
+```
+
+It marks every fix row as pending, done, conflict, missing, or no_district, moves the A04 rows for 055 and 056 to WCTAP_055 and WCTAP_056, and writes `outputs/rebuild_<time>/`: `fix_status.csv`, `review.csv` (rows to settle by hand), `extra_rows_in_replaced_districts.csv`, and `rebuilt/` (only the pending rows, in the package's own columns). `--default` adds the District geometry check. Against the unchanged 2026-11-20 state it reproduces the package exactly: 1,537 pending, and 10,812 use rows to 10,900 (10,963 less the 63 A04 rows whose districts do not exist in DEFAULT).
 
 Use the Pro Python: `"C:\Program Files\ArcGIS\Pro\bin\Python\envs\arcgispro-py3\python.exe"`.
 
