@@ -97,6 +97,18 @@ f36:
   fields: [Zoning_ID, Category, Subcategory, Use_Type, Use_Status, Density, Unit, Notes]
   expected_count: 59
 
+e04:
+  # Prefix Washoe County district IDs with WCTAP_ (Alyssa's request; Mason confirmed the
+  # format and that 019 is included, 2026-11-23).
+  prefix: "WCTAP_"
+  plan_id: WCTAP              # districts with this PLAN_ID are renamed...
+  exclude: ["055", "056"]     # ...except the Carson City halves, which keep their IDs
+  expected_count: 36          # 38 WCTAP districts on 2026-11-20, less 055 and 056
+  # Further datasets keyed on ZONING_ID to rename in the same session (keys from
+  # `datasets`). Parcel_Master is left to the parcel ETL. Add local_plan_parcels here
+  # only if the ETL does not maintain it.
+  also_update: []
+
 f35:
   # Restore ZONING_ID on Special Designation rows orphaned by a TVAP_TC_NP shape edit.
   # Found in the DEFAULT snapshot of 2026-11-23; see docs/EDIT_REQUESTS.md.
