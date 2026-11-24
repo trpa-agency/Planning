@@ -150,9 +150,21 @@ Snapshot after the edits (23:03): 283 districts, 10,820 use rows, 516 special de
 - F30 to F33: pending; `SDE.Parcel_Master` has ZONING_ID, ZONING_DESCRIPTION, PLAN_ID, and PLAN_NAME, and every old value still matches.
 - No use rows sit in A05 districts outside A05.
 
-Open before posting:
-- Does the parcel ETL set the Parcel_Master zoning fields from District? If so, drop F30 to F33 and let the ETL carry the district fixes through.
-- F25 to F29 need the replacement shapes from the fix geodatabase in the delivered zip, which is not in the repo.
+Decided 2026-11-23: the parcel ETL sets the Parcel_Master zoning fields from District, so F30 to F33 are dropped (`rebuild.drop` in `config.yaml`). The ETL carries the district fixes through to parcels.
+
+Still open: F25 to F29 need the replacement shapes from the fix geodatabase in the delivered zip, which is not in the repo.
+
+### Posting the table fixes
+
+`scripts/post_table_fixes.py` applies the rebuilt updates, deletes, and inserts to PermissibleUses and Special_Designation in one edit session. Order: updates, then deletes, then inserts. Before anything is written, it checks every target by GlobalID and every old value, and stops unless the projected counts equal `post_tables.expected_counts` (10,971 and 484). It also stops if any row would be left with a null key. It verifies the final counts and null keys inside the session before saving.
+
+1. Rebuild fresh, so the package matches the version as it is now:
+   `python Zoning/scripts/rebuild_fixes.py --default Zoning/data/snapshots/sde_DEFAULT_20261123_205432.gdb`
+2. Dry run: `python Zoning/scripts/post_table_fixes.py --rebuilt Zoning/outputs/rebuild_<time>/rebuilt`
+3. Write: set `run.write_to_db: true`, rerun step 2, then `git checkout -- Zoning/config.yaml`.
+4. Confirm: rerun the rebuild. Every table fix should read done, and only F25 to F29 should stay pending.
+
+Tested on the 2026-11-20 state: 97 updates, 689 deletes, and 744 inserts posted. The result was 10,900 and 482 rows with no null keys and no duplicate district and use pairs. A second run stopped without writing, and the rebuild afterward read every table fix as done.
 
 ## Recommended order
 

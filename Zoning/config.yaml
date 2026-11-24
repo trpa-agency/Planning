@@ -75,6 +75,19 @@ rebuild:
     A04: {"055": "WCTAP_055", "056": "WCTAP_056"}
   # Copied through unchanged; these are decisions, not edits.
   passthrough: [pending_rulings.csv, area_pending_rulings.csv, pending_split_parcels.csv]
+  # Fix IDs left out of the rebuilt package, with the reason (status "dropped").
+  drop:
+    F30: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
+    F31: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
+    F32: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
+    F33: "Parcel ETL sets Parcel_Master zoning fields from District (Mason, 2026-11-23)"
+
+post_tables:
+  # Optional fixed targets, checked on top of the counts computed from the rebuilt package.
+  # From the 2026-11-23 rebuild against SDE.mtb-edits.
+  expected_counts:
+    permissible_uses: 10971
+    special_designation: 484
 
 f36:
   # Delete use rows where every field below is blank. In mtb-edits that is 58 rows added

@@ -15,4 +15,6 @@
 - Added F36 and `scripts/f36_delete_empty_use_rows.py`, which deletes the 59 fully blank use rows (Alyssa's 58 from the Nov. 20 append plus F22's 12762). It stops unless the count matches.
 - Pointed the config at the `SDE.mtb-edits` edit version.
 - Added `scripts/rebuild_fixes.py`, which checks every fix package row against the version (pending, done, conflict, missing, no_district), rekeys A04 to the WCTAP halves, and writes a rebuilt package of pending rows. Added `tests/build_snapshot_gdb.py`, a test geodatabase from the 2026-11-20 snapshot with real GlobalIDs. The baseline reproduces the package; simulated edits produce every status.
+- Dropped F30 to F33 because the parcel ETL sets the Parcel_Master zoning fields. Added `rebuild.drop` and the "dropped" status.
+- Added `scripts/post_table_fixes.py`, which posts the rebuilt table fixes in one edit session with count, old value, and null key guards. Moved the shared comparison helpers to `src/values.py`.
 - Ran E03, F35, and F36 in `SDE.mtb-edits` on the server. The snapshot afterward matched every expected count. Not reconciled yet. Version matching now handles OS-authenticated owners such as `"TAHOE\ABETTINGER"`.
