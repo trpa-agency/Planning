@@ -98,6 +98,16 @@ ZONING_ID is the join key for everything, so the rename touches more than the Di
 
 The rename goes last. Do every edit keyed on the old IDs first, then rename in one pass.
 
+## Findings from the DEFAULT snapshot, 2026-11-23
+
+- DEFAULT matches the 2026-11-20 service: 281 districts, 10,812 use rows, 515 special designation rows, and 61,275 parcels. Nothing changed between the QA pass and this snapshot. [Certain]
+- All 803 checkable fix package rows match SDE by GlobalID and OBJECTID. The other 8 are inserts and open decisions with no existing row. The fix package OBJECTIDs are safe to use. [Certain]
+- Permissible Use has 33 rows with a null key, as the QA pass found. A05 deletes them.
+- Special Designation has 3 rows with a null key that the QA pass missed: OBJECTIDs 145, 164, and 207. All three still carry the ZONING_DESCRIPTION "Tahoe Valley Area Plan - Town Center Neighborhood Professional". TVAP_TC_NP has no Special Designation rows, and its sibling districts TVAP_TC_C and TVAP_TC_MUC carry the same three designations (TDR receiving areas for existing development, TDR receiving areas for MFRU, and Town Center). All three rows were last edited on Apr. 4, 2025. These rows were most likely orphaned when a TVAP_TC_NP shape was deleted or replaced, the same simple relationship behavior as E03. [Likely] Proposed fix F35: set ZONING_ID to TVAP_TC_NP on those three rows, matched by GlobalID:
+  - 145 `{BEE7739F-C287-42CB-9915-6A06B4E8C029}`
+  - 164 `{F0ED7835-9BB0-4646-AF0F-D3BC30EAD9C2}`
+  - 207 `{C173A649-23D3-4B22-9F36-C771EB51207B}`
+
 ## Recommended order
 
 1. Create the QA edit version as a Protected child of `Misc edits Nov 2026`.
