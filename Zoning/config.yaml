@@ -1,0 +1,56 @@
+# Zoning edits and QA. Paths, dataset names, and run flags. No credentials here:
+# the .sde connection file holds them.
+
+project:
+  name: trpa-zoning-edits
+  owner: Mason Bindl
+
+sde:
+  # .sde connection file whose transactional version is the QA edit version.
+  # Create it in Pro: New Database Connection, then set Version to the QA edit version.
+  connection: "C:/path/to/zoning_qa_edits.sde"
+  # Full version names as shown in the Versions view, owner prefix included.
+  edit_version: "OWNER.Zoning_QA_Edits"
+  # Writes are refused when the connection points at any of these.
+  protected_versions:
+    - "sde.DEFAULT"
+    - "dbo.DEFAULT"
+    - "OWNER.Misc edits Nov 2026"
+
+# Dataset paths relative to the connection. Prefix a feature dataset if there is one,
+# for example "SDE.Zoning/SDE.District".
+datasets:
+  district: SDE.District
+  permissible_uses: SDE.PermissibleUses
+  special_designation: SDE.Special_Designation
+  parcel: SDE.Parcel                 # name assumed; confirm in Catalog
+  local_plan_parcels: null           # Local Plan parcel feature class; fill in once known
+
+# Key field name per dataset. Permissible Use spells it differently.
+keys:
+  district: ZONING_ID
+  permissible_uses: Zoning_ID
+  special_designation: ZONING_ID
+  parcel: ZONING_ID
+  local_plan_parcels: ZONING_ID
+
+paths:
+  snapshots: data/snapshots
+  outputs: outputs
+  logs: logs
+  fix_package_csv: fix_package/csv
+
+run:
+  write_to_db: false   # set to true only for the run that should edit the version
+
+snapshot:
+  # District ZONING_IDs to report in detail (SQL LIKE patterns).
+  watch_zoning_ids: ["%055%", "%056%", "035%", "032B", "045%"]
+
+e03:
+  # Delete the duplicate Crystal Bay Condominiums shape and keep the use table.
+  zoning_id: "035"
+  delete_objectid: 842
+  keep_objectid: 405
+  # Abort if the duplicate covers more than this many acres outside the kept shape.
+  max_extra_acres: 0.01

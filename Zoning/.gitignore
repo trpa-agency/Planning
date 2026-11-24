@@ -1,6 +1,9 @@
 data/raw/
 data/processed/
+data/snapshots/
+data/test/
 outputs/
 logs/
 *.gdb/
 *.sde
+tests/test_config.yaml
