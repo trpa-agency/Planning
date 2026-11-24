@@ -2,12 +2,12 @@
 
 What's left for Mason to do, with Claude Code in this repo. Work top to bottom. Last updated 2026-11-24.
 
-State on 2026-11-24: all edits are in `SDE.mtb-edits`. Done there: E01, E03, and E04, every table fix from the 2026-11-20 package, F35, and F36. Nothing has been reconciled into Alyssa's version or posted to DEFAULT. Details are in [EDIT_REQUESTS.md](EDIT_REQUESTS.md).
+State on 2026-11-24: E01, E03, and E04, every table fix from the 2026-11-20 package, F35, and F36 were made in `SDE.mtb-edits` and posted into Alyssa's `Misc edits Nov 2026`. Nothing is in DEFAULT yet. Details are in [EDIT_REQUESTS.md](EDIT_REQUESTS.md).
 
 ## Now
 
 1. ~~Decide what this public repo should show.~~ Decided 2026-11-24: leave it as is. `trpa-agency/Planning` is public, and the `Zoning` docs and config name the server connection folder, version owners, and staff. They hold no credentials, and none ever go in the repo.
-2. **Reconcile and post `mtb-edits` into `Misc edits Nov 2026`** in Pro. Use the Versioning tab: reconcile by attribute, in favor of the target version, aborting on conflicts the first time. Then post.
+2. ~~Reconcile and post `mtb-edits` into `Misc edits Nov 2026`.~~ Done 2026-11-24. A snapshot of Alyssa's version at 00:31 shows 283 districts, 11,034 use rows, and 486 special designation rows, matching `mtb-edits`, with no null keys and no duplicate district IDs. Optional full check: snapshot `mtb-edits` again and compare it with the 00:31 snapshot; there should be no differences. Original instructions: reconcile `mtb-edits` into `Misc edits Nov 2026` in Pro. Use the Versioning tab: reconcile by attribute, in favor of the target version, aborting on conflicts the first time. Then post.
 3. **Verify the post.** Make `Vector_misc.sde` pointing at Alyssa's version and a `config.server.yaml` that uses it, then snapshot both versions and compare. Ask Claude: "verify the reconcile". The compare should show no differences beyond anything Alyssa edited after Nov. 23.
 4. **Send Alyssa the review note:** [REVIEW_2026-11-24.md](REVIEW_2026-11-24.md).
 
