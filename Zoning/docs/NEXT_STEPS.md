@@ -33,6 +33,12 @@ State on 2026-11-24: E01, E03, and E04, every table fix from the 2026-11-20 pack
 12. **Open planner decisions** R01 to R17. Added to the review note for Alyssa on 2026-11-24, with suggested answers where we have one. They are (in `CLAUDE.md` section 8, and in `fix_package/csv/pending_rulings.csv` and `area_pending_rulings.csv`). R18 is settled by the 055 and 056 split. Each answer becomes a small package.
 13. **South Shore Area Plan** (179 rows) needs Douglas County Code Chapter 20.703. **PCAP_REC_HOMEWOOD** needs the Homewood Mountain Resort Master Plan. Get the documents; Claude parses and compares them.
 
+## CNEL table (replaces AGIS_TRPA/MapServer/82)
+
+- **Build `SDE.District_CNEL`.** Steps in [CNEL.md](CNEL.md): dry run, review `changes.csv` and `cnel_review.gdb` against layer 82, then write with `create_table: true`. Run it in `mtb-edits` after the E04 IDs are in place (they are).
+- **Send the N01 to N08 questions to Alyssa** with the R-series list. N01 (25 versus 45 CNEL for wilderness) and N03 (Tahoe Valley table versus policy) matter most.
+- **Republish layer 82** as District joined to the table once it is in DEFAULT.
+
 ## Pipeline work (from CLAUDE.md section 11)
 
 14. **Rebuild the QA as a maintained pipeline:** extract, parse, compare, and fixes, with the prototype outputs in `tests/fixtures/` as regression tests. Start with the extract and the Plan Area Statement parser.

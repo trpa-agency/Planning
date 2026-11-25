@@ -29,6 +29,7 @@ datasets:
   special_designation: SDE.Special_Designation   # confirmed at root 2026-11-23
   parcel: SDE.Parcels/SDE.Parcel_Master
   local_plan_parcels: null           # Local Plan parcel feature class; fill in once known
+  cnel: SDE.District_CNEL            # new table; created by cnel_build_table.py
 
 # Key field name per dataset. Permissible Use spells it differently.
 keys:
@@ -37,6 +38,7 @@ keys:
   special_designation: ZONING_ID
   parcel: ZONING_ID
   local_plan_parcels: ZONING_ID
+  cnel: ZONING_ID
 
 paths:
   snapshots: data/snapshots
@@ -138,3 +140,47 @@ f35:
     - {objectid: 145, globalid: "{BEE7739F-C287-42CB-9915-6A06B4E8C029}"}
     - {objectid: 164, globalid: "{F0ED7835-9BB0-4646-AF0F-D3BC30EAD9C2}"}
     - {objectid: 207, globalid: "{C173A649-23D3-4B22-9F36-C771EB51207B}"}
+
+cnel:
+  # District CNEL table (replaces AGIS_TRPA/MapServer/82). One row per District ZONING_ID,
+  # keyed on post-E04 IDs (WCTAP_ prefix, 055 and 056 Carson City halves). Sources, page
+  # citations, and open decisions (N01 to N08) are in the CSV; see docs/CNEL.md.
+  csv: data/reference/cnel_by_district.csv
+  # Create SDE.District_CNEL on the first write run if it does not exist.
+  create_table: false
+  # Every CNEL in the table must be one of these.
+  valid_values: [25, 40, 45, 50, 55, 60, 65]
+  # cnel_export_gpkg.py: output GeoPackage (committed) and its source layers.
+  gpkg: data/cnel/district_cnel.gpkg
+  district_url: https://maps.trpa.org/server/rest/services/Zoning/MapServer/0
+  legacy_url: https://maps.trpa.org/server/rest/services/AGIS_TRPA/MapServer/82
+
+corridor:
+  # Highway noise corridors for cnel_export_gpkg.py. Major Highways is the centerline base;
+  # Streets supplies route names and fills gaps. Routes are keyed as in src/cnel.py.
+  major_url: https://maps.trpa.org/server/rest/services/AGIS_TRPA/MapServer/10
+  streets_url: https://maps.trpa.org/server/rest/services/DataDownloader_Transportation/MapServer/2
+  # Feet each side of the centerline. Meyers, Tahoe Valley, and Tourist Core state 300 feet;
+  # the Plan Area Statements and the other plans give no width.
+  buffer_feet: 300
+  # Streets names that are a state route. "NAME|Nv" matches only that maintenance code.
+  streets_names:
+    US 50: [US ROUTE 50, US HWY 50, US 50]
+    SR 28: [STATE ROUTE 28, SR 28, US HWY 28, STATE HWY 28, "TAHOE BLVD|Nv", "NORTHLAKE BLVD|Nv"]
+    SR 89: [STATE ROUTE 89, SR 89]
+    SR 207: [STATE ROUTE 207, SR 207, "KINGSBURY GRADE|Nv"]
+    SR 267: [STATE ROUTE 267, SR 267]
+    SR 431: [STATE ROUTE 431, SR 431]
+  # Major Highways names, used where Streets does not name a segment.
+  major_names:
+    US 50: [US ROUTE 50]
+    SR 28: [STATE ROUTE 28]
+    SR 89: [STATE ROUTE 89]
+    SR 207: [KINGSBURY GRADE]
+    SR 267: [STATE ROUTE 267]
+    SR 431: [STATE ROUTE 431]
+  match_m: 20          # Streets segments this close to a Major Highways segment name it
+  match_share: 0.5     # ...when they overlap at least this share of its length
+  fill_gap_m: 30       # Streets route segments farther than this from Major Highways fill gaps
+  fill_min_m: 100      # ...in pieces at least this long
+  min_piece_acres: 0.01

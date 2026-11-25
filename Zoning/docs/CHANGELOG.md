@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-24
+
+- Added the District CNEL table to replace the legacy noise layer `AGIS_TRPA/MapServer/82`: `data/reference/cnel_by_district.csv` (283 districts, with page citations), `scripts/cnel_build_table.py` (checks District coverage, writes review files and a review geodatabase, and creates and fills `SDE.District_CNEL`; dry run by default), a `cnel` section and dataset in `config.yaml`, and `docs/CNEL.md`. 33 districts change from the legacy layer; 9 carry legacy values and N01 to N08 are open. Tested on a file geodatabase copy; not run in SDE.
+- Added `scripts/cnel_export_gpkg.py` and the committed GeoPackage `data/cnel/district_cnel.gpkg` (281 districts from the public service with post-E04 IDs, plus the legacy layer 82 polygons). Moved the CNEL schema and CSV loader to `src/cnel.py`, and added `src/rest.py` for paged REST pulls.
+- Added highway noise corridors to the GeoPackage (`highway_centerlines` and `noise_corridors`, built by `src/corridors.py` from the `corridor` config section): Major Highways with route names corrected from Streets, county roads dropped, 8.2 miles of gaps filled, buffered 300 feet, and split by district with each district's corridor standard. Added `parse_corridors` to `src/cnel.py`.
+
 ## 2026-11-23
 
 - Added the Zoning folder: handoff bundle from the 2026-11-20 QA pass (prototype code, fixtures, and fix package).
