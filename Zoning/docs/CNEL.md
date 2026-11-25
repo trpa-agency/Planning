@@ -96,15 +96,19 @@ The GeoPackage also has two corridor layers, built by `src/corridors.py` with th
 - `highway_centerlines`: state route centerlines (US 50, SR 28, SR 89, SR 207, SR 267, and SR 431). The base is Major Highways (`AGIS_TRPA/MapServer/10`). Each segment takes its route from the Streets layer (`DataDownloader_Transportation/MapServer/2`) segments within 20 meters of it, which fixes two problems: Major Highways labels Tahoe City to Dollar Point as SR 89 (it is SR 28), and it leaves Incline's Tahoe Blvd unnamed. Pioneer Trail (6.7 miles) and Lakeshore Blvd (3.1 miles) are county roads and are dropped. Streets fills 6.1 miles of SR 89 and 2.1 miles of US 50 that Major Highways lacks, mostly in South Lake Tahoe. SOURCE and ROUTE_FROM say where each segment and its route came from.
 - `noise_corridors`: each route buffered 300 feet each side of the centerline, split by district. CORRIDOR_CNEL is the corridor value the district's document states for that route, EFFECTIVE_CNEL is the corridor value where one is stated and the district value where not, and CORRIDOR_BASIS says which.
 
-Results: 231 pieces covering about 8,100 acres. CORRIDOR_BASIS is "corridor standard" on 5,712 acres, "corridor included in district value" on 193, "override permissible where applicable" on 123, and "no corridor standard in document" on 2,093. [Certain]
+Results: 231 pieces covering about 8,100 acres. CORRIDOR_BASIS is "corridor standard" on 5,778 acres, "corridor included in district value" on 193, "override permissible where applicable" on 123, and "no corridor standard in document" on 2,026. [Certain]
 
 Things to know:
 
 - Width: Meyers, Tahoe Valley, and Tourist Core state 300 feet. Tourist Core measures from the road edge; this layer measures from the centerline, so it runs about 6 to 12 meters narrow there. The Plan Area Statements and the other plans give no width, so 300 feet everywhere is an assumption. [Likely]
-- No corridor standard: 1,117 of the 2,093 acres are in Placer districts. Most Placer subdistrict tables state no SR 28 or SR 267 value, so those pieces carry the district value. 85 acres are SR 207 in the South Shore districts (N08).
+- No corridor standard: 1,117 of the 2,026 acres are in Placer districts. Most Placer subdistrict tables state no SR 28 or SR 267 value, so those pieces carry the district value. 85 acres are SR 207 in the South Shore districts (N08).
 - SR 89 crosses PAS 121 and 143, where the document value is 25 (N01). Those 122 acres show an EFFECTIVE_CNEL of 25 along a state highway, which supports reading 25 as a typo.
 - Route buffers overlap by about 51 acres at junctions. A point there falls in two pieces; use the higher EFFECTIVE_CNEL.
-- The airport corridor in PAS 117 and 120 (60 CNEL) is not drawn. It needs the airport flight path shapes.
+- The airport corridor in PAS 117 and 120 and the flight path standard in PAS 100 (60 CNEL) are not drawn. No source checked so far gives the corridor as a shape:
+  - The 1987 CLUP shapefile (6 polygons, field Zone 1 to 3) holds the old safety zones: Zone 1 is the two runway end clear zones (29 and 14 acres), Zone 2 the approach and departure areas, and Zone 3 a 3,635 acre overflight area that takes in most of PAS 117, 118, 119, and Tahoe Valley. These are safety zones, not noise contours. [Likely]
+  - The 2019 ALUCP Development Displacement Analysis (ESA, for the Lake Tahoe Airport Land Use Commission) maps the 2038 forecast CNEL 55 to 75 contours in Figure 1-2, but only as a figure.
+  - No TRPA REST service has airport noise contours.
+  - The best source is the ALUCP contour GIS from ESA (project 161008) or the airport. The 60 CNEL contour is the natural reading of "airport corridor", but that is a planner call.
 
 ## Not in this table
 

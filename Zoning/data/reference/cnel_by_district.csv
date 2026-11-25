@@ -99,7 +99,7 @@ ZONING_ID,CNEL,CORRIDOR_CNEL,CNEL_NOTE,BASIS,SOURCE_DOC,SOURCE_PAGE,LEGACY_CNEL,
 117,50,designated airport: 60,,document,Plan Area Statement 117,2,50,1.0,same,
 118,55,,,document,Plan Area Statement 118,2,55,1.0,same,
 119,55,Highway 50: 65,,document,Plan Area Statement 119,3,55,0.963,same,
-120,50,airport: 60,,document,Plan Area Statement 120,2,50,1.0,same,
+120,50,airport: 60; Highway 50: 65,,document,Plan Area Statement 120,2,50,1.0,same,
 121,25,,,document,Plan Area Statement 121,2,40,0.998,40 to 25,N01
 122,50,,,document,Plan Area Statement 122,2,50,1.0,same,
 123,50,Highway 50: 65,,document,Plan Area Statement 123,2,50,1.0,same,
