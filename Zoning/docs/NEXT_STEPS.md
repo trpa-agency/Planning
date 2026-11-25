@@ -35,9 +35,22 @@ State on 2026-11-24: E01, E03, and E04, every table fix from the 2026-11-20 pack
 
 ## CNEL table (replaces AGIS_TRPA/MapServer/82)
 
-- **Build `SDE.District_CNEL`.** Steps in [CNEL.md](CNEL.md): dry run, review `changes.csv` and `cnel_review.gdb` against layer 82, then write with `create_table: true`. Run it in `mtb-edits` after the E04 IDs are in place (they are).
-- **Send the N01 to N08 questions to Alyssa** with the R-series list. N01 (25 versus 45 CNEL for wilderness) and N03 (Tahoe Valley table versus policy) matter most.
-- **Republish layer 82** as District joined to the table once it is in DEFAULT.
+State on 2026-11-24: the reference CSV (283 districts), `cnel_build_table.py`, and the GeoPackage (`data/cnel/district_cnel.gpkg`, with district values, highway centerlines, noise corridors, and the legacy layer) are on `mtb-edits` (last commit 6dab2da, not pushed). Nothing has run in SDE. Details are in [CNEL.md](CNEL.md).
+
+1. **Push `mtb-edits` and merge to `main`** so the server clone can pull the CNEL scripts.
+2. **Build `SDE.District_CNEL`** on the server, in `mtb-edits` (the E04 IDs are already there). First do a dry run, then review `changes.csv` and `cnel_review.gdb` against layer 82. Then write with `write_to_db: true` and `create_table: true`, restore the config afterward, and snapshot the version.
+3. **Send Alyssa the CNEL questions** with the R-series list: N01 to N08 from CNEL.md. N01 (25 versus 45 CNEL for wilderness) and N03 (Tahoe Valley table versus policy) matter most. Add three corridor questions:
+   - Is 300 feet from the centerline the right corridor width where a plan gives none?
+   - Should the 2,026 acres with no corridor standard (1,117 of them in Placer) use the district value, or a basin default for each route?
+   - What shape is the "airport corridor" in PAS 117 and 120 and the "approved flight paths" in PAS 100?
+4. **Get the airport noise contours.**
+   - Ask ESA (project 161008, through Jeanne) or the airport for the 2019 ALUCP CNEL contour GIS.
+   - The 1987 CLUP shapefile holds safety zones, and the ALUCP report has the contours only as Figure 1-2, so neither one works.
+   - Once we have the data, ask Claude to add an `airport_corridor` layer: the 60 CNEL contour split by PAS 100, 117, and 120, with a config entry for the source. Don't trace the figure unless the data can't be had.
+5. **Decide where the corridors live.** `noise_corridors` is only in the GeoPackage now. Choose whether it becomes an SDE feature class next to `District_CNEL` or stays a derived file rebuilt by `cnel_export_gpkg.py`.
+6. **Rebuild the GeoPackage from the version** after Alyssa posts to DEFAULT. Run `python Zoning/scripts/cnel_export_gpkg.py --source version` so it picks up the Carson City halves of 055 and 056 and the post-E04 IDs without the service workaround.
+7. **Republish layer 82** as District joined to `District_CNEL`, plus the corridors if they go to SDE. Before replacing it, find what uses `AGIS_TRPA/MapServer/82` (web maps, apps, and the noise threshold work) and tell the owners about the 33 value changes.
+8. **Send Andy the summary message** with the GitHub links to CNEL.md, the GeoPackage, the CSV, and the commit. It's drafted but not sent.
 
 ## Pipeline work (from CLAUDE.md section 11)
 
